@@ -13,17 +13,10 @@ plugins {
 android {
     namespace = "org.easy.gemini.client"
 
-    val localProperties = localProperties()
     defaultConfig {
         applicationId = "org.easy.gemini.client"
         versionCode = 1000000
         versionName = "v1.0.0"
-
-        buildConfigField(
-            "String",
-            "GEMINI_API_KEY",
-            "\"${localProperties.getProperty("gemini_api_key")}\""
-        )
     }
     val keyProperties = keyStoreProperties()
     signingConfigs {
@@ -53,22 +46,6 @@ android {
             excludes.add("META-INF/versions/9/previous-compilation-data.bin")
         }
     }
-
-    buildFeatures {
-        buildConfig = true
-    }
-}
-
-fun localProperties(): Properties {
-    val properties: Properties = Properties().apply {
-        val localFile = rootProject.file("local.properties")
-        if (localFile.isFile) {
-            InputStreamReader(FileInputStream(localFile), Charsets.UTF_8).use {
-                this.load(it)
-            }
-        }
-    }
-    return properties
 }
 
 fun keyStoreProperties(): Properties {

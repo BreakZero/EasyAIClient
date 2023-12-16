@@ -8,11 +8,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,6 +26,7 @@ import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -39,12 +44,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.lerp
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreenDrawer() {
+internal fun HomeScreenDrawer(
+    message: String,
+    onMessageChanged: (String) -> Unit
+) {
     Surface(modifier = Modifier.fillMaxSize()) {
         val coroutineScope = rememberCoroutineScope()
         var drawerState by remember {
@@ -58,6 +67,9 @@ fun HomeScreenDrawer() {
             DrawerWidth.toPx()
         }
         translationX.updateBounds(0f, drawerWidth)
+
+        val focusManager = LocalFocusManager.current
+
         fun toggleDrawerState() {
             coroutineScope.launch {
                 if (drawerState == DrawerState.Open) {
@@ -109,6 +121,9 @@ fun HomeScreenDrawer() {
                 }
                 .draggable(
                     draggableState, Orientation.Horizontal,
+                    onDragStarted = {
+                        focusManager.clearFocus()
+                    },
                     onDragStopped = { velocity ->
                         val targetOffsetX = decay.calculateTargetValue(
                             translationX.value,
@@ -123,14 +138,10 @@ fun HomeScreenDrawer() {
                             // checking if the difference between the target and actual is + or -
                             val targetDifference = (actualTargetX - targetOffsetX)
                             val canReachTargetWithDecay =
-                                (
-                                        targetOffsetX > actualTargetX && velocity > 0f &&
-                                                targetDifference > 0f
-                                        ) ||
-                                        (
-                                                targetOffsetX < actualTargetX && velocity < 0 &&
-                                                        targetDifference < 0f
-                                                )
+                                (targetOffsetX > actualTargetX && velocity > 0f &&
+                                        targetDifference > 0f) ||
+                                        (targetOffsetX < actualTargetX && velocity < 0 &&
+                                                targetDifference < 0f)
                             if (canReachTargetWithDecay) {
                                 translationX.animateDecay(
                                     initialVelocity = velocity,
@@ -147,6 +158,8 @@ fun HomeScreenDrawer() {
                         }
                     }
                 ),
+            message = message,
+            onMessageChanged = onMessageChanged,
             onDrawerClicked = ::toggleDrawerState
         )
     }
@@ -157,6 +170,8 @@ fun HomeScreenDrawer() {
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
+    message: String = "",
+    onMessageChanged: (String) -> Unit,
     onDrawerClicked: () -> Unit,
 ) {
     Scaffold(
@@ -165,13 +180,18 @@ private fun HomeScreenContent(
             TopAppBar(
                 title = { /*TODO*/ },
                 navigationIcon = {
-                    Icon(imageVector = Icons.Default.Sort, contentDescription = null)
+                    IconButton(onClick = onDrawerClicked) {
+                        Icon(imageVector = Icons.Default.Sort, contentDescription = null)
+                    }
                 }
             )
         },
     ) { _ ->
-
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
             Box(
                 modifier = Modifier
                     .weight(1.0f)
@@ -179,9 +199,21 @@ private fun HomeScreenContent(
             ) {
 
             }
-            Row(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(value = "", onValueChange = {})
-                Icon(imageVector = Icons.Default.Send, contentDescription = null)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.weight(1.0f),
+                    value = message,
+                    onValueChange = onMessageChanged
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                IconButton(onClick = {
+                    println("===== $message")
+                }) {
+                    Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                }
             }
         }
     }
@@ -202,20 +234,23 @@ private fun HomeScreenDrawerContent(
     onSettingsClick: () -> Unit
 ) {
     Column(
-        modifier.fillMaxSize()
+        modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1.0f)
         ) {
-
         }
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(0.8f)
         ) {
             Icon(imageVector = Icons.Default.VerifiedUser, contentDescription = null)
             Text(text = "D&J")
+            Spacer(modifier = Modifier.weight(1.0f))
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
         }
     }
