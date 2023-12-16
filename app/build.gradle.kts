@@ -1,72 +1,98 @@
+import java.io.FileInputStream
+import java.io.InputStreamReader
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
+    alias(easy.plugins.android.application.compose)
+    alias(easy.plugins.android.application.jacoco)
+    id("jacoco")
+    alias(easy.plugins.android.hilt)
 }
 
 android {
     namespace = "org.easy.gemini.client"
-    compileSdk = 34
 
+    val localProperties = localProperties()
     defaultConfig {
         applicationId = "org.easy.gemini.client"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 1000000
+        versionName = "v1.0.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${localProperties.getProperty("gemini_api_key")}\""
+        )
+    }
+    val keyProperties = keyStoreProperties()
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(keyProperties.getProperty("storeFile"))
+            storePassword = keyProperties.getProperty("storePassword")
+            keyAlias = keyProperties.getProperty("keyAlias")
+            keyPassword = keyProperties.getProperty("keyPassword")
         }
     }
-
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+        }
+        release {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes.add("META-INF/versions/9/previous-compilation-data.bin")
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
-dependencies {
+fun localProperties(): Properties {
+    val properties: Properties = Properties().apply {
+        val localFile = rootProject.file("local.properties")
+        if (localFile.isFile) {
+            InputStreamReader(FileInputStream(localFile), Charsets.UTF_8).use {
+                this.load(it)
+            }
+        }
+    }
+    return properties
+}
 
+fun keyStoreProperties(): Properties {
+    val properties = Properties()
+    val keyPropertiesFile = rootProject.file("keystore/keystore.properties")
+
+    if (keyPropertiesFile.isFile) {
+        InputStreamReader(FileInputStream(keyPropertiesFile), Charsets.UTF_8).use { reader ->
+            properties.load(reader)
+        }
+    }
+    return properties
+}
+
+dependencies {
     implementation(libs.generativeai)
 
-    implementation(libs.core.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.activity.compose)
-    implementation(platform(libs.compose.bom))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(platform(libs.compose.bom))
-    androidTestImplementation(libs.ui.test.junit4)
-    debugImplementation(libs.ui.tooling)
-    debugImplementation(libs.ui.test.manifest)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.compose.material3.window.size)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.compose.viewmodel)
+    implementation(libs.androidx.compose.lifecycle.runtime)
+    implementation(libs.androidx.compose.navigation)
+
+    implementation(projects.core.systemUi)
+    implementation(projects.feature.home)
 }
