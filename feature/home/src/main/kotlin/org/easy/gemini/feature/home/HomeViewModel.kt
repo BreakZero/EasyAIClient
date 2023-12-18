@@ -2,53 +2,78 @@ package org.easy.gemini.feature.home
 
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.BlobPart
+import com.google.ai.client.generativeai.type.Content
+import com.google.ai.client.generativeai.type.ImagePart
+import com.google.ai.client.generativeai.type.Part
+import com.google.ai.client.generativeai.type.TextPart
+import com.google.ai.client.generativeai.type.content
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.easy.gemini.common.BaseViewModel
-import org.easy.gemini.feature.home.model.Message
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
-    private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val homeUiState = _homeUiState.asStateFlow()
-
+    private val _historyChats = MutableStateFlow<List<String>>(emptyList())
     private val _message = MutableStateFlow("")
-    val message = _message.asStateFlow()
+    private val _localHistory = MutableStateFlow<List<Content>>(emptyList())
+
+    val homeUiState = combine(_historyChats, _localHistory, _message) { chats, history, message ->
+        HomeUiState.Initialed(
+            message = message,
+            history = history,
+            chats = chats,
+            recommended = emptyList()
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), HomeUiState.Loading)
+
     private val generativeModel = GenerativeModel(
         modelName = "gemini-pro",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
     private val chat = generativeModel.startChat()
-    private val messages = mutableListOf<Message>()
+    private val fullParts = mutableListOf<Part>()
 
-    private val responseMessageContent = StringBuilder()
     fun sendMessage() {
         chat.sendMessageStream(_message.value).onStart {
-            println("===== onStart")
-            messages.add(Message(false, _message.value))
+            _localHistory.update {
+                it + content("user") { text(_message.value) }
+            }
             _message.update { "" }
-            _homeUiState.update {
-                HomeUiState.Initialed(history = messages, recommended = emptyList())
+        }.onEach { response ->
+            if (fullParts.isEmpty()) {
+                fullParts += response.candidates.first().content.parts
+                _localHistory.update { it + response.candidates.first().content }
+            } else {
+                fullParts += response.candidates.first().content.parts
+                _localHistory.update {
+                    val tempList = it.toMutableList()
+                    tempList[it.lastIndex] = content("model") {
+                        fullParts.forEach { part ->
+                            when (part) {
+                                is TextPart -> text(part.text)
+                                is ImagePart -> image(part.image)
+                                is BlobPart -> blob(part.mimeType, part.blob)
+                            }
+                        }
+                    }
+                    tempList
+                }
             }
-        }.onEach {
-            println("===== ${it.text}")
-            responseMessageContent.append(it.text)
         }.onCompletion {
-            println("===== onCompleted... ${it?.message}")
-            _homeUiState.update {
-                messages.add(Message(true, responseMessageContent.toString()))
-                HomeUiState.Initialed(history = messages, recommended = emptyList())
-            }
+            fullParts.clear()
         }.catch {
-            println("===== onError ${it.message}")
+            // add error message
         }.launchIn(viewModelScope)
     }
 

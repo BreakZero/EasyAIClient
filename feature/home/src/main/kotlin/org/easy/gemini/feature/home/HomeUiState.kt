@@ -1,11 +1,13 @@
 package org.easy.gemini.feature.home
 
-import org.easy.gemini.feature.home.model.Message
+import com.google.ai.client.generativeai.type.Content
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState
     data class Initialed(
-        val history: List<Message>,
+        val chats: List<String>,
+        val message: String,
+        val history: List<Content>,
         val recommended: List<String>
     ) : HomeUiState
 }
