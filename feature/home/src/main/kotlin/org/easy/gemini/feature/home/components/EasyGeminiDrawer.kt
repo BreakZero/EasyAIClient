@@ -4,20 +4,20 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.lerp
@@ -48,11 +47,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import kotlinx.coroutines.launch
+import org.easy.gemini.feature.home.HomeUiState
+import org.easy.gemini.feature.home.model.Message
 
 @Composable
 internal fun HomeScreenDrawer(
     message: String,
-    onMessageChanged: (String) -> Unit
+    homeUiState: HomeUiState,
+    onMessageChanged: (String) -> Unit,
+    onMessageSent: () -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         val coroutineScope = rememberCoroutineScope()
@@ -86,7 +89,12 @@ internal fun HomeScreenDrawer(
         }
 
         HomeScreenDrawerContent(
-            historyChats = emptyList(),
+            historyChats = listOf(
+                "New Chat",
+                "配色Jetpack Compose",
+                "Gradle 生命周期",
+                "Web3 Development Skills"
+            ),
             onSelected = { /*TODO*/ },
             onSettingsClick = {}
         )
@@ -159,8 +167,10 @@ internal fun HomeScreenDrawer(
                     }
                 ),
             message = message,
+            messages = if (homeUiState is HomeUiState.Initialed) homeUiState.history else emptyList<Message>(),
             onMessageChanged = onMessageChanged,
-            onDrawerClicked = ::toggleDrawerState
+            onDrawerClicked = ::toggleDrawerState,
+            onMessageSent = onMessageSent
         )
     }
 }
@@ -171,11 +181,13 @@ internal fun HomeScreenDrawer(
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     message: String = "",
+    messages: List<Message>,
     onMessageChanged: (String) -> Unit,
     onDrawerClicked: () -> Unit,
+    onMessageSent: () -> Unit
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { /*TODO*/ },
@@ -186,18 +198,21 @@ private fun HomeScreenContent(
                 }
             )
         },
-    ) { _ ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(padding)
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Box(
+            LazyColumn(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .weight(1.0f)
-                    .background(Color.Cyan)
             ) {
-
+                items(messages) { message ->
+                    MessageItemView(message = message)
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -209,9 +224,7 @@ private fun HomeScreenContent(
                     onValueChange = onMessageChanged
                 )
                 Spacer(modifier = Modifier.width(12.dp))
-                IconButton(onClick = {
-                    println("===== $message")
-                }) {
+                IconButton(onClick = onMessageSent) {
                     Icon(imageVector = Icons.Default.Send, contentDescription = null)
                 }
             }
@@ -244,6 +257,9 @@ private fun HomeScreenDrawerContent(
                 .fillMaxWidth()
                 .weight(1.0f)
         ) {
+            items(historyChats) {
+                Text(text = it)
+            }
         }
         Row(
             modifier = Modifier.fillMaxWidth(0.8f)

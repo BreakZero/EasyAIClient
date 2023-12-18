@@ -10,6 +10,12 @@ import org.easy.gemini.feature.home.components.HomeScreenDrawer
 fun HomeContentRouter() {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val message by homeViewModel.message.collectAsStateWithLifecycle()
-    HomeScreenDrawer(message = message, onMessageChanged = homeViewModel::onMessageChanged)
+    val homeUiState by homeViewModel.homeUiState.collectAsStateWithLifecycle()
+    HomeScreenDrawer(
+        message = message,
+        onMessageChanged = homeViewModel::onMessageChanged,
+        onMessageSent = homeViewModel::sendMessage,
+        homeUiState = homeUiState
+    )
 }
 
