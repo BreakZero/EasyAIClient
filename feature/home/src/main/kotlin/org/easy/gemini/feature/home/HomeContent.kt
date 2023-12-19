@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,14 +36,17 @@ import org.easy.gemini.feature.home.components.HomeScreenDrawer
 import org.easy.gemini.feature.home.components.MessageItemView
 
 @Composable
-fun HomeContentRouter() {
+fun HomeContentRouter(
+    navigateToSettings: () -> Unit
+) {
     val homeViewModel: HomeViewModel = hiltViewModel()
     val homeUiState by homeViewModel.homeUiState.collectAsStateWithLifecycle()
     HomeScreenDrawer(
         historyChats = listOf("What is Compose", "Please introduce yourself"),
         onMessageChanged = homeViewModel::onMessageChanged,
         onMessageSent = homeViewModel::sendMessage,
-        homeUiState = homeUiState
+        homeUiState = homeUiState,
+        navigateToSettings = navigateToSettings
     )
 }
 
@@ -99,11 +105,26 @@ internal fun HomeScreenContent(
                         OutlinedTextField(
                             modifier = Modifier.weight(1.0f),
                             value = homeUiState.message,
-                            onValueChange = onMessageChanged
+                            onValueChange = onMessageChanged,
+                            shape = RoundedCornerShape(50.dp),
+                            trailingIcon = {
+                                IconButton(onClick = { /*TODO*/ }) {
+                                    Icon(
+                                        imageVector = Icons.Default.AttachFile,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
                         )
                         Spacer(modifier = Modifier.width(12.dp))
-                        IconButton(onClick = onMessageSent) {
-                            Icon(imageVector = Icons.Default.Send, contentDescription = null)
+                        IconButton(
+                            onClick = onMessageSent,
+                            enabled = homeUiState.message.isNotBlank()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = null
+                            )
                         }
                     }
                 }

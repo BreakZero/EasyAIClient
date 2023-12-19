@@ -63,6 +63,13 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
             }
             _message.update { "" }
         }.onEach { response ->
+            response.candidates.first().content.parts.forEach {
+                when(it) {
+                    is TextPart -> println("=== ${it.text}")
+                    is ImagePart -> println("=== it is an image")
+                    is BlobPart -> println("=== it is blob content")
+                }
+            }
             if (fullParts.isEmpty()) {
                 fullParts += response.candidates.first().content.parts
                 _localHistory.update { it + response.candidates.first().content }

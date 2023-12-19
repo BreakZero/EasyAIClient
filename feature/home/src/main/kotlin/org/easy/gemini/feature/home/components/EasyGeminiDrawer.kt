@@ -51,7 +51,8 @@ internal fun HomeScreenDrawer(
     historyChats: List<String>,
     homeUiState: HomeUiState,
     onMessageChanged: (String) -> Unit,
-    onMessageSent: () -> Unit
+    onMessageSent: () -> Unit,
+    navigateToSettings: () -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
         val coroutineScope = rememberCoroutineScope()
@@ -88,7 +89,7 @@ internal fun HomeScreenDrawer(
         HomeScreenDrawerContent(
             historyChats = historyChats,
             onSelected = { /*TODO*/ },
-            onSettingsClick = {}
+            onSettingsClick = navigateToSettings
         )
 
         val draggableState = rememberDraggableState(onDelta = { dragAmount ->
@@ -221,7 +222,7 @@ private fun HomeScreenDrawerContent(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(RoundedCornerShape(8.dp))
-                .clickable { onSettingsClick() }
+                .clickable(onClick = onSettingsClick)
                 .padding(vertical = 12.dp, horizontal = 16.dp)
         ) {
             Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
