@@ -3,6 +3,8 @@ package org.easy.gemini.feature.home.components
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -20,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.lerp
@@ -37,7 +42,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
-import com.google.ai.client.generativeai.type.Content
 import kotlinx.coroutines.launch
 import org.easy.gemini.feature.home.HomeScreenContent
 import org.easy.gemini.feature.home.HomeUiState
@@ -169,6 +173,7 @@ private enum class DrawerState {
     Closed
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreenDrawerContent(
     modifier: Modifier = Modifier,
@@ -187,12 +192,37 @@ private fun HomeScreenDrawerContent(
                 .fillMaxWidth()
                 .weight(1.0f)
         ) {
+            item {
+                HomeMenuItemView(
+                    item = "New Chat",
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
+                    onItemClick = {},
+                    endingIcon = {}
+                )
+            }
             items(historyChats) {
-                Text(text = it)
+                HomeMenuItemView(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f),
+                    item = it,
+                    onItemClick = onSelected,
+                    endingIcon = {
+                        Icon(
+                            modifier = Modifier.alpha(0.6f),
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null
+                        )
+                    }
+                )
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onSettingsClick() }
+                .padding(vertical = 12.dp, horizontal = 16.dp)
         ) {
             Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
             Spacer(modifier = Modifier.width(12.dp))
