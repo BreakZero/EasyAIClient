@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         google()
         mavenCentral()
@@ -11,8 +12,19 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("easy") {
+            from(files("./build-logic/building.versions.toml"))
+        }
+    }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "EasyGemini"
 include(":app")
- 
+include(":core:system-ui")
+include(":core:data")
+include(":feature:home")
+include(":feature:settings")
+include(":core:common")
+include(":core:database")
