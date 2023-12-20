@@ -10,16 +10,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import org.easy.gemini.feature.settings.components.ActionItemView
 
 @Composable
 fun SettingsRoute() {
+    val settingsViewModel: SettingsViewModel = hiltViewModel()
     SettingsScreen()
 }
 
@@ -31,10 +34,12 @@ internal fun SettingsScreen() {
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(navigationIcon = {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = null
-                )
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = null
+                    )
+                }
             }, title = { Text(text = "Settings") })
         }
     ) { padding ->

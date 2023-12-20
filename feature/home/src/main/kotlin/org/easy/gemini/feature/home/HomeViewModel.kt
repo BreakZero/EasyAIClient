@@ -21,15 +21,29 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.easy.gemini.common.BaseViewModel
+import org.easy.gemini.data.repository.UserPreferencesRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
+class HomeViewModel @Inject constructor(
+    private val userPreferencesRepository: UserPreferencesRepository
+) : BaseViewModel<HomeEvent>() {
     private val _historyChats = MutableStateFlow<List<String>>(emptyList())
     private val _message = MutableStateFlow("")
     private val _localHistory = MutableStateFlow<List<Content>>(emptyList())
 
-    val homeUiState = combine(_historyChats, _localHistory, _message) { chats, history, message ->
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-pro",
+        apiKey = BuildConfig.GEMINI_API_KEY
+    )
+
+    val homeUiState = combine(
+        userPreferencesRepository.userData,
+        _historyChats,
+        _localHistory,
+        _message
+    ) { userData, chats, history, message ->
+        println("=== $userData")
         HomeUiState.Initialed(
             message = message,
             history = history,
@@ -38,10 +52,6 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), HomeUiState.Loading)
 
-    private val generativeModel = GenerativeModel(
-        modelName = "gemini-pro",
-        apiKey = BuildConfig.GEMINI_API_KEY
-    )
     private var chat: Chat? = null
     private val fullParts = mutableListOf<Part>()
 
@@ -64,7 +74,7 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
             _message.update { "" }
         }.onEach { response ->
             response.candidates.first().content.parts.forEach {
-                when(it) {
+                when (it) {
                     is TextPart -> println("=== ${it.text}")
                     is ImagePart -> println("=== it is an image")
                     is BlobPart -> println("=== it is blob content")
