@@ -199,7 +199,7 @@ private fun HomeScreenDrawerContent(
                     modifier = Modifier
                         .fillMaxWidth(0.8f),
                     onItemClick = {},
-                    endingIcon = {}
+                    trailingIcon = {}
                 )
             }
             items(historyChats) {
@@ -208,7 +208,7 @@ private fun HomeScreenDrawerContent(
                         .fillMaxWidth(0.8f),
                     item = it,
                     onItemClick = onSelected,
-                    endingIcon = {
+                    trailingIcon = {
                         Icon(
                             modifier = Modifier.alpha(0.6f),
                             imageVector = Icons.Default.MoreVert,

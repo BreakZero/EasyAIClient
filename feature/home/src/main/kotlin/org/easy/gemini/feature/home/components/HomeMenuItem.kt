@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -17,7 +16,7 @@ internal fun HomeMenuItemView(
     modifier: Modifier = Modifier,
     item: String,
     onItemClick: () -> Unit,
-    endingIcon: @Composable RowScope.() -> Unit,
+    trailingIcon: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier = modifier.clickable {
@@ -27,6 +26,6 @@ internal fun HomeMenuItemView(
     ) {
         Text(text = item)
         Spacer(modifier = Modifier.weight(1.0f))
-        endingIcon()
+        trailingIcon()
     }
 }

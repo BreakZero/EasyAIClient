@@ -3,6 +3,8 @@ package org.easy.gemini.feature.settings
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -13,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import org.easy.gemini.feature.settings.components.ActionItemView
 
 @Composable
 fun SettingsRoute() {
@@ -35,10 +39,22 @@ internal fun SettingsScreen() {
         }
     ) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
         ) {
-            Text(text = "Set up your API KEY")
-            Text(text = "Select Model Name")
+            ActionItemView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                label = "Set up your API KEY"
+            )
+            ActionItemView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                label = "Select Model Name"
+            )
         }
     }
 }
