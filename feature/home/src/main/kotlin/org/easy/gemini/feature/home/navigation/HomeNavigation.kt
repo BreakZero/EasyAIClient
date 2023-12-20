@@ -7,8 +7,12 @@ import org.easy.gemini.feature.home.HomeContentRouter
 const val HomeIndex = "home_index"
 internal const val HomeRoute = "home_route"
 
-fun NavGraphBuilder.homeScreen() {
+fun NavGraphBuilder.homeScreen(
+    navigateToSettings: () -> Unit
+) {
     composable(HomeIndex) {
-        HomeContentRouter()
+        HomeContentRouter(
+            navigateToSettings = navigateToSettings
+        )
     }
 }

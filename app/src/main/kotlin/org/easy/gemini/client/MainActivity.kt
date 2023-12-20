@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            EasyGeminiTheme(dynamicColor = true) {
+            EasyGeminiTheme(dynamicColor = false) {
                 GeminiClientApp(windowSizeClass = calculateWindowSizeClass(activity = this))
             }
         }

@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "org.easy.gemini.feature.settings"
 }
+
+dependencies {
+    implementation(libs.androidx.hilt.navigation.compose)
+}

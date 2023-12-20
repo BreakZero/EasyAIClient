@@ -72,4 +72,5 @@ dependencies {
 
     implementation(projects.core.systemUi)
     implementation(projects.feature.home)
+    implementation(projects.feature.settings)
 }

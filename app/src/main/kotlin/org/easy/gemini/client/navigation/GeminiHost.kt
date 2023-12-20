@@ -6,6 +6,8 @@ import androidx.navigation.compose.rememberNavController
 import org.easy.gemini.client.ui.GeminiClientAppState
 import org.easy.gemini.feature.home.navigation.HomeIndex
 import org.easy.gemini.feature.home.navigation.homeScreen
+import org.easy.gemini.feature.settings.navigation.navigateToSettings
+import org.easy.gemini.feature.settings.navigation.settingsScreen
 
 @Composable
 fun GeminiHost(
@@ -14,6 +16,11 @@ fun GeminiHost(
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
-        homeScreen()
+        homeScreen(
+            navigateToSettings = {
+                navController.navigateToSettings()
+            }
+        )
+        settingsScreen()
     }
 }

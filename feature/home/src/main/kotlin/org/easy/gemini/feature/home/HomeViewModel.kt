@@ -1,6 +1,7 @@
 package org.easy.gemini.feature.home
 
 import androidx.lifecycle.viewModelScope
+import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlobPart
 import com.google.ai.client.generativeai.type.Content
@@ -41,16 +42,34 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
         modelName = "gemini-pro",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
-    private val chat = generativeModel.startChat()
+    private var chat: Chat? = null
     private val fullParts = mutableListOf<Part>()
 
+    fun startNewChat(history: List<Content>) {
+        chat = generativeModel.startChat(
+            history = history.also { initHistory ->
+                _localHistory.update { initHistory }
+            }
+        )
+    }
+
     fun sendMessage() {
-        chat.sendMessageStream(_message.value).onStart {
+        if (chat == null) {
+            startNewChat(emptyList())
+        }
+        chat!!.sendMessageStream(_message.value).onStart {
             _localHistory.update {
                 it + content("user") { text(_message.value) }
             }
             _message.update { "" }
         }.onEach { response ->
+            response.candidates.first().content.parts.forEach {
+                when(it) {
+                    is TextPart -> println("=== ${it.text}")
+                    is ImagePart -> println("=== it is an image")
+                    is BlobPart -> println("=== it is blob content")
+                }
+            }
             if (fullParts.isEmpty()) {
                 fullParts += response.candidates.first().content.parts
                 _localHistory.update { it + response.candidates.first().content }
@@ -74,6 +93,7 @@ class HomeViewModel @Inject constructor() : BaseViewModel<HomeEvent>() {
             fullParts.clear()
         }.catch {
             // add error message
+            it.printStackTrace()
         }.launchIn(viewModelScope)
     }
 
