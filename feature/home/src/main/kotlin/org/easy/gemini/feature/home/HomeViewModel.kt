@@ -27,16 +27,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository
 ) : BaseViewModel<HomeEvent>() {
     private val _historyChats = MutableStateFlow<List<String>>(emptyList())
     private val _message = MutableStateFlow("")
     private val _localHistory = MutableStateFlow<List<Content>>(emptyList())
 
-    private val generativeModel = GenerativeModel(
-        modelName = "gemini-pro",
-        apiKey = BuildConfig.GEMINI_API_KEY
-    )
+    private lateinit var chat: Chat
 
     val homeUiState = combine(
         userPreferencesRepository.userData,
@@ -45,6 +42,11 @@ class HomeViewModel @Inject constructor(
         _message
     ) { userData, chats, history, message ->
         if (userData.validate() == UserDataValidateResult.NORMAL) {
+            val generativeModel = GenerativeModel(
+                modelName = userData.modelName.ifBlank { "gemini-pro" },
+                apiKey = userData.apiKey
+            )
+            chat = generativeModel.startChat(history = history)
             HomeUiState.Initialed(
                 message = message,
                 history = history,
@@ -56,22 +58,15 @@ class HomeViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), HomeUiState.Loading)
 
-    private var chat: Chat? = null
     private val fullParts = mutableListOf<Part>()
 
     fun startNewChat(history: List<Content>) {
-        chat = generativeModel.startChat(
-            history = history.also { initHistory ->
-                _localHistory.update { initHistory }
-            }
-        )
+        chat.history.clear()
+        chat.history.addAll(history)
     }
 
     fun sendMessage() {
-        if (chat == null) {
-            startNewChat(emptyList())
-        }
-        chat!!.sendMessageStream(_message.value).onStart {
+        chat.sendMessageStream(_message.value).onStart {
             _localHistory.update {
                 it + content("user") { text(_message.value) }
             }
