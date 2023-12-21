@@ -40,7 +40,11 @@ import org.easy.gemini.model.UserData
 fun SettingsRoute() {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val userDataUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
-    SettingsScreen(userDataUiState, onModelNameChanged = settingsViewModel::onModelNameChanged)
+    SettingsScreen(
+        userDataUiState,
+        onModelNameChanged = settingsViewModel::onModelNameChanged,
+        applyApiKeyChanged = settingsViewModel::setApiKey
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +52,8 @@ fun SettingsRoute() {
 @Composable
 internal fun SettingsScreen(
     userData: UserData,
-    onModelNameChanged: (String) -> Unit
+    onModelNameChanged: (String) -> Unit,
+    applyApiKeyChanged: (String) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -131,9 +136,19 @@ internal fun SettingsScreen(
             )
         }
         if (showDialog) {
-            ApiKeyEditorDialog {
-
+            var apiKey by remember {
+                mutableStateOf(userData.apiKey)
             }
+            ApiKeyEditorDialog(
+                apiKey = apiKey,
+                onApiKeyChanged = { apiKey = it },
+                applyApiKeyChanged = {
+                    applyApiKeyChanged(apiKey)
+                },
+                onDismiss = {
+                    showDialog = false
+                }
+            )
         }
     }
 }

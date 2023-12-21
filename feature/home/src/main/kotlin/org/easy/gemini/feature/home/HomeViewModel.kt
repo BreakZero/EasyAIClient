@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import org.easy.gemini.common.BaseViewModel
 import org.easy.gemini.data.repository.UserPreferencesRepository
+import org.easy.gemini.model.UserDataValidateResult
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,13 +44,16 @@ class HomeViewModel @Inject constructor(
         _localHistory,
         _message
     ) { userData, chats, history, message ->
-        println("=== $userData")
-        HomeUiState.Initialed(
-            message = message,
-            history = history,
-            chats = chats,
-            recommended = emptyList()
-        )
+        if (userData.validate() == UserDataValidateResult.NORMAL) {
+            HomeUiState.Initialed(
+                message = message,
+                history = history,
+                chats = chats,
+                recommended = emptyList()
+            )
+        } else {
+            HomeUiState.NeedToSetup
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), HomeUiState.Loading)
 
     private var chat: Chat? = null
@@ -73,13 +77,13 @@ class HomeViewModel @Inject constructor(
             }
             _message.update { "" }
         }.onEach { response ->
-            response.candidates.first().content.parts.forEach {
-                when (it) {
-                    is TextPart -> println("=== ${it.text}")
-                    is ImagePart -> println("=== it is an image")
-                    is BlobPart -> println("=== it is blob content")
-                }
-            }
+//            response.candidates.first().content.parts.forEach {
+//                when (it) {
+//                    is TextPart -> println("=== ${it.text}")
+//                    is ImagePart -> println("=== it is an image")
+//                    is BlobPart -> println("=== it is blob content")
+//                }
+//            }
             if (fullParts.isEmpty()) {
                 fullParts += response.candidates.first().content.parts
                 _localHistory.update { it + response.candidates.first().content }

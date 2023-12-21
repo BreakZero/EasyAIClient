@@ -1,26 +1,43 @@
 package org.easy.gemini.feature.settings.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.window.DialogProperties
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ApiKeyEditorDialog(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    apiKey: String,
+    onApiKeyChanged: (String) -> Unit,
+    onDismiss: () -> Unit,
+    applyApiKeyChanged: () -> Unit
 ) {
-    val configuration = LocalConfiguration.current
     AlertDialog(
-        onDismissRequest = {}
-    ) {
-        Column {
-            Text(text = "Enter your api key:")
-            OutlinedTextField(value = "", onValueChange = {})
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            Button(onClick = {
+                applyApiKeyChanged()
+                onDismiss()
+            }) {
+                Text(text = "Confirm")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+        },
+        properties = DialogProperties(),
+        title = {},
+        text = {
+            OutlinedTextField(value = apiKey, label = {
+                Text(text = "Enter your api key")
+            }, onValueChange = onApiKeyChanged)
         }
-    }
+    )
 }
