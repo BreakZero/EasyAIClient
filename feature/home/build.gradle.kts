@@ -37,6 +37,9 @@ fun localProperties(): Properties {
 
 dependencies {
     implementation(projects.core.common)
+    implementation(projects.core.model)
+    implementation(projects.core.data)
+
     implementation(libs.generativeai)
     implementation(libs.androidx.hilt.navigation.compose)
 }

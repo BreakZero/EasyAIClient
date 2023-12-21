@@ -16,11 +16,13 @@ import org.easy.gemini.common.network.EasyDispatchers
 import org.easy.gemini.common.network.di.ApplicationScope
 import org.easy.gemini.datastore.UserPreferences
 import org.easy.gemini.datastore.UserPreferencesSerializer
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
     @Provides
+    @Singleton
     fun providesUserPreferencesDataStore(
         @ApplicationContext context: Context,
         @ApplicationScope scope: CoroutineScope,
