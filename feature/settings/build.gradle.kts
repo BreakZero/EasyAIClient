@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(projects.core.systemUi)
     implementation(projects.core.data)
     implementation(projects.core.model)
 }

@@ -2,23 +2,23 @@ package org.easy.ai.feature.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,13 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.easy.ai.feature.settings.components.ActionItemView
 import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
 import org.easy.ai.model.UserData
+import org.easy.ai.system.theme.ThemePreviews
 
 @Composable
 fun SettingsRoute() {
@@ -74,17 +72,23 @@ internal fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp)
         ) {
-            ActionItemView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                label = "Set up your API KEY",
-                trailing = {
+            ListItem(
+                modifier = Modifier.fillMaxWidth(),
+                headlineContent = {
+                    Text(text = "Choose Model Platform")
+                },
+                trailingContent = {
+                    Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                }
+            )
+            ListItem(
+                headlineContent = {
+                    Text(text = "Choose Your API KEY")
+                },
+                trailingContent = {
                     Row(
                         modifier = Modifier
-                            .fillMaxHeight()
                             .clickable {
                                 showDialog = !showDialog
                             },
@@ -95,42 +99,6 @@ internal fun SettingsScreen(
                             imageVector = Icons.Default.KeyboardArrowRight,
                             contentDescription = null
                         )
-                    }
-                }
-            )
-            ActionItemView(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                label = "Choose Model Name",
-                trailing = {
-                    Box(modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.Center) {
-                        Row {
-                            Text(
-                                text = userData.modelName,
-                                modifier = Modifier
-                                    .clickable { expanded = true },
-                                textAlign = TextAlign.Center
-                            )
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowRight,
-                                contentDescription = null
-                            )
-                        }
-                        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                            DropdownMenuItem(
-                                text = { Text(text = "gemini-pro") },
-                                onClick = {
-                                    onModelNameChanged("gemini-pro")
-                                    expanded = false
-                                })
-                            DropdownMenuItem(
-                                text = { Text(text = "gemini-pro-vision") },
-                                onClick = {
-                                    onModelNameChanged("gemini-pro-vision")
-                                    expanded = false
-                                })
-                        }
                     }
                 }
             )
@@ -150,5 +118,17 @@ internal fun SettingsScreen(
                 }
             )
         }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun SettingsScreen_Preview() {
+    Surface(modifier = Modifier.fillMaxSize()) {
+        SettingsScreen(
+            userData = UserData("", ""),
+            onModelNameChanged = {},
+            applyApiKeyChanged = {}
+        )
     }
 }

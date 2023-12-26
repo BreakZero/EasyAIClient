@@ -72,6 +72,6 @@ dependencies {
     implementation(libs.androidx.compose.navigation)
 
     implementation(projects.core.systemUi)
-    implementation(projects.feature.home)
+    implementation(projects.feature.chat)
     implementation(projects.feature.settings)
 }
