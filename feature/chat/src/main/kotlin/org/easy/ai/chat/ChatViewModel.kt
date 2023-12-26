@@ -42,11 +42,12 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun sendMessage(userMessage: String) {
+        _userMessage.update { "" }
         _chatHistory.update {
             it + ChatMessage(text = userMessage, participant = Participant.USER, isPending = true)
         }
         viewModelScope.launch {
-            val chatMessage = modelRepository.sendMessage(_userMessage.value)
+            val chatMessage = modelRepository.sendMessage(userMessage)
             _chatHistory.update {
                 it + chatMessage
             }

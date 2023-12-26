@@ -1,5 +1,10 @@
 package org.easy.ai.model
 
-sealed interface AIModel {
-    data class GPT35Turbo(val model: String = "", val maxToken: Int = 4096): AIModel
+enum class AIModel(
+    val model: String,
+    val maxToken: Int
+) {
+    GPT35Turbo("", 4096),
+    GeminiPro("gemini-pro", 0),
+    GeminiProVision("gemini-pro-vision", 0)
 }

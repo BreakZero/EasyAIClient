@@ -22,15 +22,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -199,6 +202,11 @@ private fun ChatContent(
                     IconButton(onClick = onDrawerClicked) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
                     }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(imageVector = Icons.Default.Save, contentDescription = "Save Chat")
+                    }
                 }
             )
         }
@@ -206,10 +214,19 @@ private fun ChatContent(
         when (chatUiState) {
             is ChatUiState.Configuration -> {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Please setup your api key first")
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Oops, Please config your environment first")
+                        TextButton(onClick = {
+                            onEvent(ChatEvent.OnSettingsClicked)
+                        }) {
+                            Text(text = "Open Settings", color = MaterialTheme.colorScheme.scrim)
+                        }
+                    }
                 }
             }
 
@@ -222,6 +239,7 @@ private fun ChatContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
+                        .padding(horizontal = 16.dp)
                         .padding(bottom = 12.dp)
                 ) {
                     LazyColumn(
