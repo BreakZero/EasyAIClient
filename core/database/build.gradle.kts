@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.database"
+    namespace = "org.easy.ai.database"
     defaultConfig {
         javaCompileOptions {
             annotationProcessorOptions {

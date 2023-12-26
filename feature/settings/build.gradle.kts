@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.feature.settings"
+    namespace = "org.easy.ai.feature.settings"
 }
 
 dependencies {

@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.datastore"
+    namespace = "org.easy.ai.datastore"
     defaultConfig {
         consumerProguardFile("consumer-rules.pro")
     }

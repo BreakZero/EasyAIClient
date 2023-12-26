@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.feature.home"
+    namespace = "org.easy.ai.feature.home"
     defaultConfig {
         val localProperties = localProperties()
         buildConfigField(

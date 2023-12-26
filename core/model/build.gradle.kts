@@ -4,5 +4,5 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.model"
+    namespace = "org.easy.ai.model"
 }

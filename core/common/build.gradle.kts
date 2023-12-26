@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.common"
+    namespace = "org.easy.ai.common"
 }
 
 dependencies {

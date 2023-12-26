@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-rootProject.name = "EasyGemini"
+rootProject.name = "EasyAI"
 include(":app")
 include(":core:system-ui")
 include(":core:data")

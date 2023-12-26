@@ -11,10 +11,10 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.client"
+    namespace = "org.easy.ai.client"
 
     defaultConfig {
-        applicationId = "org.easy.gemini.client"
+        applicationId = "org.easy.ai.client"
         versionCode = 1000000
         versionName = "v1.0.0"
     }
@@ -33,6 +33,7 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
+//            isDebuggable = true
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

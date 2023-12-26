@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "org.easy.gemini.system.ui"
+    namespace = "org.easy.ai.system.ui"
 }
 
 dependencies {
