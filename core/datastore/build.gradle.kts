@@ -8,6 +8,9 @@ plugins {
 
 android {
     namespace = "org.easy.gemini.datastore"
+    defaultConfig {
+        consumerProguardFile("consumer-rules.pro")
+    }
 }
 
 // Setup protobuf configuration, generating lite Java and Kotlin classes

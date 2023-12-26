@@ -60,7 +60,10 @@ class HomeViewModel @Inject constructor(
 
     private val fullParts = mutableListOf<Part>()
 
-    fun startNewChat(history: List<Content>) {
+    fun startNewChat(id: Long) {
+        // get history by id
+        val history: List<Content> = emptyList()
+        _localHistory.update { emptyList() }
         chat.history.clear()
         chat.history.addAll(history)
     }
