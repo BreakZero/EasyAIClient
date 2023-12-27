@@ -10,12 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -209,8 +208,15 @@ private fun ChatContent(
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (chatUiState is ChatUiState.Initialed) {
+                MessageInput(
+                    onMessageSend = { onEvent(ChatEvent.OnMessageSend(it)) }
+                )
+            }
         }
-    ) { paddingValues ->
+    ) { paddings ->
         when (chatUiState) {
             is ChatUiState.Configuration -> {
                 Box(
@@ -235,63 +241,66 @@ private fun ChatContent(
                 LaunchedEffect(key1 = chatUiState.chatHistory) {
                     chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
                 }
-                Column(
+
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 12.dp)
+                        .fillMaxWidth()
+                        .padding(paddings)
+                        .padding(horizontal = 16.dp),
+                    state = chatListState,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                            .weight(1.0f),
-                        state = chatListState,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(chatUiState.chatHistory) { message ->
-                            ChatMessageItemView(
-                                modifier = Modifier.fillMaxWidth(),
-                                message = message
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier.weight(1.0f),
-                            value = chatUiState.userMessage,
-                            onValueChange = {
-                                onEvent(ChatEvent.OnUserMessageChanged(it))
-                            },
-                            shape = RoundedCornerShape(50.dp),
-                            trailingIcon = {
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Icon(
-                                        imageVector = Icons.Default.AttachFile,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
+                    items(chatUiState.chatHistory) { message ->
+                        ChatMessageItemView(
+                            modifier = Modifier.fillMaxWidth(),
+                            message = message
                         )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        IconButton(
-                            onClick = {
-                                onEvent(ChatEvent.OnMessageSend(chatUiState.userMessage))
-                            },
-                            enabled = chatUiState.userMessage.isNotBlank()
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Send,
-                                contentDescription = null
-                            )
-                        }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+internal fun MessageInput(
+    onMessageSend: (String) -> Unit
+) {
+    var userMessage by rememberSaveable {
+        mutableStateOf("")
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.weight(1.0f),
+            value = userMessage,
+            onValueChange = { userMessage = it },
+            trailingIcon = {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        imageVector = Icons.Default.AttachFile,
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.CenterVertically),
+            onClick = {
+                onMessageSend(userMessage)
+                userMessage = ""
+            },
+            enabled = userMessage.isNotBlank()
+        ) {
+            Icon(
+                imageVector = Icons.Default.Send,
+                contentDescription = null
+            )
         }
     }
 }

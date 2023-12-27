@@ -22,27 +22,20 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository
 ) : BaseViewModel<ChatEvent>() {
-    private val _userMessage = MutableStateFlow("")
     private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
 
     val chatUiState = combine(
         modelRepository.initial(),
-        _userMessage,
         _chatHistory
-    ) { isInitialed, userMessage, chatHistory ->
+    ) { isInitialed, chatHistory ->
         if (isInitialed) {
-            ChatUiState.Initialed(userMessage = userMessage, chatHistory = chatHistory)
+            ChatUiState.Initialed(chatHistory = chatHistory)
         } else {
             ChatUiState.Configuration
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChatUiState.Configuration)
 
-    private fun onUserMessageChanged(userMessage: String) {
-        _userMessage.update { userMessage }
-    }
-
     private fun sendMessage(userMessage: String) {
-        _userMessage.update { "" }
         _chatHistory.update {
             it + ChatMessage(text = userMessage, participant = Participant.USER, isPending = true)
         }
@@ -58,7 +51,6 @@ class ChatViewModel @Inject constructor(
         when (event) {
             is ChatEvent.OnSettingsClicked -> dispatchNavigationEvent(event)
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
-            is ChatEvent.OnUserMessageChanged -> onUserMessageChanged(event.userMessage)
         }
     }
 }

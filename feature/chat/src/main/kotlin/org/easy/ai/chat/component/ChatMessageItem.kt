@@ -1,10 +1,12 @@
 package org.easy.ai.chat.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Computer
@@ -35,7 +37,8 @@ internal fun ChatMessageItemView(
             Spacer(modifier = Modifier.width(8.dp))
         }
         val background =
-            if (isUser) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer) else CardDefaults.cardColors()
+            if (isUser) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+            else CardDefaults.cardColors()
         val shape = if (isUser) RoundedCornerShape(
             topEnd = 0.dp,
             bottomEnd = 8.dp,
@@ -47,12 +50,21 @@ internal fun ChatMessageItemView(
             bottomStart = 8.dp,
             topStart = 0.dp
         )
-        Card(modifier = Modifier.padding(top = 8.dp), colors = background, shape = shape) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = message.text
-            )
+        Row {
+            BoxWithConstraints {
+                Card(
+                    modifier = Modifier
+                        .widthIn(0.dp, maxWidth * 0.9f)
+                        .padding(top = 8.dp), colors = background, shape = shape
+                ) {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = message.text
+                    )
+                }
+            }
         }
+
         if (isUser) {
             Spacer(modifier = Modifier.width(8.dp))
             Icon(imageVector = Icons.Default.Person, contentDescription = null)
