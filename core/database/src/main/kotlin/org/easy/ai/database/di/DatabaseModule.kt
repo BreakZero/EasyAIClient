@@ -11,9 +11,9 @@ import org.easy.ai.database.EasyAIDatabase
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DataModule {
+object DatabaseModule {
     @Provides
-    fun database(
+    fun providesDatabase(
         @ApplicationContext context: Context
     ): EasyAIDatabase {
         return Room.databaseBuilder(context, EasyAIDatabase::class.java, "easy_ai.db").build()

@@ -6,57 +6,23 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
-data class ChatHistoryWithMessage(
+data class ChatWithMessage(
     @Embedded
-    val chatHistoryEntity: ChatHistoryEntity,
+    val chat: ChatEntity,
     @Relation(
-        parentColumn = "history_id",
+        parentColumn = "chat_id",
         entityColumn = "belong_to"
     )
-    val messages: List<MessageEntity> = ArrayList<MessageEntity>()
-)
-
-@Entity(tableName = "tb_chat_history")
-data class ChatHistoryEntity(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "history_id")
-    val id: Long,
-    @ColumnInfo(name = "chat_id")
-    val chatId: Long,
-    val role: String
+    val messages: List<AiMessageEntity> = ArrayList<AiMessageEntity>()
 )
 
 @Entity(tableName = "tb_chat_message")
-data class MessageEntity(
-    @PrimaryKey(autoGenerate = true)
+data class AiMessageEntity(
+    @PrimaryKey
     @ColumnInfo(name = "message_id")
-    val id: Long,
-    val part: MessagePart,
-    val content: ByteArray,
+    val id: String,
+    val text: String? = null,
     @ColumnInfo(name = "belong_to")
-    val belong: Long
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as MessageEntity
-
-        if (id != other.id) return false
-        if (part != other.part) return false
-        if (!content.contentEquals(other.content)) return false
-        return belong == other.belong
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + part.hashCode()
-        result = 31 * result + content.contentHashCode()
-        result = 31 * result + belong.hashCode()
-        return result
-    }
-}
-
-enum class MessagePart {
-    TEXT, IMAGE, BLOB
-}
+    val belong: String,
+    val timestamp: Long
+)
