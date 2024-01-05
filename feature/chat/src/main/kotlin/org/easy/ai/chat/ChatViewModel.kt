@@ -1,12 +1,10 @@
 package org.easy.ai.chat
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,12 +35,22 @@ class ChatViewModel @Inject constructor(
 
     private fun sendMessage(userMessage: String) {
         _chatHistory.update {
-            it + ChatMessage(text = userMessage, participant = Participant.USER, isPending = true)
+            it + listOf(
+                ChatMessage(
+                    text = userMessage,
+                    participant = Participant.USER,
+                    isPending = false
+                ),
+                ChatMessage(
+                    participant = Participant.MODEL,
+                    isPending = true
+                )
+            )
         }
         viewModelScope.launch {
             val chatMessage = modelRepository.sendMessage(userMessage)
             _chatHistory.update {
-                it + chatMessage
+                it.dropLast(1) + chatMessage
             }
         }
     }

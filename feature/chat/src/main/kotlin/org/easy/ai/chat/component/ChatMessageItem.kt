@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,10 +58,14 @@ internal fun ChatMessageItemView(
                         .widthIn(0.dp, maxWidth * 0.9f)
                         .padding(top = 8.dp), colors = background, shape = shape
                 ) {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = message.text
-                    )
+                    if (message.isPending) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = message.text
+                        )
+                    }
                 }
             }
         }
