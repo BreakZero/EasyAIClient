@@ -1,6 +1,6 @@
 ## 关于 EasyAIClient
 EasyAI计划了解智能AI生态而准备编写的学习应用。
-主要目的是了解智能AI工作和API使用，顺便熟练Jetpack Compose。
+主要目的是了解智能AI工作和API使用，同时提高Jetpack Compose熟练度。
 
 目前支持功能
 - [x] Gemini聊天功能
