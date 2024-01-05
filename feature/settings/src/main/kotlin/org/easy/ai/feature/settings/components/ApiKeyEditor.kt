@@ -5,23 +5,29 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.window.DialogProperties
 
 @Composable
 internal fun ApiKeyEditorDialog(
     modifier: Modifier = Modifier,
     apiKey: String,
-    onApiKeyChanged: (String) -> Unit,
     onDismiss: () -> Unit,
-    applyApiKeyChanged: () -> Unit
+    applyApiKeyChanged: (String) -> Unit
 ) {
+    var _apiKey by remember {
+        mutableStateOf(apiKey)
+    }
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(onClick = {
-                applyApiKeyChanged()
+                applyApiKeyChanged(_apiKey)
                 onDismiss()
             }) {
                 Text(text = "Confirm")
@@ -37,7 +43,7 @@ internal fun ApiKeyEditorDialog(
         text = {
             OutlinedTextField(value = apiKey, label = {
                 Text(text = "Enter your api key")
-            }, onValueChange = onApiKeyChanged)
+            }, onValueChange = { _apiKey = it })
         }
     )
 }

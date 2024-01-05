@@ -8,10 +8,16 @@ import org.easy.ai.model.ModelPlatform
 data class SettingsUiState(
     val modelPlatform: ModelPlatform = ModelPlatform.GEMINI,
     val apiKey: String = "",
-    val model: AIModel = AIModel.GeminiPro
+    val model: AIModel = AIModel.GeminiPro,
+    val isApiKeyEditorShowed: Boolean = false,
+    val isModelListShowed: Boolean = false
 )
 
 sealed interface SettingsEvent {
+    data object ShowApiKeyEditor: SettingsEvent
+    data object HideApiKeyEditor: SettingsEvent
+    data object ShowModelList: SettingsEvent
+    data object HideModelList: SettingsEvent
     data class SavedModel(val model: AIModel): SettingsEvent
     data class SavedApiKey(val apiKey: String): SettingsEvent
 }

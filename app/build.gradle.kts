@@ -32,6 +32,13 @@ android {
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
         }
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("release")
+
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+        }
         release {
 //            isDebuggable = true
             isMinifyEnabled = true
@@ -39,7 +46,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     packaging {

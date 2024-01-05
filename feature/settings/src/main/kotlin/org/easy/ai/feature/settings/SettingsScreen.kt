@@ -21,14 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
+import org.easy.ai.feature.settings.components.ModelList
 import org.easy.ai.model.AIModel
 import org.easy.ai.system.theme.ThemePreviews
 
@@ -62,7 +60,6 @@ internal fun SettingsScreen(
             }, title = { Text(text = "Settings") })
         }
     ) { padding ->
-        var showDialog by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,20 +69,23 @@ internal fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = {
-                        onEvent(SettingsEvent.SavedModel(AIModel.GeminiPro))
+                        onEvent(SettingsEvent.ShowModelList)
                     }),
                 headlineContent = {
                     Text(text = "Choose Model Platform")
                 },
                 trailingContent = {
-                    Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = settingsUiState.model.name)
+                        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                    }
                 }
             )
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        showDialog = !showDialog
+                        onEvent(SettingsEvent.ShowApiKeyEditor)
                     },
                 headlineContent = {
                     Text(text = "Choose Your API KEY")
@@ -103,20 +103,25 @@ internal fun SettingsScreen(
                 }
             )
         }
-        if (showDialog) {
-            var apiKey by remember {
-                mutableStateOf(settingsUiState.apiKey)
-            }
+        if (settingsUiState.isApiKeyEditorShowed) {
             ApiKeyEditorDialog(
-                apiKey = apiKey,
-                onApiKeyChanged = { apiKey = it },
+                apiKey = settingsUiState.apiKey,
                 applyApiKeyChanged = {
-                    onEvent(SettingsEvent.SavedApiKey(apiKey))
+                    onEvent(SettingsEvent.SavedApiKey(it))
                 },
                 onDismiss = {
-                    showDialog = false
+                    onEvent(SettingsEvent.HideApiKeyEditor)
                 }
             )
+        }
+        if (settingsUiState.isModelListShowed) {
+            ModelList(
+                models = AIModel.values().toList(),
+                default = settingsUiState.model,
+                onDismiss = { onEvent(SettingsEvent.HideModelList) },
+                onSelected = {
+                    onEvent(SettingsEvent.SavedModel(it))
+                })
         }
     }
 }
