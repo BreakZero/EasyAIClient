@@ -1,17 +1,23 @@
 package org.easy.ai.data.model
 
 import org.easy.ai.database.entities.AiMessageEntity
+import org.easy.ai.model.ChatMessage
 
-data class AiMessage(
-    val id: String,
-    val text: String? = null,
-    val timestamp: Long
-)
-
-fun AiMessage.asEntity(chatId: String): AiMessageEntity {
-    return AiMessageEntity(id, text, chatId, timestamp)
+fun ChatMessage.asEntity(chatId: String): AiMessageEntity {
+    return AiMessageEntity(
+        id = id,
+        text = text,
+        participant = participant,
+        belong = chatId,
+        timestamp = System.currentTimeMillis()
+    )
 }
 
-fun AiMessageEntity.asExternalModel(): AiMessage {
-    return AiMessage(id, text, timestamp)
+fun AiMessageEntity.asExternalModel(): ChatMessage {
+    return ChatMessage(
+        id = id,
+        text = text.orEmpty(),
+        participant = participant,
+        isPending = false
+    )
 }

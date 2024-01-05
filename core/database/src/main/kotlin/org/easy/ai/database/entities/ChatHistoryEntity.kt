@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import org.easy.ai.model.Participant
 
 data class ChatWithMessage(
     @Embedded
@@ -21,6 +22,7 @@ data class AiMessageEntity(
     @PrimaryKey
     @ColumnInfo(name = "message_id")
     val id: String,
+    val participant: Participant,
     val text: String? = null,
     @ColumnInfo(name = "belong_to")
     val belong: String,

@@ -3,14 +3,13 @@ package org.easy.ai.data.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.model.AiChat
-import org.easy.ai.data.model.AiMessage
 import org.easy.ai.data.model.asEntity
 import org.easy.ai.data.model.asExternalModel
 import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.AiMessageEntity
 import org.easy.ai.database.entities.ChatEntity
-import java.util.UUID
+import org.easy.ai.model.ChatMessage
 import javax.inject.Inject
 
 class GeminiChatRepository @Inject constructor(
@@ -22,21 +21,16 @@ class GeminiChatRepository @Inject constructor(
         return chatDao.getAllChats().map { it.map(ChatEntity::asExternalModel) }
     }
 
-    override suspend fun saveChat(aiChat: AiChat, messages: List<String>) {
+    override suspend fun saveChat(aiChat: AiChat, messages: List<ChatMessage>) {
         chatDao.insert(aiChat.asEntity())
         messages.map {
-            AiMessageEntity(
-                id = UUID.randomUUID().toString(),
-                text = it,
-                belong = aiChat.chatId,
-                timestamp = System.currentTimeMillis()
-            )
+            it.asEntity(aiChat.chatId)
         }.forEach {
             messageDao.insert(it)
         }
     }
 
-    override fun getMessagesByChat(chatId: String): Flow<List<AiMessage>> {
-        return chatDao.getChatWithMessages(chatId).map { it.messages }.map { it.map(AiMessageEntity::asExternalModel) }
+    override suspend fun getMessagesByChat(chatId: String): List<ChatMessage> {
+        return chatDao.getChatWithMessages(chatId).messages.map(AiMessageEntity::asExternalModel)
     }
 }

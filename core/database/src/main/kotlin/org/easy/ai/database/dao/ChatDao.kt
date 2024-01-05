@@ -14,5 +14,5 @@ interface ChatDao: BaseDao<ChatEntity> {
 
     @Transaction
     @Query("SELECT * FROM TB_CHAT WHERE CHAT_ID = :chatId")
-    fun getChatWithMessages(chatId: String): Flow<ChatWithMessage>
+    suspend fun getChatWithMessages(chatId: String): ChatWithMessage
 }

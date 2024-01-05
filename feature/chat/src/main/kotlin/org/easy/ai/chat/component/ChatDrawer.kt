@@ -1,5 +1,6 @@
 package org.easy.ai.chat.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,10 +19,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.easy.ai.data.model.AiChat
 
@@ -37,7 +41,7 @@ internal fun ChatDrawer(
     onSelectedChat: (AiChat) -> Unit,
     onSettingsClicked: () -> Unit
 ) {
-    var selectedChat = remember {
+    var selectedChat by remember {
         mutableStateOf(defaultChat)
     }
     Column(
@@ -54,7 +58,13 @@ internal fun ChatDrawer(
             }
             chats?.let {
                 items(it) { chat ->
-                    ListItem(modifier = Modifier.fillMaxWidth(), headlineContent = { Text(text = chat.name) })
+                    ListItem(modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (selectedChat == chat) Color.Gray else Color.Transparent)
+                        .clickable {
+                            selectedChat = chat
+                            onSelectedChat(chat)
+                        }, headlineContent = { Text(text = chat.name) })
                 }
             }
         }

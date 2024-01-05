@@ -111,7 +111,9 @@ internal fun ChatScreen(
         ChatDrawer(
             chats = (chatUiState as? ChatUiState.Initialed)?.chats,
             defaultChat = (chatUiState as? ChatUiState.Initialed)?.currentChat,
-            onSelectedChat = {},
+            onSelectedChat = {
+                onEvent(ChatEvent.SelectedChat(it))
+            },
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
             }

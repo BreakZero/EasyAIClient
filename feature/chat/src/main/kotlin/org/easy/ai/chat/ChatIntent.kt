@@ -18,6 +18,6 @@ sealed interface ChatUiState {
 sealed interface ChatEvent {
     data object OnSettingsClicked : ChatEvent
     data class OnMessageSend(val userMessage: String) : ChatEvent
-
     data object SaveChat : ChatEvent
+    data class SelectedChat(val chat: AiChat): ChatEvent
 }

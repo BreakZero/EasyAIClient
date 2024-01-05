@@ -79,8 +79,18 @@ class ChatViewModel @Inject constructor(
                     name,
                     System.currentTimeMillis()
                 ),
-                messages = _chatHistory.value.map { it.text }
+                messages = _chatHistory.value
             )
+        }
+    }
+
+    private fun onSelectedChat(chat: AiChat) {
+        viewModelScope.launch {
+            _selectedChat.update { chat }
+            val messages = chatRepository.getMessagesByChat(chat.chatId)
+            _chatHistory.update {
+                messages
+            }
         }
     }
 
@@ -89,6 +99,7 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.OnSettingsClicked -> dispatchNavigationEvent(event)
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
             is ChatEvent.SaveChat -> saveChat()
+            is ChatEvent.SelectedChat -> onSelectedChat(event.chat)
         }
     }
 }
