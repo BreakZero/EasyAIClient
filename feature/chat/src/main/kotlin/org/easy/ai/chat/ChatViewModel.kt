@@ -10,24 +10,36 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.di.ModelPlatformQualifier
+import org.easy.ai.data.model.AiChat
+import org.easy.ai.data.repository.ChatRepository
 import org.easy.ai.data.repository.model.ModelRepository
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository
+    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository,
+    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val chatRepository: ChatRepository,
 ) : BaseViewModel<ChatEvent>() {
     private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
+    private val _selectedChat = MutableStateFlow<AiChat?>(null)
 
     val chatUiState = combine(
         modelRepository.initial(),
+        chatRepository.allChats(),
+        _selectedChat,
         _chatHistory
-    ) { isInitialed, chatHistory ->
+    ) { isInitialed, chats, selectedChat, chatHistory ->
+        println("-===== $isInitialed")
         if (isInitialed) {
-            ChatUiState.Initialed(chatHistory = chatHistory)
+            ChatUiState.Initialed(
+                chats = chats,
+                currentChat = selectedChat,
+                chatHistory = chatHistory
+            )
         } else {
             ChatUiState.Configuration
         }
@@ -55,10 +67,39 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun saveChat() {
+        viewModelScope.launch {
+            val messages = _chatHistory.value.map { it.text }
+            if (messages.isEmpty()) return@launch
+            val firstMessage = messages.first()
+            val name = firstMessage.take(8.coerceAtMost(firstMessage.length))
+            chatRepository.saveChat(
+                AiChat(
+                    UUID.randomUUID().toString(),
+                    name,
+                    System.currentTimeMillis()
+                ),
+                messages = _chatHistory.value
+            )
+        }
+    }
+
+    private fun onSelectedChat(chat: AiChat) {
+        viewModelScope.launch {
+            _selectedChat.update { chat }
+            val messages = chatRepository.getMessagesByChat(chat.chatId)
+            _chatHistory.update {
+                messages
+            }
+        }
+    }
+
     fun onEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.OnSettingsClicked -> dispatchNavigationEvent(event)
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
+            is ChatEvent.SaveChat -> saveChat()
+            is ChatEvent.SelectedChat -> onSelectedChat(event.chat)
         }
     }
 }

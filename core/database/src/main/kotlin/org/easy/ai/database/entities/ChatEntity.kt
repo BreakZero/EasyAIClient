@@ -6,9 +6,9 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "tb_chat")
 data class ChatEntity(
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey
     @ColumnInfo(name = "chat_id")
-    val chatId: Long,
+    val chatId: String,
     @ColumnInfo(name = "chat_name")
     val chatName: String,
     @ColumnInfo(name = "create_at")

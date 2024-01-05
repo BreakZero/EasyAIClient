@@ -108,9 +108,16 @@ internal fun ChatScreen(
                 }
             }
         }
-        ChatDrawer(onSettingsClicked = {
-            onEvent(ChatEvent.OnSettingsClicked)
-        })
+        ChatDrawer(
+            chats = (chatUiState as? ChatUiState.Initialed)?.chats,
+            defaultChat = (chatUiState as? ChatUiState.Initialed)?.currentChat,
+            onSelectedChat = {
+                onEvent(ChatEvent.SelectedChat(it))
+            },
+            onSettingsClicked = {
+                onEvent(ChatEvent.OnSettingsClicked)
+            }
+        )
         val draggableState = rememberDraggableState(onDelta = { dragAmount ->
             coroutineScope.launch {
                 translationX.snapTo(translationX.value + dragAmount)
@@ -203,7 +210,9 @@ private fun ChatContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        onEvent(ChatEvent.SaveChat)
+                    }) {
                         Icon(imageVector = Icons.Default.Save, contentDescription = "Save Chat")
                     }
                 }
@@ -246,7 +255,8 @@ private fun ChatContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(paddings)
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 8.dp),
                     state = chatListState,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {

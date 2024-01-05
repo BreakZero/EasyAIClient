@@ -1,8 +1,7 @@
 package org.easy.ai.database.dao
 
-import org.easy.ai.database.entities.MessageEntity
+import androidx.room.Dao
+import org.easy.ai.database.entities.AiMessageEntity
 
-
-abstract class MessageDao: BaseDao<MessageEntity> {
-
-}
+@Dao
+interface MessageDao: BaseDao<AiMessageEntity>

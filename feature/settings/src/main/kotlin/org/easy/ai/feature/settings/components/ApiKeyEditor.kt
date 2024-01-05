@@ -41,7 +41,7 @@ internal fun ApiKeyEditorDialog(
         properties = DialogProperties(),
         title = {},
         text = {
-            OutlinedTextField(value = apiKey, label = {
+            OutlinedTextField(value = _apiKey, label = {
                 Text(text = "Enter your api key")
             }, onValueChange = { _apiKey = it })
         }
