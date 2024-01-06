@@ -6,6 +6,9 @@ import org.easy.ai.model.ChatMessage
 
 interface ChatRepository {
     fun allChats(): Flow<List<AiChat>>
-    suspend fun saveChat(aiChat: AiChat, messages: List<ChatMessage>)
+    suspend fun saveChat(aiChat: AiChat)
+
+    suspend fun saveMessage(chatId: String, message: ChatMessage)
+
     suspend fun getMessagesByChat(chatId: String):  List<ChatMessage>
 }

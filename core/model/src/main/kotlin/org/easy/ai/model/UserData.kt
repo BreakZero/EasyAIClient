@@ -2,7 +2,8 @@ package org.easy.ai.model
 
 data class UserData(
     val modelName: String,
-    val apiKey: String
+    val apiKey: String,
+    val isAutomaticSaveChat: Boolean
 ) {
     fun validate(): UserDataValidateResult {
         return when {

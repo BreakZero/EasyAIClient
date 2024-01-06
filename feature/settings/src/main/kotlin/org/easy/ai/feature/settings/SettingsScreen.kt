@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -100,6 +101,20 @@ internal fun SettingsScreen(
                             contentDescription = null
                         )
                     }
+                }
+            )
+            ListItem(
+                modifier = Modifier.clickable { },
+                headlineContent = {
+                    Text(text = "Automatic chat save")
+                },
+                trailingContent = {
+                    Switch(
+                        checked = settingsUiState.isAutomaticSaveChat,
+                        onCheckedChange = {
+                            onEvent(SettingsEvent.AutomaticSaveChatChanged(it))
+                        }
+                    )
                 }
             )
         }

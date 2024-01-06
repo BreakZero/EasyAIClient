@@ -6,4 +6,5 @@ option java_multiple_files = true;
 message UserPreferences {
   string api_key = 1;
   string model_name = 2;
+  bool automatic_save_chat = 3;
 }

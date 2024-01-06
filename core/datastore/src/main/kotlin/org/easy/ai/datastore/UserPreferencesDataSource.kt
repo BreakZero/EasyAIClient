@@ -11,19 +11,26 @@ class UserPreferencesDataSource @Inject constructor(
     val userData = userPreferences.data.map {
         UserData(
             modelName = it.modelName,
-            apiKey = it.apiKey
+            apiKey = it.apiKey,
+            isAutomaticSaveChat = it.automaticSaveChat
         )
     }
 
-    suspend fun setModelName(modelName: String) {
+    suspend fun updateAiModel(modelName: String) {
         userPreferences.updateData {
             it.copy { this.modelName = modelName }
         }
     }
 
-    suspend fun setApiKey(apiKey: String) {
+    suspend fun updateApiKey(apiKey: String) {
         userPreferences.updateData {
             it.copy { this.apiKey = apiKey }
+        }
+    }
+
+    suspend fun updateAutomaticSaveChat(isAutomaticSave: Boolean) {
+        userPreferences.updateData {
+            it.copy { this.automaticSaveChat = isAutomaticSave }
         }
     }
 }

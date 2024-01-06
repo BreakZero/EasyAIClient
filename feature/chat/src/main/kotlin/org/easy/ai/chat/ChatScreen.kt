@@ -208,13 +208,6 @@ private fun ChatContent(
                     IconButton(onClick = onDrawerClicked) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
                     }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        onEvent(ChatEvent.SaveChat)
-                    }) {
-                        Icon(imageVector = Icons.Default.Save, contentDescription = "Save Chat")
-                    }
                 }
             )
         },

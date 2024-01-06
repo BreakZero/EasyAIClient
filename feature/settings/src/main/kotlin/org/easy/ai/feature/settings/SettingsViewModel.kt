@@ -23,20 +23,25 @@ class SettingsViewModel @Inject constructor(
         combine(_defaultUiState, userPreferencesRepository.userData) { defaultState, userData ->
             defaultState.copy(
                 apiKey = userData.apiKey,
-                model = AIModel.fromModelName(userData.modelName)
+                model = AIModel.fromModelName(userData.modelName),
+                isAutomaticSaveChat = userData.isAutomaticSaveChat
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), SettingsUiState())
 
-    private fun savedModel(modelName: String) {
+    private fun updateAiModel(modelName: String) {
         viewModelScope.launch {
-            userPreferencesRepository.setModelName(modelName)
+            userPreferencesRepository.updateAiModel(modelName)
         }
     }
 
-    private fun savedApiKey(apiKey: String) {
+    private fun updateApiKey(apiKey: String) {
         viewModelScope.launch {
-            userPreferencesRepository.setApiKey(apiKey)
+            userPreferencesRepository.updateApiKey(apiKey)
         }
+    }
+
+    private fun updateAutomaticSave(isAutomatic: Boolean) {
+        viewModelScope.launch { userPreferencesRepository.updateAutomaticSaveChat(isAutomatic) }
     }
 
 
@@ -58,8 +63,9 @@ class SettingsViewModel @Inject constructor(
                 _defaultUiState.update { it.copy(isModelListShowed = false) }
             }
 
-            is SettingsEvent.SavedModel -> savedModel(event.model.model)
-            is SettingsEvent.SavedApiKey -> savedApiKey(event.apiKey)
+            is SettingsEvent.SavedModel -> updateAiModel(event.model.model)
+            is SettingsEvent.SavedApiKey -> updateApiKey(event.apiKey)
+            is SettingsEvent.AutomaticSaveChatChanged -> updateAutomaticSave(event.isChecked)
         }
     }
 }

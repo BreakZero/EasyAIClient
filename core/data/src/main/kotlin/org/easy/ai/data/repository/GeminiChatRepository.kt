@@ -21,13 +21,12 @@ class GeminiChatRepository @Inject constructor(
         return chatDao.getAllChats().map { it.map(ChatEntity::asExternalModel) }
     }
 
-    override suspend fun saveChat(aiChat: AiChat, messages: List<ChatMessage>) {
+    override suspend fun saveChat(aiChat: AiChat) {
         chatDao.insert(aiChat.asEntity())
-        messages.map {
-            it.asEntity(aiChat.chatId)
-        }.forEach {
-            messageDao.insert(it)
-        }
+    }
+
+    override suspend fun saveMessage(chatId: String, message: ChatMessage) {
+        messageDao.insert(message.asEntity(chatId))
     }
 
     override suspend fun getMessagesByChat(chatId: String): List<ChatMessage> {
