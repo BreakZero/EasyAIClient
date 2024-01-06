@@ -83,7 +83,6 @@ class ChatViewModel @Inject constructor(
 
     private fun saveChat(firstText: String, initMessages: List<ChatMessage>) {
         if (_selectedChat.value != null || !_isAutomaticSaveChatOn) return
-        println("===== trigger save chat: $firstText")
         val name = firstText.take(8.coerceAtMost(firstText.length))
         val aiChat = AiChat(
             UUID.randomUUID().toString(),
@@ -108,13 +107,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun onSelectedChat(chat: AiChat) {
-        viewModelScope.launch {
-            _selectedChat.update { chat }
-            val messages = chatRepository.getMessagesByChat(chat.chatId)
-            _chatHistory.update {
-                messages
+    private fun onSelectedChat(chat: AiChat?) {
+        _selectedChat.update { chat }
+        chat?.let {
+            viewModelScope.launch {
+                val messages = chatRepository.getMessagesByChat(it.chatId)
+                _chatHistory.update {
+                    messages
+                }
             }
+        } ?: run {
+            _chatHistory.update { emptyList() }
         }
     }
 
@@ -123,7 +126,6 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.OnSettingsClicked -> dispatchNavigationEvent(event)
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
             is ChatEvent.SelectedChat -> onSelectedChat(event.chat)
-            else -> Unit
         }
     }
 }

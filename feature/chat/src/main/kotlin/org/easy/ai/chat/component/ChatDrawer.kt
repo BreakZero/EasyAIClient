@@ -1,6 +1,5 @@
 package org.easy.ai.chat.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +14,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.easy.ai.data.model.AiChat
 
@@ -38,7 +39,7 @@ internal fun ChatDrawer(
     modifier: Modifier = Modifier,
     chats: List<AiChat>?,
     defaultChat: AiChat? = null,
-    onSelectedChat: (AiChat) -> Unit,
+    onSelectedChat: (AiChat?) -> Unit,
     onSettingsClicked: () -> Unit
 ) {
     var selectedChat by remember {
@@ -50,21 +51,35 @@ internal fun ChatDrawer(
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.8f)
                 .weight(1.0f)
         ) {
             item {
-                ListItem(headlineContent = { Text(text = "New Chat") })
+                ListItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            selectedChat = null
+                            onSelectedChat(null)
+                        },
+                    headlineContent = { Text(text = "New Chat") }
+                )
             }
             chats?.let {
                 items(it) { chat ->
-                    ListItem(modifier = Modifier
-                        .fillMaxWidth()
-                        .background(if (selectedChat == chat) Color.Gray else Color.Transparent)
-                        .clickable {
-                            selectedChat = chat
-                            onSelectedChat(chat)
-                        }, headlineContent = { Text(text = chat.name) })
+                    val colors =
+                        if (selectedChat == chat) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant) else
+                            ListItemDefaults.colors()
+                    ListItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                selectedChat = chat
+                                onSelectedChat(chat)
+                            },
+                        headlineContent = { Text(text = chat.name) },
+                        colors = colors
+                    )
                 }
             }
         }
@@ -75,9 +90,9 @@ internal fun ChatDrawer(
                 .clickable(onClick = onSettingsClicked)
                 .padding(vertical = 12.dp, horizontal = 16.dp)
         ) {
-            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
+            Icon(imageVector = Icons.Default.Settings, contentDescription = null)
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = "D&J")
+            Text(text = "Settings")
             Spacer(modifier = Modifier.weight(1.0f))
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
         }
