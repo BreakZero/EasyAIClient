@@ -8,6 +8,7 @@ androidx-dataStore = "1.0.0"
 androidxTracing = "1.2.0"
 androidxWindowManager = "1.2.0"
 androidxWork = "2.9.0"
+androidx-room = "2.6.1"
 
 compose-bom = "2023.10.01"
 compose-compiler = "1.5.6"
@@ -47,6 +48,10 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 androidx-paging = { group = "androidx.paging", name = "paging-runtime", version.ref = "androidx-paging" }
 androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "androidx-paging" }
 androidx-lifecycle = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx_room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx_room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx_room" }
 
 androidx-tracing-ktx = { group = "androidx.tracing", name = "tracing-ktx", version.ref = "androidxTracing" }
 androidx-window-manager = { module = "androidx.window:window", version.ref = "androidxWindowManager" }
