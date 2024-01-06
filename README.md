@@ -1,3 +1,5 @@
+[![Android Release Build](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml/badge.svg)](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml)
+
 ## 关于 EasyAIClient
 
 > EasyAI计划了解智能AI生态而准备编写的学习应用。<br/>
