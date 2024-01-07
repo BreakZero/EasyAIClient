@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +47,7 @@ import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -205,7 +205,10 @@ private fun ChatContent(
             TopAppBar(
                 title = { /*TODO*/ },
                 navigationIcon = {
-                    IconButton(onClick = onDrawerClicked) {
+                    IconButton(
+                        modifier = Modifier.testTag("chat_menu"),
+                        onClick = onDrawerClicked
+                    ) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
                     }
                 }
