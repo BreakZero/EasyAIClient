@@ -34,19 +34,18 @@ android {
         }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
-            signingConfig = signingConfigs.getByName("release")
-
+            signingConfig = getByName("debug").signingConfig
+            isMinifyEnabled = false
             matchingFallbacks += listOf("release")
-            isDebuggable = false
         }
         release {
-            isDebuggable = true
+            isDebuggable = false
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     packaging {
