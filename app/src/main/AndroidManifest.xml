@@ -15,9 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyAI"
         tools:targetApi="34">
-        <profileable
-            android:shell="true"
-            tools:targetApi="34" />
+        <profileable android:shell="true" />
 
         <activity
             android:name=".MainActivity"

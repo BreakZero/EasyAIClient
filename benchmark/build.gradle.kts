@@ -1,27 +1,15 @@
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.androidTest)
-    alias(libs.plugins.kotlin.android)
+    alias(easy.plugins.android.test)
 }
 
 android {
-    namespace = "org.easy.ai.benchmark"
-    compileSdk = 34
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+    namespace = "org.easy.gemini.benchmark"
 
     defaultConfig {
-        minSdk = 24
-        targetSdk = 34
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // add this for emulator supported
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
     }
 
     buildTypes {
@@ -33,12 +21,6 @@ android {
             signingConfig = getByName("debug").signingConfig
             matchingFallbacks += listOf("release")
         }
-    }
-
-    flavorDimensions += listOf("Environment")
-    productFlavors {
-        create("staging") { dimension = "Environment" }
-        create("prod") { dimension = "Environment" }
     }
 
     targetProjectPath = ":app"
