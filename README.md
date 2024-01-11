@@ -14,6 +14,8 @@
 - [ ] 支持ChatGPT
 
 ### 简易的界面
+界面参考ChatGPT iOS客户端
+
 |                                                                                                     |                                                                                                       |                                                                                                         |
 |:---------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
 | ![Chat](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240106_113832.png) | ![Drawer](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240106_113918.png) | ![Settings](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240106_113936.png) |
