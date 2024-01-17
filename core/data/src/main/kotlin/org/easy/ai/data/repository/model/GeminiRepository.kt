@@ -2,6 +2,7 @@ package org.easy.ai.data.repository.model
 
 import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.repository.UserPreferencesRepository
@@ -26,6 +27,18 @@ class GeminiRepository @Inject constructor(
             }
             isValid
         }
+    }
+
+    override fun switchChat(history: List<ChatMessage>) {
+        chat?.history?.clear()
+        chat?.history?.addAll(history.filter { it.participant != Participant.ERROR }
+            .map { message ->
+                content {
+                    role = if (Participant.USER == message.participant) "user" else "model"
+                    text(message.text)
+                }
+            }
+        )
     }
 
     override suspend fun sendMessage(userMessage: String): ChatMessage {

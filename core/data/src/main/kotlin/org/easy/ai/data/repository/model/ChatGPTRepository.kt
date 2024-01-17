@@ -9,6 +9,10 @@ class ChatGPTRepository @Inject constructor() : ModelRepository {
         TODO("Not yet implemented")
     }
 
+    override fun switchChat(history: List<ChatMessage>) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun sendMessage(userMessage: String): ChatMessage {
         TODO("Not yet implemented")
     }

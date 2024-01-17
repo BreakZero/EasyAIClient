@@ -112,6 +112,7 @@ class ChatViewModel @Inject constructor(
         chat?.let {
             viewModelScope.launch {
                 val messages = chatRepository.getMessagesByChat(it.chatId)
+                modelRepository.switchChat(messages)
                 _chatHistory.update {
                     messages
                 }

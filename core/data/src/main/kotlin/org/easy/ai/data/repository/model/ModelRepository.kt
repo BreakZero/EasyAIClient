@@ -5,5 +5,7 @@ import org.easy.ai.model.ChatMessage
 
 interface ModelRepository {
     fun initial(): Flow<Boolean>
+
+    fun switchChat(history: List<ChatMessage>)
     suspend fun sendMessage(userMessage: String): ChatMessage
 }
