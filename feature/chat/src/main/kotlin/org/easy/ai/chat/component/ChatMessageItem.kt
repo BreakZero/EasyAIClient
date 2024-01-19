@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Computer
 import androidx.compose.material.icons.filled.Person
@@ -61,10 +62,11 @@ internal fun ChatMessageItemView(
                     if (message.isPending) {
                         CircularProgressIndicator()
                     } else {
-                        Text(
-                            modifier = Modifier.padding(8.dp),
-                            text = message.text
-                        )
+                        SelectionContainer(
+                            modifier = Modifier.padding(8.dp)
+                        ) {
+                            Text(text = message.text)
+                        }
                     }
                 }
             }
