@@ -77,7 +77,10 @@ dependencies {
     implementation(libs.androidx.compose.lifecycle.runtime)
     implementation(libs.androidx.compose.navigation)
 
+    implementation(projects.core.common)
+    implementation(projects.core.model)
     implementation(projects.core.systemUi)
+    implementation(projects.core.data)
     implementation(projects.feature.chat)
     implementation(projects.feature.settings)
 }

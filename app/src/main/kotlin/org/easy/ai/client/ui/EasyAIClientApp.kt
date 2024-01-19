@@ -7,8 +7,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
-import org.easy.ai.client.navigation.EasyAIHost
+import org.easy.ai.client.navigation.EasyAiHost
 import org.easy.ai.system.components.EasyBackground
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -20,7 +21,7 @@ fun EasyAIClientApp(
         testTagsAsResourceId = true
     }) {
         EasyBackground {
-            EasyAIHost(appState = appState)
+            EasyAiHost(appState = appState)
         }
     }
 }

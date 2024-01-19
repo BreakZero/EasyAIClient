@@ -6,4 +6,7 @@
     <string name="text_automatic_save_chat">Automatic save chat</string>
     <string name="text_new_chat">New Chat</string>
     <string name="action_go_to_settings">Go to Settings</string>
+    <string name="text_multimodal">MultiModal Tools</string>
+    <string name="text_text_generator">Text Generator Tools</string>
+    <string name="text_tools">Tools</string>
 </resources>

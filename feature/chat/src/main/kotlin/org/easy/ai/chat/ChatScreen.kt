@@ -74,7 +74,10 @@ internal fun ChatRoute(
             navigateToSettings()
         }
     })
-    ChatScreen(chatUiState = chatUiState, onEvent = chatViewModel::onEvent)
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = "Chat Content")
+    }
+//    ChatScreen(chatUiState = chatUiState, onEvent = chatViewModel::onEvent)
 }
 
 @Composable

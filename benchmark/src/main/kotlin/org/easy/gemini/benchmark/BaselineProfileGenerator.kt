@@ -16,7 +16,7 @@ class BaselineProfileGenerator {
         profileBlock = {
             pressHome()
             startActivityAndWait()
-            device.findObject(By.res("chat_menu")).click()
+            device.findObject(By.res("drawer_icon")).click()
         }
     )
 }
