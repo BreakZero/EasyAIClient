@@ -5,5 +5,7 @@
     <string name="text_enter_apikey">Enter your Api-Key</string>
     <string name="text_automatic_save_chat">Automatic save chat</string>
     <string name="text_new_chat">New Chat</string>
+    <string name="text_multimodal">Multi Modal Tools</string>
+    <string name="text_text_generator">Text Generator Tools</string>
     <string name="action_go_to_settings">Go to Settings</string>
 </resources>

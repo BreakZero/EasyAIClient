@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -27,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import org.easy.ai.data.model.AiChat
 import org.easy.ai.system.ui.R
 import org.easy.ai.system.ui.localDim
@@ -40,7 +43,8 @@ internal fun ChatDrawer(
     modifier: Modifier = Modifier,
     chats: List<AiChat>?,
     defaultChat: AiChat? = null,
-    onSelectedChat: (AiChat?) -> Unit,
+    onChatSelected: (AiChat?) -> Unit,
+    onMultiModalClicked: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {
     var selectedChat by remember {
@@ -61,7 +65,7 @@ internal fun ChatDrawer(
                         .fillMaxWidth()
                         .clickable {
                             selectedChat = null
-                            onSelectedChat(null)
+                            onChatSelected(null)
                         },
                     headlineContent = { Text(text = stringResource(id = R.string.text_new_chat)) }
                 )
@@ -77,7 +81,7 @@ internal fun ChatDrawer(
                             .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
                             .clickable {
                                 selectedChat = chat
-                                onSelectedChat(chat)
+                                onChatSelected(chat)
                             },
                         headlineContent = { Text(text = chat.name) },
                         colors = colors
@@ -85,6 +89,46 @@ internal fun ChatDrawer(
                 }
             }
         }
+        Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
+        Divider(
+            Modifier
+                .fillMaxWidth(0.8f)
+                .height(0.5.dp)
+        )
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .clickable {
+                    onMultiModalClicked()
+                },
+            headlineContent = {
+                Text(
+                    text = stringResource(id = R.string.text_text_generator),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        )
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .clickable {
+                    onMultiModalClicked()
+                },
+            headlineContent = {
+                Text(
+                    text = stringResource(id = R.string.text_multimodal),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        )
+        Divider(
+            Modifier
+                .fillMaxWidth(0.8f)
+                .height(0.5.dp)
+        )
+        Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -97,7 +141,10 @@ internal fun ChatDrawer(
         ) {
             Icon(imageVector = Icons.Default.Settings, contentDescription = null)
             Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceMedium))
-            Text(text = stringResource(id = R.string.text_settings))
+            Text(
+                text = stringResource(id = R.string.text_settings),
+                style = MaterialTheme.typography.titleMedium,
+            )
             Spacer(modifier = Modifier.weight(1.0f))
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
         }
