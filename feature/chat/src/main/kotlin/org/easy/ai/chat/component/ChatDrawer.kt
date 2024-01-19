@@ -74,6 +74,7 @@ internal fun ChatDrawer(
                     ListItem(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
                             .clickable {
                                 selectedChat = chat
                                 onSelectedChat(chat)

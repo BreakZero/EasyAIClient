@@ -81,7 +81,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun genChatName(message: String, defaultLength: Int = 8): String {
+    private fun genChatName(message: String, defaultLength: Int = 12): String {
         return if (message.length > defaultLength) {
             message.take(defaultLength) + "..."
         } else {
@@ -119,7 +119,8 @@ class ChatViewModel @Inject constructor(
         chat?.let {
             viewModelScope.launch {
                 val messages = chatRepository.getMessagesByChat(it.chatId)
-                modelRepository.switchChat(messages)
+                // only add success history
+                modelRepository.switchChat(messages.filter { it.participant != Participant.ERROR })
                 _chatHistory.update {
                     messages
                 }

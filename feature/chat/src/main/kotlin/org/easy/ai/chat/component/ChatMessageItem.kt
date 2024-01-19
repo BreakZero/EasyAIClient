@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,7 +63,11 @@ internal fun ChatMessageItemView(
                     shape = shape
                 ) {
                     if (message.isPending) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(MaterialTheme.localDim.spaceExtraSmall)
+                                .size(MaterialTheme.localDim.spaceLarge)
+                        )
                     } else {
                         SelectionContainer(
                             modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
