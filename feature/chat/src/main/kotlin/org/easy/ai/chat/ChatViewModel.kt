@@ -81,9 +81,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun saveChat(firstText: String, initMessages: List<ChatMessage>) {
+    private fun genChatName(message: String, defaultLength: Int = 8): String {
+        return if (message.length > defaultLength) {
+            message.take(defaultLength) + "..."
+        } else {
+            message
+        }
+    }
+
+    private fun saveChat(firstMessageText: String, initMessages: List<ChatMessage>) {
         if (_selectedChat.value != null || !_isAutomaticSaveChatOn) return
-        val name = firstText.take(8.coerceAtMost(firstText.length))
+        val name = genChatName(firstMessageText)
         val aiChat = AiChat(
             UUID.randomUUID().toString(),
             name,
@@ -100,7 +108,6 @@ class ChatViewModel @Inject constructor(
 
     private fun saveMessage(message: ChatMessage) {
         if (_selectedChat.value == null || !_isAutomaticSaveChatOn) return
-        println("===== trigger save message: ${message.text}")
         viewModelScope.launch {
             val chatId = _selectedChat.value!!.chatId
             chatRepository.saveMessage(chatId, message)

@@ -20,9 +20,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
+import org.easy.ai.system.ui.localDim
 
 @Composable
 internal fun ChatMessageItemView(
@@ -36,34 +36,36 @@ internal fun ChatMessageItemView(
     ) {
         if (!isUser) {
             Icon(imageVector = Icons.Default.Computer, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceSmall))
         }
         val background =
             if (isUser) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
             else CardDefaults.cardColors()
         val shape = if (isUser) RoundedCornerShape(
-            topEnd = 0.dp,
-            bottomEnd = 8.dp,
-            bottomStart = 8.dp,
-            topStart = 8.dp
+            topEnd = MaterialTheme.localDim.default,
+            bottomEnd = MaterialTheme.localDim.spaceSmall,
+            bottomStart = MaterialTheme.localDim.spaceSmall,
+            topStart = MaterialTheme.localDim.spaceSmall
         ) else RoundedCornerShape(
-            topEnd = 8.dp,
-            bottomEnd = 8.dp,
-            bottomStart = 8.dp,
-            topStart = 0.dp
+            topEnd = MaterialTheme.localDim.spaceSmall,
+            bottomEnd = MaterialTheme.localDim.spaceSmall,
+            bottomStart = MaterialTheme.localDim.spaceSmall,
+            topStart = MaterialTheme.localDim.default
         )
         Row {
             BoxWithConstraints {
                 Card(
                     modifier = Modifier
-                        .widthIn(0.dp, maxWidth * 0.9f)
-                        .padding(top = 8.dp), colors = background, shape = shape
+                        .widthIn(MaterialTheme.localDim.default, maxWidth * 0.9f)
+                        .padding(top = MaterialTheme.localDim.spaceSmall),
+                    colors = background,
+                    shape = shape
                 ) {
                     if (message.isPending) {
                         CircularProgressIndicator()
                     } else {
                         SelectionContainer(
-                            modifier = Modifier.padding(8.dp)
+                            modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
                         ) {
                             Text(text = message.text)
                         }
@@ -73,7 +75,7 @@ internal fun ChatMessageItemView(
         }
 
         if (isUser) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceSmall))
             Icon(imageVector = Icons.Default.Person, contentDescription = null)
         }
     }

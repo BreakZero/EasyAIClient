@@ -24,12 +24,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
 import org.easy.ai.feature.settings.components.ModelList
 import org.easy.ai.model.AIModel
 import org.easy.ai.system.theme.ThemePreviews
+import org.easy.ai.system.ui.R
 
 @Composable
 fun SettingsRoute() {
@@ -58,7 +60,7 @@ internal fun SettingsScreen(
                         contentDescription = null
                     )
                 }
-            }, title = { Text(text = "Settings") })
+            }, title = { Text(text = stringResource(id = R.string.text_settings)) })
         }
     ) { padding ->
         Column(
@@ -73,7 +75,7 @@ internal fun SettingsScreen(
                         onEvent(SettingsEvent.ShowModelList)
                     }),
                 headlineContent = {
-                    Text(text = "Choose Model Platform")
+                    Text(text = stringResource(id = R.string.text_choose_model))
                 },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -89,7 +91,7 @@ internal fun SettingsScreen(
                         onEvent(SettingsEvent.ShowApiKeyEditor)
                     },
                 headlineContent = {
-                    Text(text = "Choose Your API KEY")
+                    Text(text = stringResource(id = R.string.text_enter_apikey))
                 },
                 trailingContent = {
                     Row(
@@ -106,7 +108,7 @@ internal fun SettingsScreen(
             ListItem(
                 modifier = Modifier.clickable { },
                 headlineContent = {
-                    Text(text = "Automatic chat save")
+                    Text(text = stringResource(id = R.string.text_automatic_save_chat))
                 },
                 trailingContent = {
                     Switch(

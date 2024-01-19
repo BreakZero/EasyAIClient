@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -27,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import org.easy.ai.data.model.AiChat
+import org.easy.ai.system.ui.R
+import org.easy.ai.system.ui.localDim
 
 internal enum class DrawerState {
     Open, Closed
@@ -62,13 +63,13 @@ internal fun ChatDrawer(
                             selectedChat = null
                             onSelectedChat(null)
                         },
-                    headlineContent = { Text(text = "New Chat") }
+                    headlineContent = { Text(text = stringResource(id = R.string.text_new_chat)) }
                 )
             }
             chats?.let {
                 items(it) { chat ->
                     val colors =
-                        if (selectedChat == chat) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.onSurfaceVariant) else
+                        if (selectedChat == chat) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer) else
                             ListItemDefaults.colors()
                     ListItem(
                         modifier = Modifier
@@ -86,13 +87,16 @@ internal fun ChatDrawer(
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
                 .clickable(onClick = onSettingsClicked)
-                .padding(vertical = 12.dp, horizontal = 16.dp)
+                .padding(
+                    vertical = MaterialTheme.localDim.space12,
+                    horizontal = MaterialTheme.localDim.spaceMedium
+                )
         ) {
             Icon(imageVector = Icons.Default.Settings, contentDescription = null)
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(text = "Settings")
+            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceMedium))
+            Text(text = stringResource(id = R.string.text_settings))
             Spacer(modifier = Modifier.weight(1.0f))
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
         }

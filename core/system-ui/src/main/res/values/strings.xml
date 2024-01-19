@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_settings">Settings</string>
+    <string name="text_choose_model">Choose model</string>
+    <string name="text_enter_apikey">Enter your Api-Key</string>
+    <string name="text_automatic_save_chat">Automatic save chat</string>
+    <string name="text_new_chat">New Chat</string>
+    <string name="action_go_to_settings">Go to Settings</string>
+</resources>

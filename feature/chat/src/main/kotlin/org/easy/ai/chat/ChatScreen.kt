@@ -48,6 +48,7 @@ import androidx.compose.ui.layout.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -57,6 +58,8 @@ import org.easy.ai.chat.component.ChatDrawer
 import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
+import org.easy.ai.system.ui.localDim
+import org.easy.ai.system.ui.R as UiR
 
 private val DrawerWidth = 300.dp
 
@@ -227,7 +230,7 @@ private fun ChatContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = 24.dp),
+                        .padding(vertical = MaterialTheme.localDim.spaceMedium),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -235,7 +238,7 @@ private fun ChatContent(
                         TextButton(onClick = {
                             onEvent(ChatEvent.OnSettingsClicked)
                         }) {
-                            Text(text = "Open Settings", color = MaterialTheme.colorScheme.scrim)
+                            Text(text = stringResource(id = UiR.string.action_go_to_settings), color = MaterialTheme.colorScheme.scrim)
                         }
                     }
                 }
@@ -251,10 +254,10 @@ private fun ChatContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(paddings)
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 8.dp),
+                        .padding(horizontal = MaterialTheme.localDim.spaceMedium)
+                        .padding(bottom = MaterialTheme.localDim.spaceSmall),
                     state = chatListState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceSmall)
                 ) {
                     items(chatUiState.chatHistory) { message ->
                         ChatMessageItemView(
@@ -278,7 +281,7 @@ internal fun MessageInput(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp),
+            .padding(start = MaterialTheme.localDim.spaceSmall),
         horizontalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
