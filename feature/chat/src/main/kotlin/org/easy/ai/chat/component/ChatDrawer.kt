@@ -2,6 +2,7 @@ package org.easy.ai.chat.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,7 +44,9 @@ internal fun ChatDrawer(
     modifier: Modifier = Modifier,
     chats: List<AiChat>?,
     defaultChat: AiChat? = null,
+    hasSetup: Boolean = true,
     onChatSelected: (AiChat?) -> Unit,
+    onTextGeneratorClicked: () -> Unit,
     onMultiModalClicked: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {
@@ -89,46 +92,12 @@ internal fun ChatDrawer(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
-        Divider(
-            Modifier
-                .fillMaxWidth(0.8f)
-                .height(0.5.dp)
-        )
-        ListItem(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .clickable {
-                    onMultiModalClicked()
-                },
-            headlineContent = {
-                Text(
-                    text = stringResource(id = R.string.text_text_generator),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        )
-        ListItem(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .clickable {
-                    onMultiModalClicked()
-                },
-            headlineContent = {
-                Text(
-                    text = stringResource(id = R.string.text_multimodal),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        )
-        Divider(
-            Modifier
-                .fillMaxWidth(0.8f)
-                .height(0.5.dp)
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
+        if (hasSetup) {
+            toolsSection(
+                onTextGeneratorClicked = onTextGeneratorClicked,
+                onMultiModalClicked = onMultiModalClicked
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
@@ -149,5 +118,56 @@ internal fun ChatDrawer(
             Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
         }
     }
+}
 
+@Composable
+internal fun ColumnScope.toolsSection(
+    onTextGeneratorClicked: () -> Unit,
+    onMultiModalClicked: () -> Unit
+) {
+    Text(
+        text = stringResource(id = R.string.text_tools),
+        modifier = Modifier
+            .padding(start = MaterialTheme.localDim.spaceMedium)
+            .padding(vertical = MaterialTheme.localDim.spaceExtraSmall)
+    )
+    Divider(
+        Modifier
+            .fillMaxWidth(0.8f)
+            .height(0.5.dp)
+    )
+    ListItem(
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .clickable {
+                onTextGeneratorClicked()
+            },
+        headlineContent = {
+            Text(
+                text = stringResource(id = R.string.text_text_generator),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    )
+    ListItem(
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .clickable {
+                onMultiModalClicked()
+            },
+        headlineContent = {
+            Text(
+                text = stringResource(id = R.string.text_multimodal),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    )
+    Divider(
+        Modifier
+            .fillMaxWidth(0.8f)
+            .height(0.5.dp)
+    )
+    Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
 }
