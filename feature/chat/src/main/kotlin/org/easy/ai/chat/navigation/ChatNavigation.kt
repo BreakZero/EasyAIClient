@@ -13,9 +13,10 @@ fun NavController.navigateToChat(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.chatScreen(
+    navigateToMultiModal: () -> Unit,
     navigateToSettings: () -> Unit
 ) {
     composable(ChatRoute) {
-        ChatRoute(navigateToSettings = navigateToSettings)
+        ChatRoute(navigateToSettings = navigateToSettings, navigateToMultiModal = navigateToMultiModal)
     }
 }

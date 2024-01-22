@@ -132,9 +132,9 @@ class ChatViewModel @Inject constructor(
 
     fun onEvent(event: ChatEvent) {
         when (event) {
-            is ChatEvent.OnSettingsClicked -> dispatchNavigationEvent(event)
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
             is ChatEvent.SelectedChat -> onSelectedChat(event.chat)
+            else -> dispatchNavigationEvent(event)
         }
     }
 }

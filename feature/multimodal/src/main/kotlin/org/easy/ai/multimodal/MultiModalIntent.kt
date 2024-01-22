@@ -1,4 +1,12 @@
 package org.easy.ai.multimodal
 
-internal sealed interface MultiModalUiState {}
+import android.graphics.Bitmap
+import androidx.compose.runtime.Stable
+
+@Stable
+internal data class PromptInputContent(
+    val prompt: String = "",
+    val images: List<ByteArray>? = null
+)
+
 internal sealed interface MultiModalEvent {}
