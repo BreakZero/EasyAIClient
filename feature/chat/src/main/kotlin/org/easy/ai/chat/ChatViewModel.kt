@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.di.ModelPlatformQualifier
 import org.easy.ai.data.model.AiChat
-import org.easy.ai.data.repository.ChatRepository
+import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.data.repository.model.ModelRepository
 import org.easy.ai.model.ChatMessage
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository,
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val chatRepository: ChatRepository,
+    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val localChatRepository: LocalChatRepository,
     userPreferencesRepository: UserPreferencesRepository
 ) : BaseViewModel<ChatEvent>() {
     private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -42,7 +42,7 @@ class ChatViewModel @Inject constructor(
 
     val chatUiState = combine(
         modelRepository.initial(),
-        chatRepository.allChats(),
+        localChatRepository.allChats(),
         _selectedChat,
         _chatHistory
     ) { isInitialed, chats, selectedChat, chatHistory ->
@@ -99,9 +99,9 @@ class ChatViewModel @Inject constructor(
         )
         _selectedChat.update { aiChat }
         viewModelScope.launch {
-            chatRepository.saveChat(aiChat)
+            localChatRepository.saveChat(aiChat)
             initMessages.forEach {
-                chatRepository.saveMessage(aiChat.chatId, it)
+                localChatRepository.saveMessage(aiChat.chatId, it)
             }
         }
     }
@@ -110,7 +110,7 @@ class ChatViewModel @Inject constructor(
         if (_selectedChat.value == null || !_isAutomaticSaveChatOn) return
         viewModelScope.launch {
             val chatId = _selectedChat.value!!.chatId
-            chatRepository.saveMessage(chatId, message)
+            localChatRepository.saveMessage(chatId, message)
         }
     }
 
@@ -118,7 +118,7 @@ class ChatViewModel @Inject constructor(
         _selectedChat.update { chat }
         chat?.let {
             viewModelScope.launch {
-                val messages = chatRepository.getMessagesByChat(it.chatId)
+                val messages = localChatRepository.getMessagesByChat(it.chatId)
                 // only add success history
                 modelRepository.switchChat(messages.filter { it.participant != Participant.ERROR })
                 _chatHistory.update {

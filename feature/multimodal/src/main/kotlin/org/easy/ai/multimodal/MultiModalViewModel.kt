@@ -25,4 +25,6 @@ internal class MultiModalViewModel @Inject constructor() : BaseViewModel<MultiMo
             it.copy(images = bytes)
         }
     }
+
+    fun sendPrompt() {}
 }

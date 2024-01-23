@@ -7,10 +7,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
@@ -56,7 +59,8 @@ fun MultiModalRoute(
         promptInputContentUiState,
         multiModalViewModel::onPromptChanged,
         imagePicker::startImagePicker,
-        popBack
+        popBack,
+        multiModalViewModel::sendPrompt
     )
 }
 
@@ -66,7 +70,8 @@ internal fun MultiModalScreen(
     inputContent: PromptInputContent,
     onPromptChanged: (String) -> Unit,
     onImagePicked: () -> Unit,
-    popBack: () -> Unit
+    popBack: () -> Unit,
+    commit: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -84,7 +89,7 @@ internal fun MultiModalScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.localDim.spaceMedium),
-                onClick = { /*TODO*/ }
+                onClick = commit
             ) {
                 Text(text = "Send Prompt")
             }
@@ -103,6 +108,7 @@ internal fun MultiModalScreen(
                     .fillMaxWidth()
                     .defaultMinSize(minHeight = MaterialTheme.localDim.spaceXXLarge)
             )
+            Spacer(modifier = Modifier.height(MaterialTheme.localDim.space24))
             val images = rememberBitmapFromBytes(imageBytes = inputContent.images)
             LazyVerticalGrid(
                 modifier = Modifier.fillMaxWidth(),
@@ -115,7 +121,8 @@ internal fun MultiModalScreen(
                         Image(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(1.0f),
+                                .aspectRatio(1.0f)
+                                .clip(RoundedCornerShape(MaterialTheme.localDim.spaceExtraSmall)),
                             bitmap = imageBitmap,
                             contentDescription = null
                         )
@@ -126,6 +133,7 @@ internal fun MultiModalScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1.0f)
+                            .clip(RoundedCornerShape(MaterialTheme.localDim.spaceExtraSmall))
                             .clickable {
                                 onImagePicked()
                             }
