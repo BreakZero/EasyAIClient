@@ -56,7 +56,6 @@ internal class MultiModalViewModel @Inject constructor(
             val totalSize = inputContent.let {
                 it.prompt.encodeToByteArray().size + it.images!!.sumOf { image -> image.size }
             }
-            println("===== $totalSize")
             if (totalSize > CONTENT_LIMIT_SIZE) {
                 error = "the entire prompt is too large, 4MB limited"
             }
@@ -76,12 +75,13 @@ internal class MultiModalViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
+            val bitmaps = promptInputContent.images?.map {
+                BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
+                    .asAndroidBitmap()
+            }
             val content = content {
-                promptInputContent.images?.forEach {
-                    image(
-                        BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
-                            .asAndroidBitmap()
-                    )
+                bitmaps?.forEach {
+                    image(it)
                 }
                 text(promptInputContent.prompt)
             }
@@ -89,10 +89,7 @@ internal class MultiModalViewModel @Inject constructor(
             modelRepository.generateTextFromMultiModal(content).also {
                 println("=== $it")
             }
+            bitmaps?.forEach { it.recycle() }
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
     }
 }
