@@ -2,6 +2,8 @@ package org.easy.ai.data.repository.model
 
 import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.Content
+import com.google.ai.client.generativeai.type.GoogleGenerativeAIException
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -54,11 +56,21 @@ class GeminiRepository @Inject constructor(
             } ?: ChatMessage(
                 participant = Participant.ERROR
             )
-        } catch (e: Exception) {
+        } catch (e: GoogleGenerativeAIException) {
             ChatMessage(
                 text = e.localizedMessage.orEmpty(),
                 participant = Participant.ERROR
             )
+        }
+    }
+
+    override suspend fun generateTextFromMultiModal(prompt: Content): String {
+        return try {
+            val response = generativeModel?.generateContent(prompt)
+            response?.text.orEmpty()
+        } catch (e: GoogleGenerativeAIException) {
+            e.printStackTrace()
+            ""
         }
     }
 }

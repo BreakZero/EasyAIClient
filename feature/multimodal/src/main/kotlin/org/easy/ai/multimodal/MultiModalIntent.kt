@@ -6,7 +6,8 @@ import androidx.compose.runtime.Stable
 @Stable
 internal data class PromptInputContent(
     val prompt: String = "",
-    val images: List<ByteArray>? = null
+    val images: List<ByteArray>? = null,
+    val errorMessage: String? = null
 )
 
 internal sealed interface MultiModalEvent {}

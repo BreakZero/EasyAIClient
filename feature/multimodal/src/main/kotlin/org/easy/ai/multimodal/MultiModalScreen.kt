@@ -149,6 +149,9 @@ internal fun MultiModalScreen(
                     }
                 }
             }
+            inputContent.errorMessage?.let {
+                Text(text = it, color = MaterialTheme.colorScheme.errorContainer)
+            }
         }
     }
 }
