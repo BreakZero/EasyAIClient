@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -148,6 +149,17 @@ internal fun MultiModalScreen(
                         Image(imageVector = Icons.Default.Add, contentDescription = null)
                     }
                 }
+            }
+
+            Divider(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = MaterialTheme.localDim.spaceSmall)
+                    .height(1.dp)
+            )
+
+            inputContent.result?.let {
+                Text(text = it.ifBlank { "Loading..." })
             }
             inputContent.errorMessage?.let {
                 Text(text = it, color = MaterialTheme.colorScheme.errorContainer)

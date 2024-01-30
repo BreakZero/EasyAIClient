@@ -36,6 +36,7 @@ rootProject.name = "EasyAI"
 include(":app")
 include(":core:system-ui")
 include(":core:data")
+include(":core:domain")
 include(":feature:settings")
 include(":core:common")
 include(":core:database")

@@ -4,23 +4,24 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.viewModelScope
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
-import org.easy.ai.data.di.ModelPlatformQualifier
-import org.easy.ai.data.repository.model.ModelRepository
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.domain.GeminiModelInitialUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 internal class MultiModalViewModel @Inject constructor(
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository
+    modelInitialUseCase: GeminiModelInitialUseCase
 ) : BaseViewModel<MultiModalEvent>() {
+    private var geminiModel: GenerativeModel? = null
 
     companion object {
         private const val CONTENT_LIMIT_SIZE = 4 * 1024 * 1024
@@ -31,7 +32,9 @@ internal class MultiModalViewModel @Inject constructor(
     val inputContentUiState = _promptInputContent.asStateFlow()
 
     init {
-        modelRepository.initial().launchIn(viewModelScope)
+        modelInitialUseCase().onEach {
+            geminiModel = it
+        }.launchIn(viewModelScope)
     }
 
     fun onPromptChanged(prompt: String) {
@@ -74,6 +77,7 @@ internal class MultiModalViewModel @Inject constructor(
             }
             return
         }
+        _promptInputContent.update { it.copy(result = "") }
         viewModelScope.launch {
             val bitmaps = promptInputContent.images?.map {
                 BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
@@ -85,10 +89,15 @@ internal class MultiModalViewModel @Inject constructor(
                 }
                 text(promptInputContent.prompt)
             }
-
-            modelRepository.generateTextFromMultiModal(content).also {
-                println("=== $it")
+            try {
+                val result = geminiModel?.generateContent(content)
+                _promptInputContent.update { it.copy(result = result?.text) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _promptInputContent.update { it.copy(errorMessage = e.message) }
             }
+
+
             bitmaps?.forEach { it.recycle() }
         }
     }
