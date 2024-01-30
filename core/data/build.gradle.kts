@@ -16,4 +16,8 @@ dependencies {
     implementation(projects.core.model)
 
     implementation(libs.generativeai)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
