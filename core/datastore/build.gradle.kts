@@ -1,3 +1,6 @@
+import dagger.hilt.android.plugin.util.capitalize
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(easy.plugins.android.library)
@@ -32,6 +35,17 @@ protobuf {
     }
 }
 
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val capName = variant.name.capitalize()
+            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
+                setSource(tasks.getByName("generate${capName}Proto").outputs)
+            }
+        }
+    }
+}
+
 androidComponents.beforeVariants {
     android.sourceSets.register(it.name) {
         val buildDir = layout.buildDirectory.get().asFile
@@ -47,4 +61,8 @@ dependencies {
     implementation(libs.androidx.dataStore)
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.kotlinx.coroutines.android)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }

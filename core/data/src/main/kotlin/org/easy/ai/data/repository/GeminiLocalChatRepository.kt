@@ -12,10 +12,10 @@ import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.model.ChatMessage
 import javax.inject.Inject
 
-class GeminiChatRepository @Inject constructor(
+class GeminiLocalChatRepository @Inject constructor(
     private val chatDao: ChatDao,
     private val messageDao: MessageDao
-) : ChatRepository {
+) : LocalChatRepository {
 
     override fun allChats(): Flow<List<AiChat>> {
         return chatDao.getAllChats().map { it.map(ChatEntity::asExternalModel) }

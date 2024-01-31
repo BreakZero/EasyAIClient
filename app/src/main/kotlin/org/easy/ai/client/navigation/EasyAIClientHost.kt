@@ -8,6 +8,8 @@ import org.easy.ai.chat.navigation.chatScreen
 import org.easy.ai.client.ui.EasyAIClientAppState
 import org.easy.ai.feature.settings.navigation.navigateToSettings
 import org.easy.ai.feature.settings.navigation.settingsScreen
+import org.easy.ai.multimodal.navigation.multiModalScreen
+import org.easy.ai.multimodal.navigation.navigateToMultiModal
 
 @Composable
 fun EasyAIHost(
@@ -16,9 +18,15 @@ fun EasyAIHost(
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
-        chatScreen {
-            navController.navigateToSettings()
-        }
+        chatScreen(
+            navigateToSettings = {
+                navController.navigateToSettings()
+            },
+            navigateToMultiModal = {
+                navController.navigateToMultiModal()
+            }
+        )
         settingsScreen()
+        multiModalScreen { navController.popBackStack() }
     }
 }

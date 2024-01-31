@@ -19,4 +19,5 @@ sealed interface ChatEvent {
     data object OnSettingsClicked : ChatEvent
     data class OnMessageSend(val userMessage: String) : ChatEvent
     data class SelectedChat(val chat: AiChat?): ChatEvent
+    data object OnMultiModalClicked: ChatEvent
 }

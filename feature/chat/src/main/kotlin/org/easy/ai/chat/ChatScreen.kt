@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,13 +64,16 @@ private val DrawerWidth = 300.dp
 
 @Composable
 internal fun ChatRoute(
+    navigateToMultiModal: () -> Unit,
     navigateToSettings: () -> Unit
 ) {
     val chatViewModel: ChatViewModel = hiltViewModel()
     val chatUiState by chatViewModel.chatUiState.collectAsStateWithLifecycle()
     ObserveAsEvents(flow = chatViewModel.navigationEvents, onEvent = { event ->
-        if (event is ChatEvent.OnSettingsClicked) {
-            navigateToSettings()
+        when(event) {
+            is ChatEvent.OnSettingsClicked -> navigateToSettings()
+            is ChatEvent.OnMultiModalClicked -> navigateToMultiModal()
+            else -> Unit
         }
     })
     ChatScreen(chatUiState = chatUiState, onEvent = chatViewModel::onEvent)
@@ -114,8 +116,13 @@ internal fun ChatScreen(
         ChatDrawer(
             chats = (chatUiState as? ChatUiState.Initialed)?.chats,
             defaultChat = (chatUiState as? ChatUiState.Initialed)?.currentChat,
-            onSelectedChat = {
+            hasSetup = chatUiState is ChatUiState.Initialed,
+            onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
+            },
+            onTextGeneratorClicked = {},
+            onMultiModalClicked = {
+                onEvent(ChatEvent.OnMultiModalClicked)
             },
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
@@ -238,7 +245,10 @@ private fun ChatContent(
                         TextButton(onClick = {
                             onEvent(ChatEvent.OnSettingsClicked)
                         }) {
-                            Text(text = stringResource(id = UiR.string.action_go_to_settings), color = MaterialTheme.colorScheme.scrim)
+                            Text(
+                                text = stringResource(id = UiR.string.action_go_to_settings),
+                                color = MaterialTheme.colorScheme.scrim
+                            )
                         }
                     }
                 }
@@ -287,15 +297,7 @@ internal fun MessageInput(
         OutlinedTextField(
             modifier = Modifier.weight(1.0f),
             value = userMessage,
-            onValueChange = { userMessage = it },
-            trailingIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        imageVector = Icons.Default.AttachFile,
-                        contentDescription = null
-                    )
-                }
-            }
+            onValueChange = { userMessage = it }
         )
         IconButton(
             modifier = Modifier

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 
 @Stable
 data class Dimensions(
-    val default: Dp = 0.dp,
+    val default: Dp = Dp.Hairline,
     val spaceXXSmall: Dp = 2.dp,
     val spaceExtraSmall: Dp = 4.dp,
     val spaceSmall: Dp = 8.dp,

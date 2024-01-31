@@ -9,8 +9,13 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.hilt.navigation.compose)
+
     implementation(projects.core.common)
     implementation(projects.core.model)
     implementation(projects.core.data)
+    implementation(projects.core.domain)
     implementation(projects.core.systemUi)
+
+    implementation(libs.generativeai)
 }

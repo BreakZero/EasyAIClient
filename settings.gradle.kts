@@ -19,11 +19,24 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("com.gradle.enterprise") version ("3.16.2")
+}
+
+//gradleEnterprise {
+//    buildScan {
+//        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+//        termsOfServiceAgree = "yes"
+//        publishAlways()
+//    }
+//}
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "EasyAI"
 include(":app")
 include(":core:system-ui")
 include(":core:data")
+include(":core:domain")
 include(":feature:settings")
 include(":core:common")
 include(":core:database")
