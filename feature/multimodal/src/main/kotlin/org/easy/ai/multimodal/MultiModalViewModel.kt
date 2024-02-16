@@ -38,12 +38,14 @@ internal class MultiModalViewModel @Inject constructor(
     }
 
     fun onPromptChanged(prompt: String) {
+        println("=====onPromptChanged")
         _promptInputContent.update {
             it.copy(prompt = prompt, errorMessage = null)
         }
     }
 
     fun onImagesChanged(bytes: List<ByteArray>) {
+        println("=====onImagesChanged")
         _promptInputContent.update {
             it.copy(images = bytes, errorMessage = null)
         }
@@ -94,9 +96,8 @@ internal class MultiModalViewModel @Inject constructor(
                 _promptInputContent.update { it.copy(result = result?.text) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _promptInputContent.update { it.copy(errorMessage = e.message) }
+                _promptInputContent.update { it.copy(result = "", errorMessage = e.message) }
             }
-
 
             bitmaps?.forEach { it.recycle() }
         }

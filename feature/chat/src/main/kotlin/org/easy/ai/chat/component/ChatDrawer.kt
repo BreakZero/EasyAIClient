@@ -16,7 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import org.easy.ai.data.model.AiChat
 import org.easy.ai.system.ui.R
 import org.easy.ai.system.ui.localDim
@@ -131,11 +130,7 @@ internal fun ColumnScope.toolsSection(
             .padding(start = MaterialTheme.localDim.spaceMedium)
             .padding(vertical = MaterialTheme.localDim.spaceExtraSmall)
     )
-    Divider(
-        Modifier
-            .fillMaxWidth(0.8f)
-            .height(0.5.dp)
-    )
+    HorizontalDivider()
     ListItem(
         modifier = Modifier
             .fillMaxWidth(0.8f)
@@ -164,10 +159,6 @@ internal fun ColumnScope.toolsSection(
             )
         }
     )
-    Divider(
-        Modifier
-            .fillMaxWidth(0.8f)
-            .height(0.5.dp)
-    )
+    HorizontalDivider()
     Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
 }

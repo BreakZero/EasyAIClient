@@ -1,6 +1,7 @@
 package org.easy.ai.multimodal
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,18 +19,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,7 +66,7 @@ fun MultiModalRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 internal fun MultiModalScreen(
     inputContent: PromptInputContent,
@@ -81,7 +82,10 @@ internal fun MultiModalScreen(
             TopAppBar(title = { /*TODO*/ },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
+                        )
                     }
                 })
         },
@@ -102,7 +106,7 @@ internal fun MultiModalScreen(
                 .padding(paddingValues)
                 .padding(horizontal = MaterialTheme.localDim.spaceMedium)
         ) {
-            TextField(
+            BasicTextField2(
                 value = inputContent.prompt,
                 onValueChange = onPromptChanged,
                 modifier = Modifier
@@ -151,11 +155,8 @@ internal fun MultiModalScreen(
                 }
             }
 
-            Divider(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = MaterialTheme.localDim.spaceSmall)
-                    .height(1.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = MaterialTheme.localDim.spaceSmall)
             )
 
             inputContent.result?.let {
