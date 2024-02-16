@@ -63,7 +63,7 @@ class SettingsViewModel @Inject constructor(
                 _defaultUiState.update { it.copy(isModelListShowed = false) }
             }
 
-            is SettingsEvent.SavedModel -> updateAiModel(event.model.model)
+            is SettingsEvent.SavedModel -> updateAiModel(event.model.name)
             is SettingsEvent.SavedApiKey -> updateApiKey(event.apiKey)
             is SettingsEvent.AutomaticSaveChatChanged -> updateAutomaticSave(event.isChecked)
         }

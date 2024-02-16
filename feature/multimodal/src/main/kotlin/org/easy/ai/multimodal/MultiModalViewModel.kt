@@ -32,7 +32,7 @@ internal class MultiModalViewModel @Inject constructor(
     val inputContentUiState = _promptInputContent.asStateFlow()
 
     init {
-        modelInitialUseCase().onEach {
+        modelInitialUseCase("gemini-pro-vision").onEach {
             geminiModel = it
         }.launchIn(viewModelScope)
     }
@@ -79,7 +79,7 @@ internal class MultiModalViewModel @Inject constructor(
             }
             return
         }
-        _promptInputContent.update { it.copy(result = "") }
+        _promptInputContent.update { it.copy(result = "", errorMessage = null) }
         viewModelScope.launch {
             val bitmaps = promptInputContent.images?.map {
                 BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()

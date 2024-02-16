@@ -15,7 +15,7 @@ import org.easy.ai.data.di.ModelPlatformQualifier
 import org.easy.ai.data.model.AiChat
 import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.data.repository.UserPreferencesRepository
-import org.easy.ai.data.repository.model.ModelRepository
+import org.easy.ai.data.repository.model.ModelChatRepository
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelRepository,
+    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelChatRepository,
     @ModelPlatformQualifier(ModelPlatform.GEMINI) private val localChatRepository: LocalChatRepository,
     userPreferencesRepository: UserPreferencesRepository
 ) : BaseViewModel<ChatEvent>() {

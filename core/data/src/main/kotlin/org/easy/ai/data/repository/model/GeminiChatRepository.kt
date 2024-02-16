@@ -2,7 +2,6 @@ package org.easy.ai.data.repository.model
 
 import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.GoogleGenerativeAIException
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.flow.Flow
@@ -13,9 +12,9 @@ import org.easy.ai.model.Participant
 import org.easy.ai.model.UserDataValidateResult
 import javax.inject.Inject
 
-class GeminiRepository @Inject constructor(
+class GeminiChatRepository @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository
-) : ModelRepository {
+) : ModelChatRepository {
 
     private var generativeModel: GenerativeModel? = null
     private var chat: Chat? = null
@@ -24,7 +23,7 @@ class GeminiRepository @Inject constructor(
         return userPreferencesRepository.userData.map {
             val isValid = it.validate() == UserDataValidateResult.NORMAL
             if (isValid) {
-                generativeModel = GenerativeModel(modelName = it.modelName, apiKey = it.apiKey)
+                generativeModel = GenerativeModel(modelName = "gemini-pro", apiKey = it.apiKey)
                 chat = generativeModel!!.startChat()
             }
             isValid
@@ -61,16 +60,6 @@ class GeminiRepository @Inject constructor(
                 text = e.localizedMessage.orEmpty(),
                 participant = Participant.ERROR
             )
-        }
-    }
-
-    override suspend fun generateTextFromMultiModal(prompt: Content): String {
-        return try {
-            val response = generativeModel?.generateContent(prompt)
-            response?.text.orEmpty()
-        } catch (e: GoogleGenerativeAIException) {
-            e.printStackTrace()
-            ""
         }
     }
 }
