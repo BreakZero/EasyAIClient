@@ -19,15 +19,17 @@ package org.easy.ai.model
 //}
 
 enum class AIModel {
-    GEMINI, CHAT_GPT;
+    GEMINI;
+//    CHAT_GPT;
 
     companion object {
         fun fromModelName(model: String): AIModel {
-            return when(model) {
-                GEMINI.name -> GEMINI
-                CHAT_GPT.name -> CHAT_GPT
-                else -> GEMINI
-            }
+            return GEMINI
+//            return when (model) {
+//                GEMINI.name -> GEMINI
+//                CHAT_GPT.name -> CHAT_GPT
+//                else -> GEMINI
+//            }
         }
     }
 }
