@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.model.AIModel
 import org.easy.ai.model.UserDataValidateResult
+import java.util.LinkedList
 import javax.inject.Inject
 
 class GeminiModelInitialUseCase @Inject constructor(
