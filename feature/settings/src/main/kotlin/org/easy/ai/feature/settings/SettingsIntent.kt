@@ -8,7 +8,7 @@ import org.easy.ai.model.ModelPlatform
 data class SettingsUiState(
     val modelPlatform: ModelPlatform = ModelPlatform.GEMINI,
     val apiKey: String = "",
-    val model: AIModel = AIModel.GeminiPro,
+    val model: AIModel = AIModel.GEMINI,
     val isAutomaticSaveChat: Boolean = false,
     val isApiKeyEditorShowed: Boolean = false,
     val isModelListShowed: Boolean = false
@@ -23,5 +23,3 @@ sealed interface SettingsEvent {
     data class SavedModel(val model: AIModel) : SettingsEvent
     data class SavedApiKey(val apiKey: String) : SettingsEvent
 }
-
-
