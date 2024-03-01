@@ -17,6 +17,7 @@ android {
                 )
             }
         }
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
@@ -27,7 +28,5 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(projects.core.model)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(projects.core.testing)
 }
