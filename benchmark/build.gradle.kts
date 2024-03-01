@@ -29,8 +29,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.test.ext.junit)
-    implementation(libs.espresso.core)
-    implementation(libs.uiautomator)
+    implementation(libs.androidx.test.espresso.core)
+    implementation(libs.androidx.test.uiautomator)
     implementation(libs.benchmark.macro.junit4)
 }
 
