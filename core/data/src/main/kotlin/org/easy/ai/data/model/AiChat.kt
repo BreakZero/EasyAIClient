@@ -1,6 +1,7 @@
 package org.easy.ai.data.model
 
 import org.easy.ai.database.entities.ChatEntity
+import org.easy.ai.model.ModelPlatform
 
 data class AiChat(
     val chatId: String,
@@ -9,7 +10,7 @@ data class AiChat(
 )
 
 fun AiChat.asEntity(): ChatEntity {
-    return ChatEntity(this.chatId, this.name, this.createAt)
+    return ChatEntity(this.chatId, this.name, model = ModelPlatform.GEMINI, this.createAt)
 }
 
 fun ChatEntity.asExternalModel(): AiChat {
