@@ -116,14 +116,10 @@ internal fun ChatScreen(
         ChatDrawer(
             chats = (chatUiState as? ChatUiState.Initialed)?.chats,
             defaultChat = (chatUiState as? ChatUiState.Initialed)?.currentChat,
-            hasSetup = chatUiState is ChatUiState.Initialed,
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
-            onTextGeneratorClicked = {},
-            onMultiModalClicked = {
-                onEvent(ChatEvent.OnMultiModalClicked)
-            },
+            onPluginsClick = {},
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
             }

@@ -43,10 +43,8 @@ internal fun ChatDrawer(
     modifier: Modifier = Modifier,
     chats: List<AiChat>?,
     defaultChat: AiChat? = null,
-    hasSetup: Boolean = true,
     onChatSelected: (AiChat?) -> Unit,
-    onTextGeneratorClicked: () -> Unit,
-    onMultiModalClicked: () -> Unit,
+    onPluginsClick: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {
     var selectedChat by remember {
@@ -91,31 +89,38 @@ internal fun ChatDrawer(
                 }
             }
         }
-        if (hasSetup) {
-            toolsSection(
-                onTextGeneratorClicked = onTextGeneratorClicked,
-                onMultiModalClicked = onMultiModalClicked
-            )
-        }
-        Row(
+        ListItem(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
-                .clickable(onClick = onSettingsClicked)
-                .padding(
-                    vertical = MaterialTheme.localDim.space12,
-                    horizontal = MaterialTheme.localDim.spaceMedium
+                .clickable(onClick = onPluginsClick),
+            headlineContent = {
+                Text(
+                    text = stringResource(id = R.string.text_plugins),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-        ) {
-            Icon(imageVector = Icons.Default.Settings, contentDescription = null)
-            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceMedium))
-            Text(
-                text = stringResource(id = R.string.text_settings),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = Modifier.weight(1.0f))
-            Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-        }
+            }
+        )
+        HorizontalDivider()
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
+                .clickable(onClick = onSettingsClicked),
+            headlineContent = {
+                Text(
+                    text = stringResource(id = R.string.text_settings),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            },
+            leadingContent = {
+                Icon(imageVector = Icons.Default.Settings, contentDescription = null)
+            },
+            trailingContent = {
+                Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+            }
+        )
     }
 }
 

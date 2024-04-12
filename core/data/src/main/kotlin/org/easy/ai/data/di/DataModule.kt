@@ -6,6 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.data.repository.GeminiLocalChatRepository
+import org.easy.ai.data.repository.chat.ChatRepository
 import org.easy.ai.data.repository.model.ChatGPTRepository
 import org.easy.ai.data.repository.model.GeminiChatRepository
 import org.easy.ai.data.repository.model.ModelChatRepository
@@ -33,7 +34,13 @@ abstract class DataModule {
 
     @Binds
     @ModelPlatformQualifier(ModelPlatform.GEMINI)
-    abstract fun bindGeminiChatRepository(
+    abstract fun bindGeminiChatLocalRepository(
         geminiLocalChatRepository: GeminiLocalChatRepository
     ): LocalChatRepository
+
+    @Binds
+    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    abstract fun bindGeminiChatRepository(
+        geminiChatRepository: org.easy.ai.data.repository.chat.GeminiChatRepository
+    ): ChatRepository
 }
