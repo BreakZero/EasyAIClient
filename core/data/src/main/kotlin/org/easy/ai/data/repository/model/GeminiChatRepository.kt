@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
 import org.easy.ai.model.UserDataValidateResult
 import javax.inject.Inject
@@ -23,7 +24,10 @@ class GeminiChatRepository @Inject constructor(
         return userPreferencesRepository.userData.map {
             val isValid = it.validate() == UserDataValidateResult.NORMAL
             if (isValid) {
-                generativeModel = GenerativeModel(modelName = "gemini-pro", apiKey = it.apiKey)
+                generativeModel = GenerativeModel(
+                    modelName = "gemini-pro",
+                    apiKey = it.apiKeys[ModelPlatform.GEMINI.name]!!
+                )
                 chat = generativeModel!!.startChat()
             }
             isValid

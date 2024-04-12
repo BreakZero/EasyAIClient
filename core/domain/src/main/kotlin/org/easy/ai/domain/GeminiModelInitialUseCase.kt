@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.model.AIModel
+import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.UserDataValidateResult
 import java.util.LinkedList
 import javax.inject.Inject
@@ -16,7 +17,7 @@ class GeminiModelInitialUseCase @Inject constructor(
         return userPreferencesRepository.userData.map {
             val isValid = it.validate() == UserDataValidateResult.NORMAL
             val generativeModel = if (isValid) {
-                GenerativeModel(modelName = it.modelName, apiKey = it.apiKey)
+                GenerativeModel(modelName = it.modelName, apiKey = it.apiKeys[ModelPlatform.GEMINI.name]!!)
             } else null
             generativeModel
         }

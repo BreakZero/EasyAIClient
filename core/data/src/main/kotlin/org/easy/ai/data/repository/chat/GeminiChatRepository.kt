@@ -2,18 +2,16 @@ package org.easy.ai.data.repository.chat
 
 import com.google.ai.client.generativeai.type.InvalidStateException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.sync.Semaphore
 import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
-import org.easy.ai.datastore.UserPreferencesDataSource
 import org.easy.ai.model.EasyPrompt
 import org.easy.ai.network.gemini.GeminiRestApi
 import javax.inject.Inject
 
 class GeminiChatRepository @Inject internal constructor(
-    private val userPreferencesDataSource: UserPreferencesDataSource,
     private val chatDao: ChatDao,
     private val messageDao: MessageDao,
     private val geminiRestApi: GeminiRestApi
@@ -24,18 +22,23 @@ class GeminiChatRepository @Inject internal constructor(
         TODO("Not yet implemented")
     }
 
-    override fun sendMessage(prompt: EasyPrompt): Flow<String> {
+    override suspend fun sendMessage(apiKey: String, prompt: EasyPrompt): String {
         prompt.assertComesFromUser()
         attemptLock()
-        return userPreferencesDataSource.userData.map {
-            if (it.apiKey.isBlank()) throw IllegalStateException("api key is not setup.")
-            if (it.isAutomaticSaveChat) {
-
-            }
-            geminiRestApi.generateContent(it.apiKey, prompt)
-        }.onCompletion {
+        val response = try {
+            geminiRestApi.generateContent(apiKey, prompt)
+        } finally {
             lock.release()
         }
+        return response
+    }
+
+    override suspend fun addChat() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deletedById(chatId: String) {
+        TODO("Not yet implemented")
     }
 
     private fun EasyPrompt.assertComesFromUser() {

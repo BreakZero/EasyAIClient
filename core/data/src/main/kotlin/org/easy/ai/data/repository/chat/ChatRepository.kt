@@ -1,10 +1,14 @@
 package org.easy.ai.data.repository.chat
 
-import kotlinx.coroutines.flow.Flow
 import org.easy.ai.model.EasyPrompt
 
 interface ChatRepository {
     fun startChat()
 
-    fun sendMessage(prompt: EasyPrompt): Flow<String>
+    suspend fun sendMessage(apiKey: String, prompt: EasyPrompt): String
+
+    suspend fun addChat()
+
+    suspend fun deletedById(chatId: String)
+
 }
