@@ -11,7 +11,7 @@ import org.easy.ai.model.Participant
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "msg_id")
-    val messageId: Long,
+    val messageId: Long? = null,
     @ColumnInfo(name = "participant")
     val participant: Participant,
     @ColumnInfo(name = "content")
