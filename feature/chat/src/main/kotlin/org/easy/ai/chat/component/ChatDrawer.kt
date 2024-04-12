@@ -28,7 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import org.easy.ai.data.model.AiChat
+import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.system.ui.R
 import org.easy.ai.system.ui.localDim
 
@@ -39,9 +39,9 @@ internal enum class DrawerState {
 @Composable
 internal fun ChatDrawer(
     modifier: Modifier = Modifier,
-    chats: List<AiChat>?,
-    defaultChat: AiChat? = null,
-    onChatSelected: (AiChat?) -> Unit,
+    chats: List<ChatUiModel>?,
+    defaultChat: ChatUiModel? = null,
+    onChatSelected: (ChatUiModel?) -> Unit,
     onPluginsClick: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {

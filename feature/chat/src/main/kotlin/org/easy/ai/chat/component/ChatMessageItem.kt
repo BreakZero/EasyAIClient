@@ -21,14 +21,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.Participant
 import org.easy.ai.system.ui.localDim
 
 @Composable
 internal fun ChatMessageItemView(
     modifier: Modifier = Modifier,
-    message: ChatMessage
+    message: ChatMessageUiModel
 ) {
     val isUser = message.participant == Participant.USER
     Row(

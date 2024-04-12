@@ -1,22 +1,22 @@
 package org.easy.ai.chat
 
 import androidx.compose.runtime.Stable
-import org.easy.ai.data.model.AiChat
-import org.easy.ai.model.ChatMessage
+import org.easy.ai.data.model.ChatUiModel
+import org.easy.ai.model.ChatMessageUiModel
 
 @Stable
 data class ChattingUiState(
-    val chats: List<AiChat> = emptyList(),
-    val selectedChat: AiChat? = null,
-    val chatHistory: List<ChatMessage> = emptyList()
+    val chats: List<ChatUiModel> = emptyList(),
+    val selectedChat: ChatUiModel? = null,
+    val chatHistory: List<ChatMessageUiModel> = emptyList()
 )
 
 sealed interface ChatUiState {
     @Stable
     data class Chatting(
-        val chats: List<AiChat> = emptyList(),
-        val selectedChat: AiChat? = null,
-        val chatHistory: List<ChatMessage> = emptyList()
+        val chats: List<ChatUiModel> = emptyList(),
+        val selectedChat: ChatUiModel? = null,
+        val chatHistory: List<ChatMessageUiModel> = emptyList()
     )
 
     data object NoApiSetup: ChatUiState
@@ -25,6 +25,6 @@ sealed interface ChatUiState {
 sealed interface ChatEvent {
     data object OnSettingsClicked : ChatEvent
     data class OnMessageSend(val userMessage: String) : ChatEvent
-    data class SelectedChat(val chat: AiChat?) : ChatEvent
+    data class SelectedChat(val chat: ChatUiModel?) : ChatEvent
     data object OnMultiModalClicked : ChatEvent
 }

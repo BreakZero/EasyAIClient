@@ -5,8 +5,7 @@ import java.util.UUID
 enum class Participant {
     USER, MODEL, ERROR
 }
-data class ChatMessage(
-    val id: String = UUID.randomUUID().toString(),
+data class ChatMessageUiModel(
     val text: String = "",
     val participant: Participant = Participant.USER,
     var isPending: Boolean = false

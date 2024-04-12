@@ -12,11 +12,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
-import org.easy.ai.data.model.AiChat
+import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.domain.MessageSendingUseCase
-import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.EasyPrompt
+import org.easy.ai.model.Participant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,33 +25,43 @@ class ChatViewModel @Inject constructor(
     private val localChatRepository: LocalChatRepository,
     private val messageSendingUseCase: MessageSendingUseCase
 ) : BaseViewModel<ChatEvent>() {
-    private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
-    private val _selectedChat = MutableStateFlow<AiChat?>(null)
+    private val _chatHistory = MutableStateFlow<List<ChatMessageUiModel>>(emptyList())
+    private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
 
     val chatUiState = combine(
         localChatRepository.getAllChats(),
-        _selectedChat
-    ) { chats, selectedChat ->
+        _selectedChat,
+        _chatHistory,
+    ) { chats, selectedChat, chathistory ->
         val chatHistory = selectedChat?.let {
             localChatRepository.getMessagesByChat(it.chatId)
         } ?: emptyList()
         ChattingUiState(
             chats = chats,
             selectedChat = selectedChat,
-            chatHistory = chatHistory
+            chatHistory = chathistory
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChattingUiState())
 
     private fun sendMessage(userMessage: String) {
         val userPrompt = EasyPrompt.TextPrompt(role = "user", userMessage)
-        messageSendingUseCase(userPrompt).onEach {
-            println("===== $it")
-        }.catch {
-            it.printStackTrace()
+        val sendingMessage = ChatMessageUiModel(text = userMessage, isPending = true)
+        _chatHistory.update {
+            it + sendingMessage
+        }
+        messageSendingUseCase(userPrompt).onEach { response ->
+            _chatHistory.update {
+                it + ChatMessageUiModel(text = response, participant = Participant.MODEL)
+            }
+        }.catch { error ->
+            _chatHistory.update {
+                it + ChatMessageUiModel(text = "response error", participant = Participant.ERROR)
+            }
+            error.printStackTrace()
         }.launchIn(viewModelScope)
     }
 
-    private fun onSelectedChat(chat: AiChat?) {
+    private fun onSelectedChat(chat: ChatUiModel?) {
         _selectedChat.update { chat }
         chat?.let {
             viewModelScope.launch {
