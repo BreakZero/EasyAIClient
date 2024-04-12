@@ -20,12 +20,14 @@ class GeminiRestApiController internal constructor(
 ) : GeminiRestApi {
     override suspend fun generateContent(apiKey: String, prompt: EasyPrompt): String {
         val request = constructRequest(prompt)
-        val response = httpClient.post("gemini-pro:generateContent") {
+        val response = httpClient.post("models/gemini-pro:generateContent") {
             applyCommonConfiguration(apiKey, request)
-        }.also { validateResponse(it) }
-            .body<GenerateContentResponse>()
-        println("===== $response")
-        return ""
+        }.also {
+            validateResponse(it)
+        }.body<GenerateContentResponse>()
+
+        return response.candidates?.firstOrNull()?.content?.parts?.filterIsInstance<TextPart>()
+            ?.joinToString(", ") { it.text } ?: ""
     }
 
     private fun HttpRequestBuilder.applyCommonConfiguration(apiKey: String, request: Request) {

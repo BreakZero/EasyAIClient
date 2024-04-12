@@ -1,9 +1,6 @@
 package org.easy.ai.data.repository.chat
 
 import com.google.ai.client.generativeai.type.InvalidStateException
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.sync.Semaphore
 import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
@@ -15,11 +12,13 @@ class GeminiChatRepository @Inject internal constructor(
     private val chatDao: ChatDao,
     private val messageDao: MessageDao,
     private val geminiRestApi: GeminiRestApi
-) : ChatRepository {
+) : AiModelChatRepository {
     private var lock = Semaphore(1)
-    private val history: MutableList<EasyPrompt.TextPrompt> = ArrayList()
-    override fun startChat() {
-        TODO("Not yet implemented")
+    private val history: MutableList<EasyPrompt> = ArrayList()
+
+    override fun startChat(history: List<EasyPrompt>) {
+        this.history.clear()
+        this.history.addAll(history)
     }
 
     override suspend fun sendMessage(apiKey: String, prompt: EasyPrompt): String {
@@ -31,14 +30,6 @@ class GeminiChatRepository @Inject internal constructor(
             lock.release()
         }
         return response
-    }
-
-    override suspend fun addChat() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deletedById(chatId: String) {
-        TODO("Not yet implemented")
     }
 
     private fun EasyPrompt.assertComesFromUser() {

@@ -8,6 +8,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.URLProtocol
@@ -18,11 +22,6 @@ import kotlinx.serialization.json.Json
 import org.easy.ai.network.gemini.GeminiRestApi
 import org.easy.ai.network.gemini.GeminiRestApiController
 import javax.inject.Qualifier
-
-internal object NetworkHost {
-    const val CHAT_GPT_REST_URL = ""
-    const val GEMINI_REST_URL = "https://generativelanguage.googleapis.com/v1beta/models/"
-}
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -39,9 +38,13 @@ internal val JSON = Json {
 }
 
 private fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient {
-    return httpClient {
+    return HttpClient {
         install(ContentNegotiation) {
             json(JSON)
+        }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.BODY
         }
         config()
     }
@@ -58,7 +61,7 @@ object NetworkModule {
                 url {
                     protocol = URLProtocol.HTTPS
                     host = "generativelanguage.googleapis.com"
-                    path("v1/models/")
+                    path("v1/]")
                 }
                 contentType(ContentType.Application.Json)
                 header("x-goog-api-client", "easyai-android")

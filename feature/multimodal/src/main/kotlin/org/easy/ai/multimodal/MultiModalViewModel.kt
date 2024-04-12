@@ -38,14 +38,12 @@ internal class MultiModalViewModel @Inject constructor(
     }
 
     fun onPromptChanged(prompt: String) {
-        println("=====onPromptChanged")
         _promptInputContent.update {
             it.copy(prompt = prompt, errorMessage = null)
         }
     }
 
     fun onImagesChanged(bytes: List<ByteArray>) {
-        println("=====onImagesChanged")
         _promptInputContent.update {
             it.copy(images = bytes, errorMessage = null)
         }
