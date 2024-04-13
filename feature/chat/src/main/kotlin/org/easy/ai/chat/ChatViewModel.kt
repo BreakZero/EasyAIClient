@@ -4,130 +4,88 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
-import org.easy.ai.data.di.ModelPlatformQualifier
-import org.easy.ai.data.model.AiChat
+import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.data.repository.UserPreferencesRepository
-import org.easy.ai.data.repository.model.ModelChatRepository
-import org.easy.ai.model.ChatMessage
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.domain.MessageSendingUseCase
+import org.easy.ai.domain.StartChatUseCase
+import org.easy.ai.model.ChatMessageUiModel
+import org.easy.ai.model.EasyPrompt
 import org.easy.ai.model.Participant
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val modelRepository: ModelChatRepository,
-    @ModelPlatformQualifier(ModelPlatform.GEMINI) private val localChatRepository: LocalChatRepository,
-    userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository,
+    private val localChatRepository: LocalChatRepository,
+    private val startChatUseCase: StartChatUseCase,
+    private val messageSendingUseCase: MessageSendingUseCase
 ) : BaseViewModel<ChatEvent>() {
-    private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
-    private val _selectedChat = MutableStateFlow<AiChat?>(null)
-    private var _isAutomaticSaveChatOn = false
+    private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
+    private val _messageSize = MutableStateFlow(0)
 
-    init {
-        viewModelScope.launch {
-            userPreferencesRepository.userData
-                .onEach { _isAutomaticSaveChatOn = it.isAutomaticSaveChat }
-                .collect()
-        }
+    private val _chatHistoryFlow = combine(_messageSize, _selectedChat) { _, chat ->
+        chat?.chatId?.let { localChatRepository.getMessagesByChat(it) } ?: emptyList()
     }
 
+    private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
+    val pendingMessage = _pendingMessage.asStateFlow()
+
     val chatUiState = combine(
-        modelRepository.initial(),
-        localChatRepository.allChats(),
+        userPreferencesRepository.hasApiKey(),
+        localChatRepository.getAllChats(),
         _selectedChat,
-        _chatHistory
-    ) { isInitialed, chats, selectedChat, chatHistory ->
-        if (isInitialed) {
-            ChatUiState.Initialed(
+        _chatHistoryFlow
+    ) { isHasKeys, chats, selectedChat, chatHistory ->
+        if (isHasKeys) {
+            ChatUiState.Chatting(
                 chats = chats,
-                currentChat = selectedChat,
+                selectedChat = selectedChat,
                 chatHistory = chatHistory
             )
         } else {
-            ChatUiState.Configuration
+            ChatUiState.NoApiSetup
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChatUiState.Configuration)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChatUiState.NoApiSetup)
 
     private fun sendMessage(userMessage: String) {
-        saveChat(userMessage, _chatHistory.value)
-        _chatHistory.update { it ->
-            it + listOf(
-                ChatMessage(
-                    text = userMessage,
-                    participant = Participant.USER,
-                    isPending = false
-                ).also { saveMessage(it) },
-                ChatMessage(
-                    participant = Participant.MODEL,
-                    isPending = true
-                )
-            )
-        }
-        viewModelScope.launch {
-            val chatMessage = modelRepository.sendMessage(userMessage)
-            saveMessage(chatMessage)
-            _chatHistory.update {
-                it.dropLast(1) + chatMessage
-            }
-        }
+        val userPrompt = EasyPrompt.TextPrompt(role = "user", userMessage)
+        val uiMessageModel = ChatMessageUiModel(text = userMessage, participant = Participant.USER, isPending = true)
+        _pendingMessage.update { uiMessageModel }
+
+        messageSendingUseCase(userPrompt).onEach { _ ->
+            clearPendingMessage()
+            _messageSize.update { it + 1 }
+        }.catch { error ->
+            clearPendingMessage()
+            _messageSize.update { it + 1 }
+            error.printStackTrace()
+        }.launchIn(viewModelScope)
     }
 
-    private fun genChatName(message: String, defaultLength: Int = 12): String {
-        return if (message.length > defaultLength) {
-            message.take(defaultLength) + "..."
-        } else {
-            message
-        }
+    private fun clearPendingMessage() {
+        _pendingMessage.update { null }
     }
 
-    private fun saveChat(firstMessageText: String, initMessages: List<ChatMessage>) {
-        if (_selectedChat.value != null || !_isAutomaticSaveChatOn) return
-        val name = genChatName(firstMessageText)
-        val aiChat = AiChat(
-            UUID.randomUUID().toString(),
-            name,
-            System.currentTimeMillis()
-        )
-        _selectedChat.update { aiChat }
-        viewModelScope.launch {
-            localChatRepository.saveChat(aiChat)
-            initMessages.forEach {
-                localChatRepository.saveMessage(aiChat.chatId, it)
-            }
-        }
-    }
-
-    private fun saveMessage(message: ChatMessage) {
-        if (_selectedChat.value == null || !_isAutomaticSaveChatOn) return
-        viewModelScope.launch {
-            val chatId = _selectedChat.value!!.chatId
-            localChatRepository.saveMessage(chatId, message)
-        }
-    }
-
-    private fun onSelectedChat(chat: AiChat?) {
-        _selectedChat.update { chat }
-        chat?.let {
-            viewModelScope.launch {
-                val messages = localChatRepository.getMessagesByChat(it.chatId)
-                // only add success history
-                modelRepository.switchChat(messages.filter { it.participant != Participant.ERROR })
-                _chatHistory.update {
-                    messages
-                }
-            }
-        } ?: run {
-            _chatHistory.update { emptyList() }
-        }
+    private fun onSelectedChat(chat: ChatUiModel?) {
+        startChatUseCase(chat?.chatId).onEach {
+            clearPendingMessage()
+            _selectedChat.update { chat }
+            val historySize = chat?.chatId?.let {
+                localChatRepository.getMessagesByChat(it).size
+            } ?: 0
+            _messageSize.update { historySize }
+        }.catch {
+            it.printStackTrace()
+        }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: ChatEvent) {

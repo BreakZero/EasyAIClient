@@ -4,11 +4,11 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.easy.ai.data.repository.ChatRepository
 import org.easy.ai.data.repository.LocalChatRepository
-import org.easy.ai.data.repository.GeminiLocalChatRepository
-import org.easy.ai.data.repository.model.ChatGPTRepository
-import org.easy.ai.data.repository.model.GeminiChatRepository
-import org.easy.ai.data.repository.model.ModelChatRepository
+import org.easy.ai.data.repository.chat.AiModelChatRepository
+import org.easy.ai.data.repository.chat.ChatGPTChatRepository
+import org.easy.ai.data.repository.chat.GeminiChatRepository
 import org.easy.ai.model.ModelPlatform
 import javax.inject.Qualifier
 
@@ -20,20 +20,19 @@ annotation class ModelPlatformQualifier(val model: ModelPlatform)
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
     @Binds
+    abstract fun bindLocalChatRepository(
+        localChatRepository: LocalChatRepository
+    ): ChatRepository
+
+    @Binds
     @ModelPlatformQualifier(ModelPlatform.GEMINI)
     abstract fun bindGeminiRepository(
-        geminiRepository: GeminiChatRepository
-    ): ModelChatRepository
+        geminiChatRepository: GeminiChatRepository
+    ): AiModelChatRepository
 
     @Binds
     @ModelPlatformQualifier(ModelPlatform.CHAT_GPT)
     abstract fun bindChatGPTRepository(
-        chatGPTRepository: ChatGPTRepository
-    ): ModelChatRepository
-
-    @Binds
-    @ModelPlatformQualifier(ModelPlatform.GEMINI)
-    abstract fun bindGeminiChatRepository(
-        geminiLocalChatRepository: GeminiLocalChatRepository
-    ): LocalChatRepository
+        chatGPTChatRepository: ChatGPTChatRepository
+    ): AiModelChatRepository
 }

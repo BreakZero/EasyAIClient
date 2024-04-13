@@ -1,59 +1,86 @@
 package org.easy.ai.network.di
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.serialization.ExperimentalSerializationApi
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
+import io.ktor.client.request.header
+import io.ktor.http.ContentType
+import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
+import io.ktor.http.path
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.easy.ai.network.ChatGPTApi
-import retrofit2.Retrofit
-import javax.inject.Singleton
+import org.easy.ai.network.gemini.GeminiRestApi
+import org.easy.ai.network.gemini.GeminiRestApiController
+import javax.inject.Qualifier
 
-object NetworkHost {
-    internal const val CHAT_GPT_BASE_URL = ""
-}
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class GeminiRestHttpClient
 
-@OptIn(ExperimentalSerializationApi::class)
-private val json = Json {
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ChatGPTRestHttpClient
+
+internal val JSON = Json {
     prettyPrint = true
     ignoreUnknownKeys = true
     isLenient = true
-    explicitNulls = true
+}
+
+private fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient {
+    return HttpClient {
+        install(ContentNegotiation) {
+            json(JSON)
+        }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.BODY
+        }
+        config()
+    }
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+    @GeminiRestHttpClient
     @Provides
-    @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().addInterceptor { chain ->
-            var request: Request? = null
-            val original = chain.request()
-            // Request customization: add request headers
-            val requestBuilder = original.newBuilder()
-                .addHeader("Authorization", "Bearer ")
-            request = requestBuilder.build()
-            chain.proceed(request)
-        }.build()
+    fun providesGeminiRestHttpClient(): HttpClient {
+        return httpClient {
+            defaultRequest {
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = "generativelanguage.googleapis.com"
+                    path("v1/]")
+                }
+                contentType(ContentType.Application.Json)
+                header("x-goog-api-client", "easyai-android")
+            }
+        }
+    }
+
+    @ChatGPTRestHttpClient
+    @Provides
+    fun providesChatGPTRestHttpClient(): HttpClient {
+        return httpClient {
+
+        }
     }
 
     @Provides
-    @Singleton
-    fun provideChatGPTApi(
-        okHttpClient: OkHttpClient
-    ): ChatGPTApi {
-        val contentType = "application/json".toMediaType()
-        return Retrofit.Builder()
-            .baseUrl(NetworkHost.CHAT_GPT_BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(ChatGPTApi::class.java)
+    fun providesGeminiRestApi(
+        @GeminiRestHttpClient httpClient: HttpClient
+    ): GeminiRestApi {
+        return GeminiRestApiController(httpClient)
     }
 }

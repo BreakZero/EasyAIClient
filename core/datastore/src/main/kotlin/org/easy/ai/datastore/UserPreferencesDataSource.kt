@@ -2,6 +2,7 @@ package org.easy.ai.datastore
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
+import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.UserData
 import javax.inject.Inject
 
@@ -11,9 +12,17 @@ class UserPreferencesDataSource @Inject constructor(
     val userData = userPreferences.data.map {
         UserData(
             modelName = it.modelName,
-            apiKey = it.apiKey,
+            apiKeys = it.apiKeysMap,
             isAutomaticSaveChat = it.automaticSaveChat
         )
+    }
+
+    suspend fun addApiKey(modelPlatform: ModelPlatform, apiKey: String) {
+        userPreferences.updateData {
+            it.copy {
+                apiKeys.put(modelPlatform.name, apiKey)
+            }
+        }
     }
 
     suspend fun updateAiModel(modelName: String) {
@@ -24,7 +33,9 @@ class UserPreferencesDataSource @Inject constructor(
 
     suspend fun updateApiKey(apiKey: String) {
         userPreferences.updateData {
-            it.copy { this.apiKey = apiKey }
+            it.copy {
+                apiKeys.put(ModelPlatform.GEMINI.name, apiKey)
+            }
         }
     }
 

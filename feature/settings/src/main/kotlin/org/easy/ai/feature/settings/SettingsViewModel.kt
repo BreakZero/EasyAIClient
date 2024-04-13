@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.model.AIModel
+import org.easy.ai.model.ModelPlatform
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +23,7 @@ class SettingsViewModel @Inject constructor(
     val settingsUiState =
         combine(_defaultUiState, userPreferencesRepository.userData) { defaultState, userData ->
             defaultState.copy(
-                apiKey = userData.apiKey,
+                apiKey = userData.apiKeys[ModelPlatform.GEMINI.name].orEmpty(),
                 model = AIModel.fromModelName(userData.modelName),
                 isAutomaticSaveChat = userData.isAutomaticSaveChat
             )

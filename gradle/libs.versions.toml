@@ -35,7 +35,7 @@ androidx-test-runner = "1.5.2"
 # tools
 coil = "2.4.0"
 koin = "3.4.1"
-ktor = "2.3.6"
+ktor = "2.3.10"
 ksp = "1.9.22-1.0.17"
 dagger-hilt = "2.49"
 material = "1.11.0"
@@ -100,6 +100,7 @@ koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", versi
 
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version.ref = "ktor" }
 ktor-client-websockets = { group = "io.ktor", name = "ktor-client-websockets", version.ref = "ktor" }
 ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-client-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }

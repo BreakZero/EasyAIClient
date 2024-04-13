@@ -57,6 +57,7 @@ import org.easy.ai.chat.component.ChatDrawer
 import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
+import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.system.ui.localDim
 import org.easy.ai.system.ui.R as UiR
 
@@ -69,19 +70,25 @@ internal fun ChatRoute(
 ) {
     val chatViewModel: ChatViewModel = hiltViewModel()
     val chatUiState by chatViewModel.chatUiState.collectAsStateWithLifecycle()
+    val pendingMessage by chatViewModel.pendingMessage.collectAsStateWithLifecycle()
     ObserveAsEvents(flow = chatViewModel.navigationEvents, onEvent = { event ->
-        when(event) {
+        when (event) {
             is ChatEvent.OnSettingsClicked -> navigateToSettings()
             is ChatEvent.OnMultiModalClicked -> navigateToMultiModal()
             else -> Unit
         }
     })
-    ChatScreen(chatUiState = chatUiState, onEvent = chatViewModel::onEvent)
+    ChatScreen(
+        chatUiState = chatUiState,
+        pendingMessageUiModel = pendingMessage,
+        onEvent = chatViewModel::onEvent
+    )
 }
 
 @Composable
 internal fun ChatScreen(
     chatUiState: ChatUiState,
+    pendingMessageUiModel: ChatMessageUiModel?,
     onEvent: (ChatEvent) -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -114,16 +121,12 @@ internal fun ChatScreen(
             }
         }
         ChatDrawer(
-            chats = (chatUiState as? ChatUiState.Initialed)?.chats,
-            defaultChat = (chatUiState as? ChatUiState.Initialed)?.currentChat,
-            hasSetup = chatUiState is ChatUiState.Initialed,
+            chats = (chatUiState as? ChatUiState.Chatting)?.chats,
+            defaultChat = (chatUiState as? ChatUiState.Chatting)?.selectedChat,
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
-            onTextGeneratorClicked = {},
-            onMultiModalClicked = {
-                onEvent(ChatEvent.OnMultiModalClicked)
-            },
+            onPluginsClick = {},
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
             }
@@ -195,6 +198,7 @@ internal fun ChatScreen(
                     }
                 ),
             chatUiState = chatUiState,
+            pendingMessageUiModel = pendingMessageUiModel,
             onDrawerClicked = ::toggleDrawerState,
             onEvent = onEvent
         )
@@ -206,6 +210,7 @@ internal fun ChatScreen(
 private fun ChatContent(
     modifier: Modifier = Modifier,
     chatUiState: ChatUiState,
+    pendingMessageUiModel: ChatMessageUiModel? = null,
     onDrawerClicked: () -> Unit,
     onEvent: (ChatEvent) -> Unit
 ) {
@@ -225,7 +230,7 @@ private fun ChatContent(
             )
         },
         bottomBar = {
-            if (chatUiState is ChatUiState.Initialed) {
+            if (chatUiState is ChatUiState.Chatting) {
                 MessageInput(
                     onMessageSend = { onEvent(ChatEvent.OnMessageSend(it)) }
                 )
@@ -233,28 +238,7 @@ private fun ChatContent(
         }
     ) { paddings ->
         when (chatUiState) {
-            is ChatUiState.Configuration -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = MaterialTheme.localDim.spaceMedium),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Oops, Please config your environment first")
-                        TextButton(onClick = {
-                            onEvent(ChatEvent.OnSettingsClicked)
-                        }) {
-                            Text(
-                                text = stringResource(id = UiR.string.action_go_to_settings),
-                                color = MaterialTheme.colorScheme.scrim
-                            )
-                        }
-                    }
-                }
-            }
-
-            is ChatUiState.Initialed -> {
+            is ChatUiState.Chatting -> {
                 val chatListState = rememberLazyListState()
                 LaunchedEffect(key1 = chatUiState.chatHistory) {
                     chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
@@ -274,6 +258,32 @@ private fun ChatContent(
                             modifier = Modifier.fillMaxWidth(),
                             message = message
                         )
+                    }
+                    pendingMessageUiModel?.let {
+                        item {
+                            ChatMessageItemView(message = it)
+                        }
+                    }
+                }
+            }
+
+            ChatUiState.NoApiSetup -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddings),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Oops, Please config your environment first")
+                        TextButton(onClick = {
+                            onEvent(ChatEvent.OnSettingsClicked)
+                        }) {
+                            Text(
+                                text = stringResource(id = UiR.string.action_go_to_settings),
+                                color = MaterialTheme.colorScheme.scrim
+                            )
+                        }
                     }
                 }
             }
