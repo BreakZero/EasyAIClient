@@ -7,6 +7,8 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +47,7 @@ import androidx.compose.ui.layout.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +58,7 @@ import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
 import org.easy.ai.system.ui.localDim
+import org.easy.ai.system.ui.R as UiR
 
 private val DrawerWidth = 300.dp
 
@@ -75,7 +81,7 @@ internal fun ChatRoute(
 
 @Composable
 internal fun ChatScreen(
-    chatUiState: ChattingUiState,
+    chatUiState: ChatUiState,
     onEvent: (ChatEvent) -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -108,8 +114,8 @@ internal fun ChatScreen(
             }
         }
         ChatDrawer(
-            chats = chatUiState.chats,
-            defaultChat = chatUiState.selectedChat,
+            chats = (chatUiState as? ChatUiState.Chatting)?.chats,
+            defaultChat = (chatUiState as? ChatUiState.Chatting)?.selectedChat,
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
@@ -195,7 +201,7 @@ internal fun ChatScreen(
 @Composable
 private fun ChatContent(
     modifier: Modifier = Modifier,
-    chatUiState: ChattingUiState,
+    chatUiState: ChatUiState,
     onDrawerClicked: () -> Unit,
     onEvent: (ChatEvent) -> Unit
 ) {
@@ -215,30 +221,56 @@ private fun ChatContent(
             )
         },
         bottomBar = {
-            MessageInput(
-                onMessageSend = { onEvent(ChatEvent.OnMessageSend(it)) }
-            )
+            if (chatUiState is ChatUiState.Chatting) {
+                MessageInput(
+                    onMessageSend = { onEvent(ChatEvent.OnMessageSend(it)) }
+                )
+            }
         }
     ) { paddings ->
-        val chatListState = rememberLazyListState()
-        LaunchedEffect(key1 = chatUiState.chatHistory) {
-            chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
-        }
+        when (chatUiState) {
+            is ChatUiState.Chatting -> {
+                val chatListState = rememberLazyListState()
+                LaunchedEffect(key1 = chatUiState.chatHistory) {
+                    chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
+                }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddings)
-                .padding(horizontal = MaterialTheme.localDim.spaceMedium)
-                .padding(bottom = MaterialTheme.localDim.spaceSmall),
-            state = chatListState,
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceSmall)
-        ) {
-            items(chatUiState.chatHistory) { message ->
-                ChatMessageItemView(
-                    modifier = Modifier.fillMaxWidth(),
-                    message = message
-                )
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddings)
+                        .padding(horizontal = MaterialTheme.localDim.spaceMedium)
+                        .padding(bottom = MaterialTheme.localDim.spaceSmall),
+                    state = chatListState,
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceSmall)
+                ) {
+                    items(chatUiState.chatHistory) { message ->
+                        ChatMessageItemView(
+                            modifier = Modifier.fillMaxWidth(),
+                            message = message
+                        )
+                    }
+                }
+            }
+            ChatUiState.NoApiSetup -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddings),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Oops, Please config your environment first")
+                        TextButton(onClick = {
+                            onEvent(ChatEvent.OnSettingsClicked)
+                        }) {
+                            Text(
+                                text = stringResource(id = UiR.string.action_go_to_settings),
+                                color = MaterialTheme.colorScheme.scrim
+                            )
+                        }
+                    }
+                }
             }
         }
     }

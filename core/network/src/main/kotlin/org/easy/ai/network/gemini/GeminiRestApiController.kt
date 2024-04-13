@@ -18,8 +18,8 @@ import org.easy.ai.network.gemini.shared.TextPart
 class GeminiRestApiController internal constructor(
     private val httpClient: HttpClient
 ) : GeminiRestApi {
-    override suspend fun generateContent(apiKey: String, prompt: EasyPrompt): String {
-        val request = constructRequest(prompt)
+    override suspend fun generateContent(apiKey: String, vararg prompt: EasyPrompt): String {
+        val request = constructRequest(*prompt)
         val response = httpClient.post("models/gemini-pro:generateContent") {
             applyCommonConfiguration(apiKey, request)
         }.also {

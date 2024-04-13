@@ -45,7 +45,7 @@ class LocalChatRepository @Inject constructor(
     }
 
     override suspend fun getMessagesByChat(chatId: String): List<ChatMessageUiModel> {
-        return chatDao.getChatHistoryByChatId(chatId).messages.map(MessageEntity::asUiModel)
+        return messageDao.getChatHistoryByChatId(chatId).messages.map(MessageEntity::asUiModel)
     }
 }
 

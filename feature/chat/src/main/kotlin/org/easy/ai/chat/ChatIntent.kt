@@ -17,7 +17,7 @@ sealed interface ChatUiState {
         val chats: List<ChatUiModel> = emptyList(),
         val selectedChat: ChatUiModel? = null,
         val chatHistory: List<ChatMessageUiModel> = emptyList()
-    )
+    ): ChatUiState
 
     data object NoApiSetup: ChatUiState
 }

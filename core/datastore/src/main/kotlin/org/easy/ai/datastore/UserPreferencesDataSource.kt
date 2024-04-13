@@ -17,6 +17,14 @@ class UserPreferencesDataSource @Inject constructor(
         )
     }
 
+    suspend fun addApiKey(modelPlatform: ModelPlatform, apiKey: String) {
+        userPreferences.updateData {
+            it.copy {
+                apiKeys.put(modelPlatform.name, apiKey)
+            }
+        }
+    }
+
     suspend fun updateAiModel(modelName: String) {
         userPreferences.updateData {
             it.copy { this.modelName = modelName }

@@ -1,7 +1,5 @@
 package org.easy.ai.model
 
-import java.util.UUID
-
 enum class Participant {
     USER, MODEL, ERROR
 }
