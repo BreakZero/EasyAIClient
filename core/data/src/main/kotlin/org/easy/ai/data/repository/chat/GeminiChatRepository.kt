@@ -12,7 +12,9 @@ import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GeminiChatRepository @Inject internal constructor(
     private val chatDao: ChatDao,
     private val messageDao: MessageDao,
@@ -56,7 +58,11 @@ class GeminiChatRepository @Inject internal constructor(
         }
 
         val response = try {
-            geminiRestApi.generateContent(apiKey, *history.toTypedArray(), prompt).also { res ->
+            geminiRestApi.generateContent(
+                apiKey,
+                *history.filter { it.filterErrorType() }.toTypedArray(),
+                prompt
+            ).also { res ->
                 // only success will save into local
                 // saving message
                 messageDao.insert(
@@ -109,6 +115,13 @@ class GeminiChatRepository @Inject internal constructor(
                 throw InvalidStateException("Chat prompts should come from the 'user' role.")
             }
         }
+    }
+
+    private fun EasyPrompt.filterErrorType(): Boolean {
+        return this is EasyPrompt.TextPrompt && !this.role.equals(
+            Participant.ERROR.name,
+            ignoreCase = true
+        )
     }
 
     private fun attemptLock() {

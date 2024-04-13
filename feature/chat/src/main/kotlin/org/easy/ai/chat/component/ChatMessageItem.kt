@@ -3,10 +3,9 @@ package org.easy.ai.chat.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -31,57 +30,79 @@ internal fun ChatMessageItemView(
     message: ChatMessageUiModel
 ) {
     val isUser = message.participant == Participant.USER
-    Row(
-        modifier = modifier,
-        horizontalArrangement = if (!isUser) Arrangement.Start else Arrangement.End
-    ) {
-        if (!isUser) {
-            Icon(imageVector = Icons.Default.Computer, contentDescription = null)
-            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceSmall))
-        }
-        val background =
-            if (isUser) CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            else CardDefaults.cardColors()
-        val shape = if (isUser) RoundedCornerShape(
-            topEnd = MaterialTheme.localDim.default,
-            bottomEnd = MaterialTheme.localDim.spaceSmall,
-            bottomStart = MaterialTheme.localDim.spaceSmall,
-            topStart = MaterialTheme.localDim.spaceSmall
-        ) else RoundedCornerShape(
-            topEnd = MaterialTheme.localDim.spaceSmall,
-            bottomEnd = MaterialTheme.localDim.spaceSmall,
-            bottomStart = MaterialTheme.localDim.spaceSmall,
-            topStart = MaterialTheme.localDim.default
-        )
-        Row {
-            BoxWithConstraints {
-                Card(
-                    modifier = Modifier
-                        .widthIn(MaterialTheme.localDim.default, maxWidth * 0.9f)
-                        .padding(top = MaterialTheme.localDim.spaceSmall),
-                    colors = background,
-                    shape = shape
+    if (isUser) UserMessage(modifier = modifier, text = message.text, isPending = message.isPending)
+    else ModelMessage(modifier = modifier, text = message.text)
+}
+
+@Composable
+private fun ModelMessage(
+    modifier: Modifier = Modifier,
+    text: String,
+) {
+    val shape = RoundedCornerShape(
+        topEnd = MaterialTheme.localDim.spaceSmall,
+        bottomEnd = MaterialTheme.localDim.spaceSmall,
+        bottomStart = MaterialTheme.localDim.spaceSmall,
+        topStart = MaterialTheme.localDim.default
+    )
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+        Icon(imageVector = Icons.Default.Computer, contentDescription = null)
+        BoxWithConstraints {
+            Card(
+                modifier = Modifier
+                    .widthIn(MaterialTheme.localDim.default, maxWidth * 0.9f)
+                    .padding(top = MaterialTheme.localDim.spaceSmall),
+                shape = shape
+            ) {
+                SelectionContainer(
+                    modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
                 ) {
-                    if (message.isPending) {
+                    Text(text = text)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserMessage(
+    modifier: Modifier = Modifier,
+    text: String,
+    isPending: Boolean
+) {
+    val shape = RoundedCornerShape(
+        topEnd = MaterialTheme.localDim.default,
+        bottomEnd = MaterialTheme.localDim.spaceSmall,
+        bottomStart = MaterialTheme.localDim.spaceSmall,
+        topStart = MaterialTheme.localDim.spaceSmall
+    )
+    val background =
+        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        BoxWithConstraints {
+            Card(
+                modifier = Modifier
+                    .widthIn(MaterialTheme.localDim.default, maxWidth * 0.9f)
+                    .padding(top = MaterialTheme.localDim.spaceSmall),
+                colors = background,
+                shape = shape
+            ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceExtraSmall)) {
+                    if (isPending) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(MaterialTheme.localDim.spaceExtraSmall)
                                 .size(MaterialTheme.localDim.spaceLarge)
                         )
-                    } else {
-                        SelectionContainer(
-                            modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
-                        ) {
-                            Text(text = message.text)
-                        }
+                    }
+                    SelectionContainer(
+                        modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
+                    ) {
+                        Text(text = text)
                     }
                 }
             }
         }
-
-        if (isUser) {
-            Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceSmall))
-            Icon(imageVector = Icons.Default.Person, contentDescription = null)
-        }
+        Icon(imageVector = Icons.Default.Person, contentDescription = null)
     }
 }

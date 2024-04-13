@@ -43,7 +43,7 @@ class GeminiRestApiController internal constructor(
             contents = prompts.map { prompt ->
                 when (prompt) {
                     is EasyPrompt.TextPrompt -> Content(
-                        role = prompt.role,
+                        role = prompt.role.lowercase(),
                         listOf(TextPart(prompt.text))
                     )
                 }

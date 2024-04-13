@@ -4,11 +4,10 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -25,23 +24,28 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository,
+    userPreferencesRepository: UserPreferencesRepository,
     private val localChatRepository: LocalChatRepository,
     private val startChatUseCase: StartChatUseCase,
     private val messageSendingUseCase: MessageSendingUseCase
 ) : BaseViewModel<ChatEvent>() {
-    private val _chatHistory = MutableStateFlow<List<ChatMessageUiModel>>(emptyList())
     private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
+    private val _messageSize = MutableStateFlow(0)
+
+    private val _chatHistoryFlow = combine(_messageSize, _selectedChat) { _, chat ->
+        chat?.chatId?.let { localChatRepository.getMessagesByChat(it) } ?: emptyList()
+    }
+
+    private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
+    val pendingMessage = _pendingMessage.asStateFlow()
 
     val chatUiState = combine(
         userPreferencesRepository.hasApiKey(),
         localChatRepository.getAllChats(),
         _selectedChat,
-    ) { hasApiKey, chats, selectedChat ->
-        if (hasApiKey) {
-            val chatHistory = selectedChat?.let {
-                localChatRepository.getMessagesByChat(it.chatId)
-            } ?: emptyList()
+        _chatHistoryFlow
+    ) { isHasKeys, chats, selectedChat, chatHistory ->
+        if (isHasKeys) {
             ChatUiState.Chatting(
                 chats = chats,
                 selectedChat = selectedChat,
@@ -54,26 +58,31 @@ class ChatViewModel @Inject constructor(
 
     private fun sendMessage(userMessage: String) {
         val userPrompt = EasyPrompt.TextPrompt(role = "user", userMessage)
-        val sendingMessage = ChatMessageUiModel(text = userMessage, isPending = true)
-        _chatHistory.update {
-            it + sendingMessage
-        }
-        messageSendingUseCase(userPrompt).onEach { response ->
-            _chatHistory.update {
-                it + ChatMessageUiModel(text = response, participant = Participant.MODEL)
-            }
+        val uiMessageModel = ChatMessageUiModel(text = userMessage, participant = Participant.USER, isPending = true)
+        _pendingMessage.update { uiMessageModel }
+
+        messageSendingUseCase(userPrompt).onEach { _ ->
+            clearPendingMessage()
+            _messageSize.update { it + 1 }
         }.catch { error ->
-            _chatHistory.update {
-                it + ChatMessageUiModel(text = "response error", participant = Participant.ERROR)
-            }
+            clearPendingMessage()
+            _messageSize.update { it + 1 }
             error.printStackTrace()
         }.launchIn(viewModelScope)
     }
 
-    private fun onSelectedChat(chat: ChatUiModel?) {
-        startChatUseCase(chat?.chatId).onCompletion {
-            _selectedChat.update { chat }
+    private fun clearPendingMessage() {
+        _pendingMessage.update { null }
+    }
 
+    private fun onSelectedChat(chat: ChatUiModel?) {
+        startChatUseCase(chat?.chatId).onEach {
+            clearPendingMessage()
+            _selectedChat.update { chat }
+            val historySize = chat?.chatId?.let {
+                localChatRepository.getMessagesByChat(it).size
+            } ?: 0
+            _messageSize.update { historySize }
         }.catch {
             it.printStackTrace()
         }.launchIn(viewModelScope)
