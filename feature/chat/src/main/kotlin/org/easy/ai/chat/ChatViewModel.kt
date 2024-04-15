@@ -1,12 +1,16 @@
 package org.easy.ai.chat
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,7 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val localChatRepository: LocalChatRepository,
-    private val startNewChatUseCase: StartNewChatUseCase,
+    startNewChatUseCase: StartNewChatUseCase,
 ) : BaseViewModel<ChatEvent>() {
     private val _allLocalChatStream = localChatRepository.getAllChats()
     private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
@@ -64,37 +68,46 @@ class ChatViewModel @Inject constructor(
         _chatHistory.update { newHistory }
     }
 
-    private suspend fun sendMessage(userMessage: String) {
+    private fun sendMessage(userMessage: String) {
         val uiMessageModel = ChatMessageUiModel(
             text = userMessage, participant = Participant.USER, isPending = true
         )
         _pendingMessage.update { uiMessageModel }
-        if (_selectedChat.value != null) {
-            // save message
-        }
-        val response = chat.sendMessage(userMessage)
-        clearPendingMessage()
-        if (_selectedChat.value != null) {
-            // save message
-        }
-        _chatHistory.update {
-            it + uiMessageModel + ChatMessageUiModel(
-                text = response.message,
-                participant = response.participant
-            )
-        }
+
+        chat.sendMessageStream(userMessage)
+            .onEach { content ->
+                _chatHistory.update {
+                    it + uiMessageModel.copy(isPending = false) + ChatMessageUiModel(
+                        text = content.message,
+                        participant = content.participant
+                    )
+                }
+                _selectedChat.value?.let {
+                    localChatRepository.saveMessage(
+                        chatId = it.chatId,
+                        text = userMessage,
+                        participant = Participant.USER
+                    )
+                    localChatRepository.saveMessage(
+                        chatId = it.chatId,
+                        text = content.message,
+                        participant = content.participant
+                    )
+                }
+            }.catch {
+                Log.w("===", it.message.orEmpty())
+            }.onCompletion { resMessage ->
+                clearPendingMessage()
+            }.launchIn(viewModelScope)
     }
 
     private fun clearPendingMessage() {
         _pendingMessage.update { null }
     }
 
-
     fun onEvent(event: ChatEvent) {
         when (event) {
-            is ChatEvent.OnMessageSend -> viewModelScope.launch {
-                sendMessage(event.userMessage)
-            }
+            is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
 
             is ChatEvent.SelectedChat -> {
                 viewModelScope.launch {

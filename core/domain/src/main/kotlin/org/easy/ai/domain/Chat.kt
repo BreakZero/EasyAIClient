@@ -1,6 +1,10 @@
 package org.easy.ai.domain
 
 import com.google.ai.client.generativeai.type.InvalidStateException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import org.easy.ai.data.model.ChatMessageContent
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.model.Participant
@@ -40,6 +44,23 @@ class Chat internal constructor(
     suspend fun sendMessage(prompt: String): ChatMessageContent {
         val content = ChatMessageContent(message = prompt, participant = Participant.USER)
         return sendMessage(content)
+    }
+
+    fun sendMessageStream(prompt: ChatMessageContent): Flow<ChatMessageContent> {
+        attemptLock()
+        history.add(prompt)
+        return flow {
+            val response = chatPlugin.sendMessage(apiKey, history)
+            history.add(response)
+            emit(response)
+        }.onCompletion {
+            lock.release()
+        }
+    }
+
+    fun sendMessageStream(prompt: String): Flow<ChatMessageContent> {
+        val content = ChatMessageContent(message = prompt, participant = Participant.USER)
+        return sendMessageStream(content)
     }
 
     private fun attemptLock() {
