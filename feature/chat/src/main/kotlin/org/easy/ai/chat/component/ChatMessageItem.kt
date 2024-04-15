@@ -3,9 +3,11 @@ package org.easy.ai.chat.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
@@ -47,6 +49,7 @@ private fun ModelMessage(
     )
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
         Icon(imageVector = Icons.Default.Computer, contentDescription = null)
+        Spacer(modifier = Modifier.width(MaterialTheme.localDim.spaceExtraSmall))
         BoxWithConstraints {
             Card(
                 modifier = Modifier

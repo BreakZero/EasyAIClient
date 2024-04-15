@@ -27,36 +27,31 @@ class GeminiChatRepository @Inject internal constructor(
 
     override suspend fun startChat(chatId: String?) {
         attemptLock()
-        this.chatId = chatId
-        val history = chatId?.let {
-            messageDao.getChatHistoryByChatId(it).messages.map {
-                content(role = it.participant.name) { text(it.content) }
-            }
-        } ?: emptyList()
-
         this.history.clear()
-        this.history.addAll(history)
-
+        if (chatId == null) {
+            this.chatId = UUID.randomUUID().toString()
+            chatDao.insert(
+                ChatEntity(
+                    chatId = this.chatId!!,
+                    chatName = "Chat Name ${this.chatId}",
+                    model = ModelPlatform.GEMINI,
+                    createAt = System.currentTimeMillis()
+                )
+            )
+        } else {
+            this.chatId = chatId
+            messageDao.getChatHistoryByChatId(chatId).messages.map { message ->
+                content(role = message.participant.name.lowercase()) { text(message.content) }
+            }.also {
+                this.history.addAll(it)
+            }
+        }
         lock.release()
     }
 
     override suspend fun sendMessage(apiKey: String, message: String): String {
         val content = content(Participant.USER.name.lowercase()) { text(message) }
         attemptLock()
-        if (history.isEmpty() && chatId == null) {
-            // saving chat
-            val chatName = genChatName(message)
-            this.chatId = UUID.randomUUID().toString()
-            chatDao.insert(
-                ChatEntity(
-                    chatId = this.chatId!!,
-                    chatName = chatName,
-                    model = ModelPlatform.GEMINI,
-                    createAt = System.currentTimeMillis()
-                )
-            )
-        }
-
         val response = try {
             geminiRestApi.generateContent(
                 apiKey,

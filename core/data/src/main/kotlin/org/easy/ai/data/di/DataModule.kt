@@ -4,6 +4,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import org.easy.ai.data.aimodel.ChatGPTModelRepository
+import org.easy.ai.data.aimodel.GeminiModelRepository
+import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.data.repository.ChatRepository
 import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.data.repository.chat.AiModelChatRepository
@@ -35,4 +38,17 @@ abstract class DataModule {
     abstract fun bindChatGPTRepository(
         chatGPTChatRepository: ChatGPTChatRepository
     ): AiModelChatRepository
+
+
+    @Binds
+    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    abstract fun bindGeminiChatPlugin(
+        geminiModel: GeminiModelRepository
+    ): ChatPlugin
+
+    @Binds
+    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    abstract fun bindChatGPTChatPlugin(
+        chatGptModel: ChatGPTModelRepository
+    ): ChatPlugin
 }
