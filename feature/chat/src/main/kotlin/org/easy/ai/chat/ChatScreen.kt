@@ -71,7 +71,7 @@ private val DrawerWidth = 300.dp
 
 @Composable
 internal fun ChatRoute(
-    navigateToMultiModal: () -> Unit,
+    navigateToPlugins: () -> Unit,
     navigateToSettings: () -> Unit
 ) {
     val chatViewModel: ChatViewModel = hiltViewModel()
@@ -80,7 +80,7 @@ internal fun ChatRoute(
     ObserveAsEvents(flow = chatViewModel.navigationEvents, onEvent = { event ->
         when (event) {
             is ChatEvent.OnSettingsClicked -> navigateToSettings()
-            is ChatEvent.OnMultiModalClicked -> navigateToMultiModal()
+            is ChatEvent.OnPluginsClicked -> navigateToPlugins()
             else -> Unit
         }
     })
@@ -132,7 +132,7 @@ internal fun ChatScreen(
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
-            onPluginsClick = {},
+            onPluginsClick = { onEvent(ChatEvent.OnPluginsClicked) },
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
             }

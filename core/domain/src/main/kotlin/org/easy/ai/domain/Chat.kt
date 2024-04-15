@@ -10,7 +10,7 @@ import org.easy.ai.model.Participant
 import java.util.concurrent.Semaphore
 
 class Chat internal constructor(
-    val history: MutableList<ChatMessageContent> = ArrayList(),
+    private val history: MutableList<ChatMessageContent> = ArrayList(),
     private val apiKey: String,
     private val chatPlugin: ChatPlugin
 ) {

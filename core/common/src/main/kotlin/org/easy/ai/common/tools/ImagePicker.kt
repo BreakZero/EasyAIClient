@@ -1,7 +1,6 @@
 package org.easy.ai.common.tools
 
 import android.content.Context
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -16,7 +15,7 @@ class ImagePicker @Inject constructor(
     private lateinit var contentLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
     @Composable
-    fun registerPicker(onContentPicker: (List<ByteArray>) -> Unit) {
+    fun RegisterPicker(onContentPicker: (List<ByteArray>) -> Unit) {
         this.contentLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(9),
             onResult = { uris ->

@@ -22,7 +22,7 @@ sealed interface ChatEvent {
     data object OnSettingsClicked : ChatEvent
     data class OnMessageSend(val userMessage: String) : ChatEvent
     data class SelectedChat(val chat: ChatUiModel?) : ChatEvent
-    data object OnMultiModalClicked : ChatEvent
+    data object OnPluginsClicked : ChatEvent
 
     data object OnSaveChat: ChatEvent
 }

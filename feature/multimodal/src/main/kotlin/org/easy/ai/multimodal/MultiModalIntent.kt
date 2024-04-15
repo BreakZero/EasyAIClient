@@ -1,6 +1,5 @@
 package org.easy.ai.multimodal
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.Stable
 
 @Stable

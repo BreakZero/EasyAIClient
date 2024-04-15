@@ -84,7 +84,7 @@ internal class MultiModalViewModel @Inject constructor(
                     .asAndroidBitmap()
             }
             val content = content {
-                bitmaps?.forEach {
+                bitmaps?.map {
                     image(it)
                 }
                 text(promptInputContent.prompt)

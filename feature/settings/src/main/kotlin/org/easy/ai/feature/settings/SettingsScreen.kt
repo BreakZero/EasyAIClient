@@ -1,6 +1,7 @@
 package org.easy.ai.feature.settings
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -122,7 +123,7 @@ internal fun SettingsScreen(
         }
         if (settingsUiState.isApiKeyEditorShowed) {
             ApiKeyEditorDialog(
-                apiKey = settingsUiState.apiKey,
+                initialKey = settingsUiState.apiKey,
                 applyApiKeyChanged = {
                     onEvent(SettingsEvent.SavedApiKey(it))
                 },
