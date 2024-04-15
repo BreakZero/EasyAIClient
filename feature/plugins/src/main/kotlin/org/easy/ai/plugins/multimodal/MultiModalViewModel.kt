@@ -1,22 +1,24 @@
 package org.easy.ai.plugins.multimodal
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import org.easy.ai.domain.MultiModalGeneratingUseCase
 import javax.inject.Inject
 
 @OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
-internal class MultiModalViewModel @Inject constructor(): ViewModel() {
+internal class MultiModalViewModel @Inject constructor(
+    private val multiModalGeneratingUseCase: MultiModalGeneratingUseCase
+) : ViewModel() {
     companion object {
         private const val CONTENT_LIMIT_SIZE = 4 * 1024 * 1024
     }
@@ -53,17 +55,16 @@ internal class MultiModalViewModel @Inject constructor(): ViewModel() {
         val error = validatePrompt()
         if (error != null) {
             // error handling
+            _uiState.update { it.copy(error = error) }
             return
         }
+        _uiState.update { it.copy(error = null) }
         val images = _uiState.value.images
-        viewModelScope.launch {
-            val bitmaps = images.map {
-                BitmapFactory.decodeByteArray(it,0,it.size).asImageBitmap().asAndroidBitmap()
-            }
-
-            // generate request
-
-            bitmaps.forEach { it.recycle() }
-        }
+        multiModalGeneratingUseCase(promptTextField.text.toString(), images)
+            .onEach {
+                println("==== $it")
+            }.catch {
+                it.printStackTrace()
+            }.launchIn(viewModelScope)
     }
 }
