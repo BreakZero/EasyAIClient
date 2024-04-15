@@ -78,6 +78,6 @@ dependencies {
 
     implementation(projects.core.systemUi)
     implementation(projects.feature.chat)
-    implementation(projects.feature.multimodal)
     implementation(projects.feature.settings)
+    implementation(projects.feature.plugins)
 }

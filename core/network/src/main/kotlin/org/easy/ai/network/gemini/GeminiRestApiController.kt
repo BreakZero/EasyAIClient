@@ -17,6 +17,7 @@ import org.easy.ai.network.gemini.internal.GRpcErrorResponse
 import org.easy.ai.network.gemini.internal.GenerateContentRequest
 import org.easy.ai.network.gemini.internal.GenerateContentResponse
 import org.easy.ai.network.gemini.internal.Request
+import org.easy.ai.network.gemini.type.Content
 import org.easy.ai.network.gemini.type.FinishReason
 import org.easy.ai.network.gemini.type.PromptBlockedException
 import org.easy.ai.network.gemini.type.ResponseStoppedException
@@ -33,6 +34,20 @@ class GeminiRestApiController internal constructor(
     ): org.easy.ai.network.gemini.type.GenerateContentResponse {
         val request = constructRequest(*content)
         val response = httpClient.post("models/gemini-pro:generateContent") {
+            applyCommonConfiguration(apiKey, request)
+        }.also {
+            validateResponse(it)
+        }.body<GenerateContentResponse>()
+
+        return response.toPublic().validate()
+    }
+
+    override suspend fun generateContentByVision(
+        apiKey: String,
+        vararg content: Content
+    ): org.easy.ai.network.gemini.type.GenerateContentResponse {
+        val request = constructRequest(*content)
+        val response = httpClient.post("models/gemini-pro-vision:generateContent") {
             applyCommonConfiguration(apiKey, request)
         }.also {
             validateResponse(it)

@@ -1,95 +1,121 @@
 package org.easy.ai.chat
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
+import org.easy.ai.data.model.ChatMessageContent
 import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.repository.LocalChatRepository
-import org.easy.ai.data.repository.UserPreferencesRepository
-import org.easy.ai.domain.MessageSendingUseCase
-import org.easy.ai.domain.StartChatUseCase
+import org.easy.ai.domain.Chat
+import org.easy.ai.domain.StartNewChatUseCase
 import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.Participant
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    userPreferencesRepository: UserPreferencesRepository,
     private val localChatRepository: LocalChatRepository,
-    private val startChatUseCase: StartChatUseCase,
-    private val messageSendingUseCase: MessageSendingUseCase
+    startNewChatUseCase: StartNewChatUseCase,
 ) : BaseViewModel<ChatEvent>() {
-    private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
-    private val _messageSize = MutableStateFlow(0)
-
-    private val _chatHistoryFlow = combine(_messageSize, _selectedChat) { _, chat ->
-        chat?.chatId?.let { localChatRepository.getMessagesByChat(it) } ?: emptyList()
-    }
-
+    private val _allLocalChatStream = localChatRepository.getAllChats()
     private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
-    val pendingMessage = _pendingMessage.asStateFlow()
+    private val _chatHistory = MutableStateFlow(emptyList<ChatMessageUiModel>())
+    private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
 
-    val chatUiState = combine(
-        userPreferencesRepository.hasApiKey(),
-        localChatRepository.getAllChats(),
-        _selectedChat,
-        _chatHistoryFlow
-    ) { isHasKeys, chats, selectedChat, chatHistory ->
-        if (isHasKeys) {
-            ChatUiState.Chatting(
-                chats = chats,
-                selectedChat = selectedChat,
-                chatHistory = chatHistory
-            )
-        } else {
-            ChatUiState.NoApiSetup
-        }
+    private lateinit var chat: Chat
+
+    val chatUiState = startNewChatUseCase().map {
+        this.chat = it
+        ChatUiState.Initialed as ChatUiState
+    }.catch {
+        emit(ChatUiState.NoApiSetup)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChatUiState.NoApiSetup)
 
+    val chatContentUiState = combine(
+        _allLocalChatStream,
+        _pendingMessage,
+        _chatHistory,
+        _selectedChat
+    ) { chats, pendingMessage, history, selectedChat ->
+        ChattingUiState(
+            chats = chats,
+            pendingMessage = pendingMessage,
+            chatHistory = history,
+            selectedChat = selectedChat
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChattingUiState())
+
+    private suspend fun onChatSelected(uiChat: ChatUiModel?) {
+        val newHistory = uiChat?.let {
+            localChatRepository.getMessagesByChat(it.chatId)
+        } ?: emptyList()
+        chat.release(newHistory.map {
+            ChatMessageContent(message = it.text, participant = it.participant)
+        })
+        _selectedChat.update { uiChat }
+        _chatHistory.update { newHistory }
+    }
+
     private fun sendMessage(userMessage: String) {
-        val uiMessageModel = ChatMessageUiModel(text = userMessage, participant = Participant.USER, isPending = true)
+        val uiMessageModel = ChatMessageUiModel(
+            text = userMessage, participant = Participant.USER, isPending = true
+        )
         _pendingMessage.update { uiMessageModel }
 
-        messageSendingUseCase(userMessage).onEach { _ ->
-            clearPendingMessage()
-            _messageSize.update { it + 1 }
-        }.catch { error ->
-            clearPendingMessage()
-            _messageSize.update { it + 1 }
-            error.printStackTrace()
-        }.launchIn(viewModelScope)
+        chat.sendMessageStream(userMessage)
+            .onEach { content ->
+                _chatHistory.update {
+                    it + uiMessageModel.copy(isPending = false) + ChatMessageUiModel(
+                        text = content.message,
+                        participant = content.participant
+                    )
+                }
+                _selectedChat.value?.let {
+                    localChatRepository.saveMessage(
+                        chatId = it.chatId,
+                        text = userMessage,
+                        participant = Participant.USER
+                    )
+                    localChatRepository.saveMessage(
+                        chatId = it.chatId,
+                        text = content.message,
+                        participant = content.participant
+                    )
+                }
+            }.catch {
+                Log.w("===", it.message.orEmpty())
+            }.onCompletion { resMessage ->
+                clearPendingMessage()
+            }.launchIn(viewModelScope)
     }
 
     private fun clearPendingMessage() {
         _pendingMessage.update { null }
     }
 
-    private fun onSelectedChat(chat: ChatUiModel?) {
-        startChatUseCase(chat?.chatId).onEach {
-            clearPendingMessage()
-            _selectedChat.update { chat }
-            val historySize = chat?.chatId?.let {
-                localChatRepository.getMessagesByChat(it).size
-            } ?: 0
-            _messageSize.update { historySize }
-        }.catch {
-            it.printStackTrace()
-        }.launchIn(viewModelScope)
-    }
-
     fun onEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
-            is ChatEvent.SelectedChat -> onSelectedChat(event.chat)
+
+            is ChatEvent.SelectedChat -> {
+                viewModelScope.launch {
+                    onChatSelected(event.chat)
+                }
+            }
+
+            is ChatEvent.OnSaveChat -> {}
             else -> dispatchNavigationEvent(event)
         }
     }

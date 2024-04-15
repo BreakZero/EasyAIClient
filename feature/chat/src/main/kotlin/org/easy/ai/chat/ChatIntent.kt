@@ -8,16 +8,12 @@ import org.easy.ai.model.ChatMessageUiModel
 data class ChattingUiState(
     val chats: List<ChatUiModel> = emptyList(),
     val selectedChat: ChatUiModel? = null,
+    val pendingMessage: ChatMessageUiModel? = null,
     val chatHistory: List<ChatMessageUiModel> = emptyList()
 )
 
 sealed interface ChatUiState {
-    @Stable
-    data class Chatting(
-        val chats: List<ChatUiModel> = emptyList(),
-        val selectedChat: ChatUiModel? = null,
-        val chatHistory: List<ChatMessageUiModel> = emptyList()
-    ): ChatUiState
+    data object Initialed: ChatUiState
 
     data object NoApiSetup: ChatUiState
 }
@@ -26,5 +22,7 @@ sealed interface ChatEvent {
     data object OnSettingsClicked : ChatEvent
     data class OnMessageSend(val userMessage: String) : ChatEvent
     data class SelectedChat(val chat: ChatUiModel?) : ChatEvent
-    data object OnMultiModalClicked : ChatEvent
+    data object OnPluginsClicked : ChatEvent
+
+    data object OnSaveChat: ChatEvent
 }

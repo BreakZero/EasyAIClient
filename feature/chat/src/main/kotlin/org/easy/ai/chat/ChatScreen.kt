@@ -24,18 +24,19 @@ import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.clearText
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,7 +64,6 @@ import org.easy.ai.chat.component.ChatDrawer
 import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
-import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.system.ui.localDim
 import org.easy.ai.system.ui.R as UiR
 
@@ -71,22 +71,22 @@ private val DrawerWidth = 300.dp
 
 @Composable
 internal fun ChatRoute(
-    navigateToMultiModal: () -> Unit,
+    navigateToPlugins: () -> Unit,
     navigateToSettings: () -> Unit
 ) {
     val chatViewModel: ChatViewModel = hiltViewModel()
     val chatUiState by chatViewModel.chatUiState.collectAsStateWithLifecycle()
-    val pendingMessage by chatViewModel.pendingMessage.collectAsStateWithLifecycle()
+    val contentUiState by chatViewModel.chatContentUiState.collectAsStateWithLifecycle()
     ObserveAsEvents(flow = chatViewModel.navigationEvents, onEvent = { event ->
         when (event) {
             is ChatEvent.OnSettingsClicked -> navigateToSettings()
-            is ChatEvent.OnMultiModalClicked -> navigateToMultiModal()
+            is ChatEvent.OnPluginsClicked -> navigateToPlugins()
             else -> Unit
         }
     })
     ChatScreen(
         chatUiState = chatUiState,
-        pendingMessageUiModel = pendingMessage,
+        contentUiState = contentUiState,
         onEvent = chatViewModel::onEvent
     )
 }
@@ -94,7 +94,7 @@ internal fun ChatRoute(
 @Composable
 internal fun ChatScreen(
     chatUiState: ChatUiState,
-    pendingMessageUiModel: ChatMessageUiModel?,
+    contentUiState: ChattingUiState,
     onEvent: (ChatEvent) -> Unit
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -127,12 +127,12 @@ internal fun ChatScreen(
             }
         }
         ChatDrawer(
-            chats = (chatUiState as? ChatUiState.Chatting)?.chats,
-            defaultChat = (chatUiState as? ChatUiState.Chatting)?.selectedChat,
+            chats = contentUiState.chats,
+            defaultChat = contentUiState.selectedChat,
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
-            onPluginsClick = {},
+            onPluginsClick = { onEvent(ChatEvent.OnPluginsClicked) },
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)
             }
@@ -204,8 +204,8 @@ internal fun ChatScreen(
                     }
                 ),
             chatUiState = chatUiState,
-            pendingMessageUiModel = pendingMessageUiModel,
             onDrawerClicked = ::toggleDrawerState,
+            contentUiState = contentUiState,
             onEvent = onEvent
         )
     }
@@ -216,7 +216,7 @@ internal fun ChatScreen(
 private fun ChatContent(
     modifier: Modifier = Modifier,
     chatUiState: ChatUiState,
-    pendingMessageUiModel: ChatMessageUiModel? = null,
+    contentUiState: ChattingUiState,
     onDrawerClicked: () -> Unit,
     onEvent: (ChatEvent) -> Unit
 ) {
@@ -232,11 +232,20 @@ private fun ChatContent(
                     ) {
                         Icon(imageVector = Icons.Default.Sort, contentDescription = null)
                     }
+                },
+                actions = {
+                    if (contentUiState.selectedChat == null) {
+                        IconButton(onClick = {
+                            onEvent(ChatEvent.OnSaveChat)
+                        }) {
+                            Icon(imageVector = Icons.Default.Save, contentDescription = null)
+                        }
+                    }
                 }
             )
         },
         bottomBar = {
-            if (chatUiState is ChatUiState.Chatting) {
+            if (chatUiState is ChatUiState.Initialed) {
                 MessageInput(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -247,9 +256,9 @@ private fun ChatContent(
         }
     ) { paddings ->
         when (chatUiState) {
-            is ChatUiState.Chatting -> {
+            is ChatUiState.Initialed -> {
                 val chatListState = rememberLazyListState()
-                LaunchedEffect(key1 = chatUiState.chatHistory) {
+                LaunchedEffect(key1 = contentUiState.chatHistory) {
                     chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
                 }
 
@@ -262,13 +271,13 @@ private fun ChatContent(
                     state = chatListState,
                     verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceSmall)
                 ) {
-                    items(chatUiState.chatHistory) { message ->
+                    items(contentUiState.chatHistory) { message ->
                         ChatMessageItemView(
                             modifier = Modifier.fillMaxWidth(),
                             message = message
                         )
                     }
-                    pendingMessageUiModel?.let {
+                    contentUiState.pendingMessage?.let {
                         item {
                             ChatMessageItemView(message = it)
                         }
@@ -309,12 +318,12 @@ internal fun MessageInput(
     val textFieldState = rememberTextFieldState()
     Row(
         modifier = modifier
+            .fillMaxWidth()
             .padding(start = MaterialTheme.localDim.spaceSmall),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         BasicTextField2(
             modifier = Modifier
-                .fillMaxWidth()
                 .weight(1.0f),
             state = textFieldState,
             decorator = @Composable {
@@ -325,7 +334,16 @@ internal fun MessageInput(
                     enabled = true,
                     singleLine = false,
                     visualTransformation = VisualTransformation.None,
-                    interactionSource = interactionSource
+                    interactionSource = interactionSource,
+                    container = {
+                        OutlinedTextFieldDefaults.ContainerBox(
+                            enabled = true,
+                            isError = false,
+                            interactionSource = interactionSource,
+                            colors = TextFieldDefaults.colors(),
+                            shape = RoundedCornerShape(26.dp)
+                        )
+                    }
                 )
             }
         )
