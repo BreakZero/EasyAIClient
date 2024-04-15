@@ -25,9 +25,12 @@ fun NavGraphBuilder.attachPluginRoutes(
 ) {
     navigation(route = pluginEntryRoute, startDestination = pluginListRoute) {
         composable(pluginListRoute) {
-            PluginListRoute {
-                navController.navigateToMultiModal()
-            }
+            PluginListRoute(
+                popBack = navController::navigateUp,
+                enterPlugin = {
+                    navController.navigateToMultiModal()
+                }
+            )
         }
         composable(multiModalRoute) {
             MultiModalRoute(popBack = navController::navigateUp)
