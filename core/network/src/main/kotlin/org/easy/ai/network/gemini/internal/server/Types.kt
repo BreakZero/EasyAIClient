@@ -1,10 +1,10 @@
-package org.easy.ai.network.gemini.server
+package org.easy.ai.network.gemini.internal.server
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.easy.ai.network.gemini.shared.Content
-import org.easy.ai.network.gemini.shared.HarmCategory
+import org.easy.ai.network.gemini.internal.shared.Content
+import org.easy.ai.network.gemini.internal.shared.HarmCategory
 import org.easy.ai.network.gemini.util.FirstOrdinalSerializer
 
 internal object BlockReasonSerializer :

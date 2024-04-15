@@ -3,7 +3,6 @@ package org.easy.ai.domain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.datastore.UserPreferencesDataSource
-import org.easy.ai.model.EasyPrompt
 import org.easy.ai.model.ModelPlatform
 import javax.inject.Inject
 
@@ -11,12 +10,12 @@ class MessageSendingUseCase @Inject internal constructor(
     private val userPreferencesDataSource: UserPreferencesDataSource,
     private val exactlyChatModelUseCase: GetExactlyChatModelUseCase
 ) {
-    operator fun invoke(prompt: EasyPrompt, modelPlatform: ModelPlatform? = null): Flow<String> {
+    operator fun invoke(message: String, modelPlatform: ModelPlatform? = null): Flow<String> {
         return userPreferencesDataSource.userData.map {
             val (model, apiKey) = getApiKeyByPriority(modelPlatform, it.apiKeys)
             if (apiKey.isNullOrBlank()) throw IllegalStateException("api key not set yet.")
             val chatRepository = exactlyChatModelUseCase(model)
-            chatRepository.sendMessage(apiKey, prompt)
+            chatRepository.sendMessage(apiKey, message)
         }
     }
 

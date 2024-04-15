@@ -6,10 +6,11 @@ import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
-import org.easy.ai.model.EasyPrompt
 import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
+import org.easy.ai.network.gemini.type.Content
+import org.easy.ai.network.gemini.type.content
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,7 +22,7 @@ class GeminiChatRepository @Inject internal constructor(
     private val geminiRestApi: GeminiRestApi
 ) : AiModelChatRepository {
     private var lock = Semaphore(1)
-    private val history: MutableList<EasyPrompt> = ArrayList()
+    private val history: MutableList<Content> = ArrayList()
     private var chatId: String? = null
 
     override suspend fun startChat(chatId: String?) {
@@ -29,7 +30,7 @@ class GeminiChatRepository @Inject internal constructor(
         this.chatId = chatId
         val history = chatId?.let {
             messageDao.getChatHistoryByChatId(it).messages.map {
-                EasyPrompt.TextPrompt(role = it.participant.name, it.content)
+                content(role = it.participant.name) { text(it.content) }
             }
         } ?: emptyList()
 
@@ -39,13 +40,12 @@ class GeminiChatRepository @Inject internal constructor(
         lock.release()
     }
 
-    override suspend fun sendMessage(apiKey: String, prompt: EasyPrompt): String {
-        prompt.assertComesFromUser()
+    override suspend fun sendMessage(apiKey: String, message: String): String {
+        val content = content(Participant.USER.name.lowercase()) { text(message) }
         attemptLock()
-        val text = (prompt as EasyPrompt.TextPrompt).text
         if (history.isEmpty() && chatId == null) {
             // saving chat
-            val chatName = genChatName(text)
+            val chatName = genChatName(message)
             this.chatId = UUID.randomUUID().toString()
             chatDao.insert(
                 ChatEntity(
@@ -61,14 +61,14 @@ class GeminiChatRepository @Inject internal constructor(
             geminiRestApi.generateContent(
                 apiKey,
                 *history.filter { it.filterErrorType() }.toTypedArray(),
-                prompt
+                content
             ).also { res ->
                 // only success will save into local
                 // saving message
                 messageDao.insert(
                     MessageEntity(
                         participant = Participant.USER,
-                        content = text,
+                        content = message,
                         chatId = chatId!!,
                         timestamp = System.currentTimeMillis()
                     )
@@ -77,7 +77,7 @@ class GeminiChatRepository @Inject internal constructor(
                 messageDao.insert(
                     MessageEntity(
                         participant = Participant.MODEL,
-                        content = res,
+                        content = res.text.orEmpty(),
                         chatId = chatId!!,
                         timestamp = System.currentTimeMillis()
                     )
@@ -96,7 +96,7 @@ class GeminiChatRepository @Inject internal constructor(
         } finally {
             lock.release()
         }
-        return response
+        return response.text.orEmpty()
     }
 
     private fun genChatName(message: String, defaultLength: Int = 12): String {
@@ -107,18 +107,8 @@ class GeminiChatRepository @Inject internal constructor(
         }
     }
 
-    private fun EasyPrompt.assertComesFromUser() {
-        if (this !is EasyPrompt.TextPrompt) {
-            throw InvalidStateException("Chat prompts should come from the 'user' role.")
-        } else {
-            if (this.role != "user") {
-                throw InvalidStateException("Chat prompts should come from the 'user' role.")
-            }
-        }
-    }
-
-    private fun EasyPrompt.filterErrorType(): Boolean {
-        return this is EasyPrompt.TextPrompt && !this.role.equals(
+    private fun Content.filterErrorType(): Boolean {
+        return !this.role.equals(
             Participant.ERROR.name,
             ignoreCase = true
         )

@@ -1,4 +1,4 @@
-package org.easy.ai.network.gemini.client
+package org.easy.ai.network.gemini.internal.client
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

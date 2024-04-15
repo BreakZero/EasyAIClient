@@ -1,7 +1,8 @@
 package org.easy.ai.network.gemini
 
-import org.easy.ai.model.EasyPrompt
+import org.easy.ai.network.gemini.type.Content
+import org.easy.ai.network.gemini.type.GenerateContentResponse
 
 interface GeminiRestApi {
-    suspend fun generateContent(apiKey: String, vararg prompt: EasyPrompt): String
+    suspend fun generateContent(apiKey: String, vararg content: Content): GenerateContentResponse
 }

@@ -10,24 +10,35 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
-import org.easy.ai.model.EasyPrompt
+import kotlinx.serialization.SerializationException
 import org.easy.ai.network.di.JSON
-import org.easy.ai.network.gemini.shared.Content
-import org.easy.ai.network.gemini.shared.TextPart
+import org.easy.ai.network.gemini.internal.CountTokensRequest
+import org.easy.ai.network.gemini.internal.GRpcErrorResponse
+import org.easy.ai.network.gemini.internal.GenerateContentRequest
+import org.easy.ai.network.gemini.internal.GenerateContentResponse
+import org.easy.ai.network.gemini.internal.Request
+import org.easy.ai.network.gemini.type.FinishReason
+import org.easy.ai.network.gemini.type.PromptBlockedException
+import org.easy.ai.network.gemini.type.ResponseStoppedException
+import org.easy.ai.network.gemini.util.toInternal
+import org.easy.ai.network.gemini.util.toPublic
+import org.easy.ai.network.gemini.type.Content as PublicContent
 
 class GeminiRestApiController internal constructor(
     private val httpClient: HttpClient
 ) : GeminiRestApi {
-    override suspend fun generateContent(apiKey: String, vararg prompt: EasyPrompt): String {
-        val request = constructRequest(*prompt)
+    override suspend fun generateContent(
+        apiKey: String,
+        vararg content: PublicContent
+    ): org.easy.ai.network.gemini.type.GenerateContentResponse {
+        val request = constructRequest(*content)
         val response = httpClient.post("models/gemini-pro:generateContent") {
             applyCommonConfiguration(apiKey, request)
         }.also {
             validateResponse(it)
         }.body<GenerateContentResponse>()
 
-        return response.candidates?.firstOrNull()?.content?.parts?.filterIsInstance<TextPart>()
-            ?.joinToString(", ") { it.text } ?: ""
+        return response.toPublic().validate()
     }
 
     private fun HttpRequestBuilder.applyCommonConfiguration(apiKey: String, request: Request) {
@@ -38,16 +49,9 @@ class GeminiRestApiController internal constructor(
         header("x-goog-api-key", apiKey)
     }
 
-    private fun constructRequest(vararg prompts: EasyPrompt): GenerateContentRequest {
+    private fun constructRequest(vararg content: PublicContent): GenerateContentRequest {
         return GenerateContentRequest(
-            contents = prompts.map { prompt ->
-                when (prompt) {
-                    is EasyPrompt.TextPrompt -> Content(
-                        role = prompt.role.lowercase(),
-                        listOf(TextPart(prompt.text))
-                    )
-                }
-            }
+            contents = content.map(PublicContent::toInternal)
         )
     }
 }
@@ -64,4 +68,15 @@ private suspend fun validateResponse(response: HttpResponse) {
 
         throw NetworkErrorException(message)
     }
+}
+
+private fun org.easy.ai.network.gemini.type.GenerateContentResponse.validate() = apply {
+    if (candidates.isEmpty() && promptFeedback == null) {
+        throw SerializationException("Error deserializing response, found no valid fields")
+    }
+    promptFeedback?.blockReason?.let { throw PromptBlockedException(this) }
+    candidates
+        .mapNotNull { it.finishReason }
+        .firstOrNull { it != FinishReason.STOP }
+        ?.let { throw ResponseStoppedException(this) }
 }

@@ -1,10 +1,10 @@
-package org.easy.ai.network.gemini
+package org.easy.ai.network.gemini.internal
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.easy.ai.network.gemini.shared.Content
-import org.easy.ai.network.gemini.client.GenerationConfig
-import org.easy.ai.network.gemini.shared.SafetySetting
+import org.easy.ai.network.gemini.internal.shared.Content
+import org.easy.ai.network.gemini.internal.client.GenerationConfig
+import org.easy.ai.network.gemini.internal.shared.SafetySetting
 
 internal sealed interface Request
 

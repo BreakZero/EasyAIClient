@@ -1,4 +1,4 @@
-package org.easy.ai.network.gemini.shared
+package org.easy.ai.network.gemini.internal.shared
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.KSerializer

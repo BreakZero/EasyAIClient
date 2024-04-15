@@ -18,7 +18,6 @@ import org.easy.ai.data.repository.UserPreferencesRepository
 import org.easy.ai.domain.MessageSendingUseCase
 import org.easy.ai.domain.StartChatUseCase
 import org.easy.ai.model.ChatMessageUiModel
-import org.easy.ai.model.EasyPrompt
 import org.easy.ai.model.Participant
 import javax.inject.Inject
 
@@ -57,11 +56,10 @@ class ChatViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChatUiState.NoApiSetup)
 
     private fun sendMessage(userMessage: String) {
-        val userPrompt = EasyPrompt.TextPrompt(role = "user", userMessage)
         val uiMessageModel = ChatMessageUiModel(text = userMessage, participant = Participant.USER, isPending = true)
         _pendingMessage.update { uiMessageModel }
 
-        messageSendingUseCase(userPrompt).onEach { _ ->
+        messageSendingUseCase(userMessage).onEach { _ ->
             clearPendingMessage()
             _messageSize.update { it + 1 }
         }.catch { error ->
