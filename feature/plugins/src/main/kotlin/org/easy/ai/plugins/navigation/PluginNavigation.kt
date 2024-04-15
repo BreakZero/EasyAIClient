@@ -30,7 +30,7 @@ fun NavGraphBuilder.attachPluginRoutes(
             }
         }
         composable(multiModalRoute) {
-            MultiModalRoute()
+            MultiModalRoute(popBack = navController::navigateUp)
         }
     }
 }

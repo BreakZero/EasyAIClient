@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -66,7 +67,9 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun MultiModalRoute() {
+internal fun MultiModalRoute(
+    popBack: () -> Unit
+) {
     val multiModalViewModel: MultiModalViewModel = hiltViewModel()
     val imagePicker = ImagePicker(LocalContext.current)
     imagePicker.RegisterPicker(multiModalViewModel::onImageChanged)
@@ -76,7 +79,7 @@ internal fun MultiModalRoute() {
         prompt = multiModalViewModel.promptTextField,
         uiState = uiState,
         onImagePicked = imagePicker::startImagePicker,
-        popBack = {},
+        popBack = popBack,
         submit = multiModalViewModel::submitPrompt
     )
 }
@@ -109,9 +112,10 @@ private fun MultiModalScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.localDim.spaceMedium),
-                onClick = submit
+                onClick = submit,
+                enabled = !uiState.inProgress
             ) {
-                Text(text = "Submit Prompt")
+                Text(text = if (uiState.inProgress) "Generating..." else "Submit Prompt")
             }
         }
     ) { paddingValues ->
@@ -165,6 +169,17 @@ private fun MultiModalScreen(
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = MaterialTheme.localDim.spaceSmall)
             )
+
+            uiState.error?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.errorContainer
+                )
+            }
+            uiState.generateResult?.let {
+                Text(style = MaterialTheme.typography.titleMedium, text = it)
+            }
         }
     }
 }

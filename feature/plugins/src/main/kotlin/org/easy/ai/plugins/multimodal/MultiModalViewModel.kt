@@ -58,13 +58,18 @@ internal class MultiModalViewModel @Inject constructor(
             _uiState.update { it.copy(error = error) }
             return
         }
-        _uiState.update { it.copy(error = null) }
+        _uiState.update { it.copy(inProgress = true, generateResult = null) }
         val images = _uiState.value.images
         multiModalGeneratingUseCase(promptTextField.text.toString(), images)
-            .onEach {
-                println("==== $it")
-            }.catch {
-                it.printStackTrace()
+            .onEach { result ->
+                _uiState.update { it.copy(inProgress = false, generateResult = result) }
+            }.catch { error ->
+                _uiState.update {
+                    it.copy(
+                        inProgress = false,
+                        error = error.message ?: "unknown generating error..."
+                    )
+                }
             }.launchIn(viewModelScope)
     }
 }
