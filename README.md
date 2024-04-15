@@ -16,7 +16,7 @@
 ### 简易的界面
 界面参考ChatGPT iOS客户端
 
-|                                                                                                     |                                                                                                       |                                                                                                         |
-|:---------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
-| ![Chat](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240219_093059.png) | ![Drawer](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240219_093128.png) | ![Settings](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240219_093228.png) |
-| ![Chat](https://github.com/BreakZero/EasyAIClient/blob/main/screens/Screenshot_20240219_093343.png) |                                                                                                       |                                                                                                         |
+|                                                                             |                                                                             |                                                                             |
+|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| ![Screenshot_20240415_224658.png](screens%2FScreenshot_20240415_224658.png) | ![Screenshot_20240415_224727.png](screens%2FScreenshot_20240415_224727.png) | ![Screenshot_20240415_224957.png](screens%2FScreenshot_20240415_224957.png) |
+| ![Screenshot_20240415_225032.png](screens%2FScreenshot_20240415_225032.png) | ![Screenshot_20240415_225042.png](screens%2FScreenshot_20240415_225042.png) | ![Screenshot_20240415_225140.png](screens%2FScreenshot_20240415_225140.png) |

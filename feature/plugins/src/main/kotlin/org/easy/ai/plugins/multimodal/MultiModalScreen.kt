@@ -97,7 +97,7 @@ private fun MultiModalScreen(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            TopAppBar(title = { /*TODO*/ },
+            TopAppBar(title = { Text("Gemini Multi Modal") },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
                         Icon(

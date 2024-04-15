@@ -33,7 +33,7 @@ internal fun PluginListRoute(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { /*TODO*/ },
+            TopAppBar(title = { Text(text = "Supported Plugins") },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
                         Icon(
@@ -46,11 +46,7 @@ internal fun PluginListRoute(
     ) { paddingValues ->
         val plugins = remember {
             mutableStateListOf(
-                "Multi Modal",
-                "Multi Modal1",
-                "Multi Modal2",
-                "Multi Modal3",
-                "Multi Modal5"
+                "Gemini\nMulti Modal"
             )
         }
         LazyVerticalGrid(
