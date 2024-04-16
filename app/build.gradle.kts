@@ -67,7 +67,6 @@ fun keyStoreProperties(): Properties {
 }
 
 dependencies {
-    implementation(libs.generativeai)
 
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.compose.material3.window.size)

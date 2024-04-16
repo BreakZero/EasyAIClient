@@ -1,6 +1,5 @@
 package org.easy.ai.domain
 
-import com.google.ai.client.generativeai.type.InvalidStateException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
@@ -69,7 +68,7 @@ class Chat internal constructor(
 
     private fun attemptLock() {
         if (!lock.tryAcquire()) {
-            throw InvalidStateException(
+            throw IllegalStateException(
                 "This chat instance currently has an ongoing request, please wait for it to complete " +
                         "before sending more messages"
             )

@@ -18,7 +18,6 @@ dependencies {
     implementation(projects.core.data)
     implementation(projects.core.datastore)
 
-    implementation(libs.generativeai)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

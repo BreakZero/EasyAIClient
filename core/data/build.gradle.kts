@@ -19,8 +19,6 @@ dependencies {
     implementation(projects.core.datastore)
     implementation(projects.core.model)
 
-    implementation(libs.generativeai)
-
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)
     testImplementation(libs.kotlinx.coroutines.test)

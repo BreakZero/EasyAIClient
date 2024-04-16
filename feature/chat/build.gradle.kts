@@ -15,6 +15,5 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.systemUi)
 
-    implementation(libs.generativeai)
     implementation(libs.androidx.hilt.navigation.compose)
 }
