@@ -1,6 +1,5 @@
 package org.easy.ai.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -12,7 +11,7 @@ import org.easy.ai.database.entities.MessageEntity
 
 @Database(
     entities = [ChatEntity::class, MessageEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(EnumConverts::class)
