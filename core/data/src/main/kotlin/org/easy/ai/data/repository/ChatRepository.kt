@@ -10,6 +10,8 @@ interface ChatRepository {
     fun getAllChats(): Flow<List<ChatUiModel>>
     suspend fun saveChat(name: String, platform: ModelPlatform)
 
+    suspend fun deleteChatById(chatId: String)
+
     suspend fun saveMessage(chatId: String, text: String, participant: Participant)
 
     suspend fun getMessagesByChat(chatId: String): List<ChatMessageUiModel>

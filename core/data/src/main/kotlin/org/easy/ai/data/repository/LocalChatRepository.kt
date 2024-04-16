@@ -34,6 +34,10 @@ class LocalChatRepository @Inject constructor(
         )
     }
 
+    override suspend fun deleteChatById(chatId: String) {
+        chatDao.deleteChatById(chatId)
+    }
+
     override suspend fun saveMessage(chatId: String, text: String, participant: Participant) {
         val entity = MessageEntity(
             participant = participant,

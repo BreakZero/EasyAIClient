@@ -9,4 +9,7 @@ import org.easy.ai.database.entities.ChatEntity
 interface ChatDao : BaseDao<ChatEntity> {
     @Query("SELECT * FROM TB_CHAT")
     fun getAllChats(): Flow<List<ChatEntity>>
+
+    @Query("DELETE FROM TB_CHAT WHERE CHAT_ID = :chatId")
+    suspend fun deleteChatById(chatId: String)
 }
