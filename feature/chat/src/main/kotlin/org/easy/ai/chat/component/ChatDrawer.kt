@@ -1,21 +1,21 @@
 package org.easy.ai.chat.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +42,7 @@ internal fun ChatDrawer(
     chats: List<ChatUiModel>?,
     defaultChat: ChatUiModel? = null,
     onChatSelected: (ChatUiModel?) -> Unit,
+    onChatDelete: (ChatUiModel) -> Unit,
     onPluginsClick: () -> Unit,
     onSettingsClicked: () -> Unit
 ) {
@@ -70,20 +71,12 @@ internal fun ChatDrawer(
             }
             chats?.let {
                 items(it) { chat ->
-                    val colors =
-                        if (selectedChat == chat) ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer) else
-                            ListItemDefaults.colors()
-                    ListItem(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
-                            .clickable {
-                                selectedChat = chat
-                                onChatSelected(chat)
-                            },
-                        headlineContent = { Text(text = chat.name) },
-                        colors = colors
-                    )
+                    ChatItemView(chat = chat, isSelected = selectedChat == chat, onItemClick = {
+                        selectedChat = chat
+                        onChatSelected(chat)
+                    }) {
+                        onChatDelete(chat)
+                    }
                 }
             }
         }
@@ -123,45 +116,41 @@ internal fun ChatDrawer(
 }
 
 @Composable
-internal fun ColumnScope.toolsSection(
-    onTextGeneratorClicked: () -> Unit,
-    onMultiModalClicked: () -> Unit
+internal fun ChatItemView(
+    modifier: Modifier = Modifier,
+    chat: ChatUiModel,
+    isSelected: Boolean,
+    onItemClick: (ChatUiModel) -> Unit,
+    onDelete: () -> Unit
 ) {
-    Text(
-        text = stringResource(id = R.string.text_tools),
-        modifier = Modifier
-            .padding(start = MaterialTheme.localDim.spaceMedium)
-            .padding(vertical = MaterialTheme.localDim.spaceExtraSmall)
-    )
-    HorizontalDivider()
-    ListItem(
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .clickable {
-                onTextGeneratorClicked()
+    var isContextMenuVisible by remember {
+        mutableStateOf(false)
+    }
+    val colors = if (isSelected) ListItemDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+    ) else ListItemDefaults.colors()
+
+    Box(modifier = modifier) {
+        ListItem(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall))
+                .clickable { onItemClick(chat) },
+            headlineContent = { Text(text = chat.name) },
+            trailingContent = {
+                IconButton(onClick = { isContextMenuVisible = true }) {
+                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
+                }
             },
-        headlineContent = {
-            Text(
-                text = stringResource(id = R.string.text_text_generator),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            colors = colors
+        )
+        DropdownMenu(
+            expanded = isContextMenuVisible, onDismissRequest = { isContextMenuVisible = false }
+        ) {
+            DropdownMenuItem(text = { Text(text = "Delete") }, onClick = {
+                isContextMenuVisible = false
+                onDelete()
+            })
         }
-    )
-    ListItem(
-        modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .clickable {
-                onMultiModalClicked()
-            },
-        headlineContent = {
-            Text(
-                text = stringResource(id = R.string.text_multimodal),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    )
-    HorizontalDivider()
-    Spacer(modifier = Modifier.height(MaterialTheme.localDim.spaceExtraSmall))
+    }
 }

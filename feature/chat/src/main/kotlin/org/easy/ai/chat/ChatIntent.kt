@@ -25,4 +25,5 @@ sealed interface ChatEvent {
     data object OnPluginsClicked : ChatEvent
 
     data object OnSaveChat: ChatEvent
+    data class OnDeleteChat(val chatId: String): ChatEvent
 }

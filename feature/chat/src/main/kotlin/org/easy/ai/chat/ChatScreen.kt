@@ -132,6 +132,9 @@ internal fun ChatScreen(
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
             },
+            onChatDelete = {
+                onEvent(ChatEvent.OnDeleteChat(it.chatId))
+            },
             onPluginsClick = { onEvent(ChatEvent.OnPluginsClicked) },
             onSettingsClicked = {
                 onEvent(ChatEvent.OnSettingsClicked)

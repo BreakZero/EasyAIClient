@@ -116,6 +116,13 @@ class ChatViewModel @Inject constructor(
             }
 
             is ChatEvent.OnSaveChat -> {}
+            is ChatEvent.OnDeleteChat -> {
+                viewModelScope.launch {
+                    localChatRepository.deleteChatById(event.chatId)
+                    onChatSelected(null)
+                }
+            }
+
             else -> dispatchNavigationEvent(event)
         }
     }
