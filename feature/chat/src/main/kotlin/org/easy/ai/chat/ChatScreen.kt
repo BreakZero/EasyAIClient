@@ -261,7 +261,10 @@ private fun ChatContent(
         when (chatUiState) {
             is ChatUiState.Initialed -> {
                 val chatListState = rememberLazyListState()
-                LaunchedEffect(key1 = contentUiState.chatHistory) {
+                LaunchedEffect(
+                    key1 = contentUiState.chatHistory,
+                    key2 = contentUiState.pendingMessage
+                ) {
                     chatListState.animateScrollToItem(chatListState.layoutInfo.totalItemsCount)
                 }
 

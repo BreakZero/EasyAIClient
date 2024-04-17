@@ -28,7 +28,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -52,6 +51,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
@@ -93,6 +93,7 @@ private fun MultiModalScreen(
     popBack: () -> Unit,
     submit: () -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -112,7 +113,10 @@ private fun MultiModalScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = MaterialTheme.localDim.spaceMedium),
-                onClick = submit,
+                onClick = {
+                    submit()
+                    focusManager.clearFocus()
+                },
                 enabled = !uiState.inProgress
             ) {
                 Text(text = if (uiState.inProgress) "Generating..." else "Submit Prompt")

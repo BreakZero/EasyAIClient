@@ -21,7 +21,9 @@ import org.easy.ai.data.repository.LocalChatRepository
 import org.easy.ai.domain.Chat
 import org.easy.ai.domain.StartNewChatUseCase
 import org.easy.ai.model.ChatMessageUiModel
+import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -105,6 +107,23 @@ class ChatViewModel @Inject constructor(
         _pendingMessage.update { null }
     }
 
+    private suspend fun saveChat() {
+        if (_selectedChat.value != null || _chatHistory.value.isEmpty()) return
+        val chatId = UUID.randomUUID().toString()
+        val chatName = _chatHistory.value.first().text
+        localChatRepository.saveChat(
+            chatId = chatId,
+            name = chatName,
+            platform = ModelPlatform.GEMINI
+        )
+        _chatHistory.value.onEach {
+            localChatRepository.saveMessage(chatId, it.text, it.participant)
+        }
+        _selectedChat.update {
+            localChatRepository.getChatById(chatId)
+        }
+    }
+
     fun onEvent(event: ChatEvent) {
         when (event) {
             is ChatEvent.OnMessageSend -> sendMessage(event.userMessage)
@@ -115,7 +134,12 @@ class ChatViewModel @Inject constructor(
                 }
             }
 
-            is ChatEvent.OnSaveChat -> {}
+            is ChatEvent.OnSaveChat -> {
+                viewModelScope.launch {
+                    saveChat()
+                }
+            }
+
             is ChatEvent.OnDeleteChat -> {
                 viewModelScope.launch {
                     localChatRepository.deleteChatById(event.chatId)

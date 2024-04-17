@@ -23,10 +23,10 @@ class LocalChatRepository @Inject constructor(
         return chatDao.getAllChats().map { it.map(ChatEntity::asExternalModel) }
     }
 
-    override suspend fun saveChat(name: String, platform: ModelPlatform) {
+    override suspend fun saveChat(chatId: String?, name: String, platform: ModelPlatform) {
         chatDao.insert(
             ChatEntity(
-                chatId = UUID.randomUUID().toString(),
+                chatId = chatId ?: UUID.randomUUID().toString(),
                 chatName = name,
                 model = platform,
                 createAt = System.currentTimeMillis()
@@ -36,6 +36,10 @@ class LocalChatRepository @Inject constructor(
 
     override suspend fun deleteChatById(chatId: String) {
         chatDao.deleteChatById(chatId)
+    }
+
+    override suspend fun getChatById(chatId: String): ChatUiModel {
+        return chatDao.getChatById(chatId).asExternalModel()
     }
 
     override suspend fun saveMessage(chatId: String, text: String, participant: Participant) {

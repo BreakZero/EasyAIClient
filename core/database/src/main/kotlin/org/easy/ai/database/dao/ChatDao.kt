@@ -10,6 +10,9 @@ interface ChatDao : BaseDao<ChatEntity> {
     @Query("SELECT * FROM TB_CHAT")
     fun getAllChats(): Flow<List<ChatEntity>>
 
+    @Query("SELECT * FROM tb_chat WHERE chat_id = :chatId")
+    suspend fun getChatById(chatId: String): ChatEntity
+
     @Query("DELETE FROM TB_CHAT WHERE CHAT_ID = :chatId")
     suspend fun deleteChatById(chatId: String)
 }
