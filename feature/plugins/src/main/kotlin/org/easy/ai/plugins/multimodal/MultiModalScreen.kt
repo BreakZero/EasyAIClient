@@ -24,6 +24,7 @@ import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -182,7 +183,12 @@ private fun MultiModalScreen(
                 )
             }
             uiState.generateResult?.let {
-                Text(style = MaterialTheme.typography.titleMedium, text = it)
+                Text(
+                    modifier = Modifier
+                        .weight(1.0f)
+                        .verticalScroll(rememberScrollState()),
+                    style = MaterialTheme.typography.titleMedium, text = it
+                )
             }
         }
     }

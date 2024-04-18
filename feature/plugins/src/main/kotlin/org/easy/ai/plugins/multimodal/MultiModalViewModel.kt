@@ -62,7 +62,7 @@ internal class MultiModalViewModel @Inject constructor(
         val images = _uiState.value.images
         multiModalGeneratingUseCase(promptTextField.text.toString(), images)
             .onEach { result ->
-                _uiState.update { it.copy(inProgress = false, generateResult = result) }
+                _uiState.update { it.copy(inProgress = false, generateResult = result, error = null) }
             }.catch { error ->
                 _uiState.update {
                     it.copy(

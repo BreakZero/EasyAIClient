@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -47,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.lerp
@@ -97,7 +99,11 @@ internal fun ChatScreen(
     contentUiState: ChattingUiState,
     onEvent: (ChatEvent) -> Unit
 ) {
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize(),
+        color = Color.Transparent
+    ) {
         val coroutineScope = rememberCoroutineScope()
         var drawerState by remember {
             mutableStateOf(DrawerState.Closed)
