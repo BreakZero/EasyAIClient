@@ -37,6 +37,12 @@ jobs:
           GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew core:data:jacocoTestReport
 
+      - name: Network module unit test
+        env:
+          GT_USERNAME: ${{ github.actor }}
+          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew core:network:jacocoTestReport
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
