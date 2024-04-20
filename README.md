@@ -1,4 +1,6 @@
 [![Android Release Build](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml/badge.svg)](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml)
+[![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/coverage.svg?branch=main)](https://codecov.io/github/BreakZero/EasyAIClient/coverage.svg?branch=main)
+
 
 ## 关于 EasyAIClient
 
