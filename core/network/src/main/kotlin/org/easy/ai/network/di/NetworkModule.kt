@@ -61,7 +61,7 @@ object NetworkModule {
                 url {
                     protocol = URLProtocol.HTTPS
                     host = "generativelanguage.googleapis.com"
-                    path("v1/]")
+                    path("v1/")
                 }
                 contentType(ContentType.Application.Json)
                 header("x-goog-api-client", "easyai-android")

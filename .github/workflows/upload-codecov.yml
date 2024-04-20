@@ -1,4 +1,4 @@
-name: DATA MODULE codecov
+name: upload codecov
 
 on: [push, pull_request]
 
@@ -41,5 +41,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          flags: Data-Module
-          files: ./core/data/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
+          flags: Data-Module, Network-Module
+          files: |
+            ./core/data/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml,
+            ./core/network/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
