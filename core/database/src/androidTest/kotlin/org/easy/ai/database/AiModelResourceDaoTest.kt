@@ -8,7 +8,9 @@ import kotlinx.coroutines.test.runTest
 import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.ChatEntity
+import org.easy.ai.database.entities.MessageEntity
 import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.Participant
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -41,22 +43,23 @@ class AiModelResourceDaoTest {
         )
     }
 
-//    @Test
-//    fun Test_saved_chat_with_message() = runTest {
-//        val chatEntity = newChatEntity(1)
-//        val aiMessage = AiMessageEntity(
-//            id = "_mid",
-//            participant = Participant.MODEL,
-//            belong = "_id1",
-//            timestamp = 0L
-//        )
-//        chatDao.insert(chatEntity)
-//        messageDao.insert(aiMessage)
-//
-//        val chatWithMessage = chatDao.getChatHistoryByChatId("_id1")
-//        assertEquals(chatWithMessage.chat, chatEntity)
-//        assertEquals(chatWithMessage.messages, listOf(aiMessage))
-//    }
+    @Test
+    fun Test_saved_chat_with_message() = runTest {
+        val chatEntity = newChatEntity(1)
+        val aiMessage = MessageEntity(
+            messageId = 1L,
+            participant = Participant.MODEL,
+            chatId = "_id1",
+            content = "mock message",
+            timestamp = 0L
+        )
+        chatDao.insert(chatEntity)
+        messageDao.insert(aiMessage)
+
+        val chatWithMessage = messageDao.getChatHistoryByChatId("_id1")
+        assertEquals(chatWithMessage.chat, chatEntity)
+        assertEquals(chatWithMessage.messages, listOf(aiMessage))
+    }
 }
 
 private fun newChatEntity(id: Int): ChatEntity {

@@ -67,7 +67,6 @@ fun keyStoreProperties(): Properties {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.compose.material3.window.size)
     implementation(libs.androidx.core.ktx)

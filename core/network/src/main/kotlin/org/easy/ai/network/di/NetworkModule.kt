@@ -73,7 +73,12 @@ object NetworkModule {
     @Provides
     fun providesChatGPTRestHttpClient(): HttpClient {
         return httpClient {
+            defaultRequest {
+                url {
 
+                }
+                contentType(ContentType.Application.Json)
+            }
         }
     }
 

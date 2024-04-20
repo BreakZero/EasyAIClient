@@ -15,8 +15,14 @@ class TestChatDao : ChatDao {
         return flow { emit(mockChats) }
     }
 
-    override suspend fun getChatHistoryByChatId(chatId: String): ChatHistory {
-        TODO("Not yet implemented")
+    override suspend fun getChatById(chatId: String): ChatEntity {
+        return mockChats.find { it.chatId == chatId } ?: throw NoSuchElementException("not chat found: $chatId")
+    }
+
+    override suspend fun deleteChatById(chatId: String) {
+        mockChats.removeIf {
+            it.chatId == chatId
+        }
     }
 
     override suspend fun insert(vararg data: ChatEntity) {

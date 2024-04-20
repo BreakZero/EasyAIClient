@@ -7,20 +7,20 @@ plugins {
     id("org.easy.hilt")
     id("org.easy.jacoco")
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
     namespace = "org.easy.ai.database"
     defaultConfig {
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf(
-                    "room.schemaLocation" to "$projectDir/schemas",
-                    "room.incremental" to "true"
-                )
-            }
-        }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        getByName("androidTest").assets.srcDir("$projectDir/schemas")
     }
 }
 
@@ -32,4 +32,5 @@ dependencies {
     implementation(projects.core.model)
 
     androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.androidx.room.testing)
 }

@@ -10,8 +10,8 @@ import org.junit.Test
 class ModelUnitTest {
     @Test
     fun test_ai_chat_model() {
-        val chatUiModel = ChatUiModel("chat_id","chat_name",8888)
+        val chatUiModel = ChatUiModel("chat_id","chat_name",888)
         val entity = chatUiModel.asEntity()
-        Assert.assertEquals(entity, ChatEntity("chat_id","chat_name",ModelPlatform.GEMINI, 888))
+        Assert.assertEquals(entity, ChatEntity("chat_id","chat_name", ModelPlatform.GEMINI, 888))
     }
 }

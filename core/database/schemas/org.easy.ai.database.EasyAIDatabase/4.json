@@ -1,0 +1,118 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "b5becf0ebd8c6a317e9738b404b9b490",
+    "entities": [
+      {
+        "tableName": "tb_chat",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chat_id` TEXT NOT NULL, `chat_name` TEXT NOT NULL, `model_platform` TEXT NOT NULL, `create_at` INTEGER NOT NULL, PRIMARY KEY(`chat_id`))",
+        "fields": [
+          {
+            "fieldPath": "chatId",
+            "columnName": "chat_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chatName",
+            "columnName": "chat_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "model",
+            "columnName": "model_platform",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createAt",
+            "columnName": "create_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "chat_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "tb_message",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`msg_id` INTEGER PRIMARY KEY AUTOINCREMENT, `participant` TEXT NOT NULL, `content` TEXT NOT NULL, `chat_id` TEXT NOT NULL, `create_at` INTEGER NOT NULL, FOREIGN KEY(`chat_id`) REFERENCES `tb_chat`(`chat_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "messageId",
+            "columnName": "msg_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "participant",
+            "columnName": "participant",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chatId",
+            "columnName": "chat_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "create_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "msg_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_tb_message_chat_id",
+            "unique": false,
+            "columnNames": [
+              "chat_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tb_message_chat_id` ON `${TABLE_NAME}` (`chat_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "tb_chat",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "chat_id"
+            ],
+            "referencedColumns": [
+              "chat_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b5becf0ebd8c6a317e9738b404b9b490')"
+    ]
+  }
+}
