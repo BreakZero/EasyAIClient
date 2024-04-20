@@ -41,5 +41,5 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: BreakZero/EasyAIClient
+          flags: Data-Module
           files: ./core/data/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
