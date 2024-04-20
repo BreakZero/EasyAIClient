@@ -6,19 +6,16 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.easy.ai.data.model.asExternalModel
-import org.easy.ai.data.model.asUiModel
+import org.easy.ai.data.testdoubles.DataHolder
 import org.easy.ai.data.testdoubles.TestChatDao
 import org.easy.ai.data.testdoubles.TestMessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
-import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.ModelPlatform
 import org.easy.ai.model.Participant
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.times
-import org.mockito.Mockito.verify
 
 
 class LocalChatRepositoryTest {
@@ -28,55 +25,95 @@ class LocalChatRepositoryTest {
     private lateinit var chatDao: TestChatDao
     private lateinit var localChatRepository: LocalChatRepository
 
+    private val mockChat = ChatEntity("chat_id", "chat_name", ModelPlatform.GEMINI, 888)
+    private val mockMessage = MessageEntity(
+        messageId = 0L,
+        participant = Participant.USER,
+        content = "mock message content",
+        chatId = "chat_id",
+        timestamp = 999
+    )
+
     @Before
     fun setup() {
-        messageDao = mock(TestMessageDao::class.java)
+        messageDao = TestMessageDao()
         chatDao = TestChatDao()
         localChatRepository = LocalChatRepository(chatDao, messageDao)
     }
 
+    @After
+    fun clear() {
+        DataHolder.chatTable.clear()
+        DataHolder.messageTable.clear()
+    }
+
     @Test
-    fun Gemini_test_all_local_chat() = testScope.runTest {
+    fun test_chat_insert() = testScope.runTest {
+        chatDao.insert(mockChat)
+        assertEquals(1, localChatRepository.getAllChats().first().size)
+        assertEquals(mockChat.asExternalModel(), localChatRepository.getChatById(mockChat.chatId))
+    }
+
+    @Test
+    fun test_insert_message() = testScope.runTest {
+        chatDao.insert(mockChat)
+        messageDao.insert(mockMessage)
         assertEquals(
-            localChatRepository.getAllChats().first(),
-            chatDao.getAllChats().first().map(ChatEntity::asExternalModel)
+            1,
+            localChatRepository.getMessagesByChat(mockChat.chatId).size
         )
     }
 
-//    @Test
-//    fun Gemini_test_messages_by_chat() = testScope.runTest {
-//        assertEquals(
-//            localChatRepository.getMessagesByChat("chat_id").also {
-//                println("=== $it")
-//            },
-//            messageDao.getChatHistoryByChatId("chat_id").messages.map(MessageEntity::asUiModel)
-//        )
-//    }
+    @Test
+    fun test_delete_chat() = testScope.runTest {
+        localChatRepository.deleteChatById(mockChat.chatId)
+        assertEquals(
+            0,
+            localChatRepository.getAllChats().first().size
+        )
+    }
 
     @Test
-    fun Gemini_test_save_chat() = testScope.runTest {
+    fun test_save_chat() = testScope.runTest {
         localChatRepository.saveChat(
-            chatId = "chat_id",
-            name = "Mock Chat Name",
+            chatId = "saving-chat",
+            name = "saving_chat",
             platform = ModelPlatform.GEMINI
         )
         assertEquals(
-            localChatRepository.getAllChats().first().size,
-            2
+            1,
+            localChatRepository.getAllChats().first().size
         )
     }
 
     @Test
-    fun Gemini_test_save_message() = testScope.runTest {
-        val message =
-            ChatMessageUiModel(text = "content", participant = Participant.USER, isPending = true)
-        val messageEntity = MessageEntity(
-            participant = Participant.USER,
-            content = "content",
-            chatId = "chat_id_1",
-            timestamp = System.currentTimeMillis()
+    fun test_save_chat_null() = testScope.runTest {
+        localChatRepository.saveChat(
+            chatId = null,
+            name = "saving_chat",
+            platform = ModelPlatform.GEMINI
         )
-        localChatRepository.saveMessage("chat_id_1", "content", participant = Participant.USER)
-        verify(messageDao, times(1)).insert(messageEntity)
+        assertEquals(
+            "saving_chat",
+            localChatRepository.getAllChats().first().first().name
+        )
+    }
+
+    @Test
+    fun test_save_message() = testScope.runTest {
+        localChatRepository.saveChat(
+            chatId = "saving-chat",
+            name = "saving_chat",
+            platform = ModelPlatform.GEMINI
+        )
+        localChatRepository.saveMessage(
+            "saving-chat",
+            text = "message content",
+            participant = Participant.MODEL
+        )
+        assertEquals(
+            localChatRepository.getMessagesByChat("saving-chat").first().text,
+            "message content"
+        )
     }
 }
