@@ -31,13 +31,13 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-  run unit test report:
+  unit test report:
     needs: prepare
     runs-on: macos-latest
     strategy:
       matrix:
         module: [ network, data ]
-    step:
+    steps:
       - name: run unit test report
         env:
           GT_USERNAME: ${{ github.actor }}
