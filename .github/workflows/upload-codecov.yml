@@ -3,7 +3,7 @@ name: upload codecov
 on: [push, pull_request]
 
 jobs:
-  generate_unit_test_coverage:
+  prepare:
     runs-on: macos-latest
 
     steps:
@@ -31,23 +31,23 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: Data module unit test
-        env:
-          GT_USERNAME: ${{ github.actor }}
-          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew core:data:jacocoTestReport
+    unit_test_report:
+      needs: prepare
+      runs-on: macos-latest
+      strategy:
+        matrix:
+          module: [ network, data ]
 
-      - name: Network module unit test
-        env:
-          GT_USERNAME: ${{ github.actor }}
-          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew core:network:jacocoTestReport
+      step:
+        - name: run unit test report
+          env:
+            GT_USERNAME: ${{ github.actor }}
+            GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: ./gradlew core:${{ matrix.module }}:jacocoTestReport
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: Data-Module, Network-Module
-          files: |
-            ./core/data/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml,
-            ./core/network/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
+        - name: Upload coverage reports to Codecov
+          uses: codecov/codecov-action@v4.0.1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            flags: ${{ matrix.module }}
+            files: ./core/${{ matrix.module }}/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
