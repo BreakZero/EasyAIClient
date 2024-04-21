@@ -69,7 +69,16 @@ class GeminiApiTest {
     fun test_success_response() = testScope.runTest {
         val response = apiController.generateContent("", content { })
         Assert.assertEquals(
-            "In the tranquil village of Verdigny, nestled amidst rolling hills and whispering willows in 17th century France, there lived a young maiden named Antoinette. Her heart yearned for adventure, and her mind was filled with untold tales of magic and wonder.",
+            "mock success response.",
+            response.text
+        )
+    }
+
+    @Test
+    fun test_vision_success_response() = testScope.runTest {
+        val response = apiController.generateContentByVision("", content {  })
+        Assert.assertEquals(
+            "mock success response.",
             response.text
         )
     }

@@ -7,7 +7,7 @@ internal val geminiGenerateContentNormal = """
                     "content": {
                         "parts": [
                             {
-                                "text": "In the tranquil village of Verdigny, nestled amidst rolling hills and whispering willows in 17th century France, there lived a young maiden named Antoinette. Her heart yearned for adventure, and her mind was filled with untold tales of magic and wonder."
+                                "text": "mock success response."
                             }
                         ],
                         "role": "model"
