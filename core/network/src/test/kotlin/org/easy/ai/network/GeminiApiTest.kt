@@ -1,5 +1,6 @@
 package org.easy.ai.network
 
+import android.accounts.NetworkErrorException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -36,13 +37,26 @@ class GeminiApiTest {
     @Before
     fun setup() {
         val mockEngine = MockEngine { request ->
-            println("=== ${request.url.encodedPath}")
+            println("=== ${request.headers["x-goog-api-key"]}")
+            val type = request.headers["x-goog-api-key"]
+            when(type) {
+                "error" -> {
+                    respond(
+                        content = ByteReadChannel(mockErrorResponse),
+                        status = HttpStatusCode.BadRequest,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+                else -> {
+                    respond(
+                        content = ByteReadChannel(geminiGenerateContentNormal),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+            }
 
-            respond(
-                content = ByteReadChannel(geminiGenerateContentNormal),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
+
         }
         val httpClient = HttpClient(mockEngine) {
             install(ContentNegotiation) {
@@ -81,5 +95,10 @@ class GeminiApiTest {
             "mock success response.",
             response.text
         )
+    }
+
+    @Test(expected = NetworkErrorException::class)
+    fun test_null_response() = testScope.runTest {
+        apiController.generateContent("error", content {  })
     }
 }
