@@ -7,7 +7,7 @@ internal val geminiGenerateContentNormal = """
                     "content": {
                         "parts": [
                             {
-                                "text": "In the tranquil village of Verdigny, nestled amidst rolling hills and whispering willows in 17th century France, there lived a young maiden named Antoinette. Her heart yearned for adventure, and her mind was filled with untold tales of magic and wonder."
+                                "text": "mock success response."
                             }
                         ],
                         "role": "model"
@@ -36,3 +36,23 @@ internal val geminiGenerateContentNormal = """
             ]
         }
     """.trimIndent()
+
+val mockErrorResponse = """
+    {
+        "error": {
+            "code": 400,
+            "message": "API key not valid. Please pass a valid API key.",
+            "status": "INVALID_ARGUMENT",
+            "details": [
+                {
+                    "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+                    "reason": "API_KEY_INVALID",
+                    "domain": "googleapis.com",
+                    "metadata": {
+                        "service": "generativelanguage.googleapis.com"
+                    }
+                }
+            ]
+        }
+    }
+""".trimIndent()

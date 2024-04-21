@@ -1,5 +1,6 @@
 package org.easy.ai.network
 
+import android.accounts.NetworkErrorException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -36,13 +37,26 @@ class GeminiApiTest {
     @Before
     fun setup() {
         val mockEngine = MockEngine { request ->
-            println("=== ${request.url.encodedPath}")
+            println("=== ${request.headers["x-goog-api-key"]}")
+            val type = request.headers["x-goog-api-key"]
+            when(type) {
+                "error" -> {
+                    respond(
+                        content = ByteReadChannel(mockErrorResponse),
+                        status = HttpStatusCode.BadRequest,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+                else -> {
+                    respond(
+                        content = ByteReadChannel(geminiGenerateContentNormal),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+            }
 
-            respond(
-                content = ByteReadChannel(geminiGenerateContentNormal),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
+
         }
         val httpClient = HttpClient(mockEngine) {
             install(ContentNegotiation) {
@@ -69,8 +83,22 @@ class GeminiApiTest {
     fun test_success_response() = testScope.runTest {
         val response = apiController.generateContent("", content { })
         Assert.assertEquals(
-            "In the tranquil village of Verdigny, nestled amidst rolling hills and whispering willows in 17th century France, there lived a young maiden named Antoinette. Her heart yearned for adventure, and her mind was filled with untold tales of magic and wonder.",
+            "mock success response.",
             response.text
         )
+    }
+
+    @Test
+    fun test_vision_success_response() = testScope.runTest {
+        val response = apiController.generateContentByVision("", content {  })
+        Assert.assertEquals(
+            "mock success response.",
+            response.text
+        )
+    }
+
+    @Test(expected = NetworkErrorException::class)
+    fun test_null_response() = testScope.runTest {
+        apiController.generateContent("error", content {  })
     }
 }
