@@ -1,8 +1,8 @@
 [![Android Release Build](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml/badge.svg)](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml)
 
 ## Module Unit Test Coverage
-data: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)
-network: data: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)
+- data: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)
+- network: data: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)
 
 
 ## 关于 EasyAIClient
