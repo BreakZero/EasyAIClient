@@ -20,3 +20,7 @@ flags:
   data:
     paths:
       - core/data/src/main/kotlin/
+
+comment:
+  layout: "header, files, footer" # remove "new" from "header" and "footer"
+  hide_project_coverage: false # set to false
