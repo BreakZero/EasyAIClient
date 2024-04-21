@@ -5,6 +5,9 @@ on: [push, pull_request]
 jobs:
   prepare:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        module: [ network, data ]
 
     steps:
       - name: Check out repository
@@ -31,13 +34,6 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-  unit_test_report:
-    needs: prepare
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        module: [ network, data ]
-    steps:
       - name: run unit test report
         env:
           GT_USERNAME: ${{ github.actor }}
