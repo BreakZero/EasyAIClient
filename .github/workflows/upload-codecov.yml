@@ -45,6 +45,6 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          codecov_yml_path: ./.github/workflows/codecov_rule.yml
+          codecov_yml_path: ./codecov_rule.yml
           flags: ${{ matrix.module }}
           files: ./core/${{ matrix.module }}/build/reports/jacoco/jacocoTestStagingDebugUnitTestReport/jacocoTestStagingDebugUnitTestReport.xml
