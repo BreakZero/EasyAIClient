@@ -1,0 +1,22 @@
+coverage:
+  status:
+    project:
+      default: off
+      network:
+        target: 30%
+        flags:
+          - network
+      data:
+        target: 30%
+        flags:
+          - data
+
+flags:
+  # filter the folder(s) you wish to measure by that flag
+  network:
+    # only include files in the backend folder
+    paths: #note, accepts globs, not regexes
+      - core/network/src/main/kotlin/
+  data:
+    paths:
+      - core/data/src/main/kotlin/
