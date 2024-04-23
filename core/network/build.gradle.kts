@@ -11,6 +11,18 @@ plugins {
 
 android {
     namespace = "org.easy.ai.network"
+    defaultConfig {
+        consumerProguardFile("consumer-rules.pro")
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 }
 
 dependencies {

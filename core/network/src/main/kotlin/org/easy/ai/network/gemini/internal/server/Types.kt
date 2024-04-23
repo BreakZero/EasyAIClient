@@ -75,19 +75,24 @@ internal data class SafetyRating(
 
 @Serializable(HarmProbabilitySerializer::class)
 internal enum class HarmProbability {
+    @SerialName("UNKNOWN")
     UNKNOWN,
     @SerialName("HARM_PROBABILITY_UNSPECIFIED")
     UNSPECIFIED,
+    @SerialName("NEGLIGIBLE")
     NEGLIGIBLE,
+    @SerialName("LOW")
     LOW,
+    @SerialName("MEDIUM")
     MEDIUM,
+    @SerialName("HIGH")
     HIGH
 }
 
 @Serializable(FinishReasonSerializer::class)
 internal enum class FinishReason {
-    @SerialName("UNKNOWN")
-    UNKNOWN,
+//    @SerialName("UNKNOWN")
+//    UNKNOWN,
     @SerialName("FINISH_REASON_UNSPECIFIED")
     UNSPECIFIED,
     @SerialName("STOP")

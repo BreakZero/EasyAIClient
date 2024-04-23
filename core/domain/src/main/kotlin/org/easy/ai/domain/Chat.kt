@@ -24,11 +24,11 @@ class Chat internal constructor(
 
     suspend fun sendMessage(prompt: ChatMessageContent): ChatMessageContent {
         attemptLock()
-        history.add(prompt)
         val response = try {
             val response = chatPlugin.sendMessage(
                 apiKey,
                 history.filter { it.participant != Participant.ERROR })
+            history.add(prompt)
             history.add(response)
             response
         } catch (e: Exception) {

@@ -15,6 +15,7 @@ internal object HarmCategorySerializer :
 
 @Serializable(HarmCategorySerializer::class)
 internal enum class HarmCategory {
+    @SerialName("UNKNOWN")
     UNKNOWN,
     @SerialName("HARM_CATEGORY_HARASSMENT")
     HARASSMENT,
