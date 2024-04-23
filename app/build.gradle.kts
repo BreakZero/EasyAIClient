@@ -14,8 +14,9 @@ android {
 
     defaultConfig {
         applicationId = "org.easy.ai.client"
-        versionCode = 1000000
-        versionName = "v1.0.0"
+        targetSdk = 34
+        versionCode = 100000008
+        versionName = "v0.0.6"
     }
     val keyProperties = keyStoreProperties()
     signingConfigs {

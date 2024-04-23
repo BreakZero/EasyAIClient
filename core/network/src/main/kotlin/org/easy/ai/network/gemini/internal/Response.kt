@@ -1,6 +1,7 @@
 package org.easy.ai.network.gemini.internal
 
 import android.util.Log
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.easy.ai.network.gemini.internal.server.Candidate
 import org.easy.ai.network.gemini.internal.server.GRpcError
@@ -12,7 +13,9 @@ internal sealed interface Response
 
 @Serializable
 internal data class GenerateContentResponse(
+    @SerialName("candidates")
     val candidates: List<Candidate>? = null,
+    @SerialName("promptFeedback")
     val promptFeedback: PromptFeedback? = null,
 ) : Response {
     val text: String? by lazy { firstPartAs<TextPart>()?.text }

@@ -1,0 +1,1 @@
+-keep class org.easy.ai.network.gemini.internal.** { *; }
