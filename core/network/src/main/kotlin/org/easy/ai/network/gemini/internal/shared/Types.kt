@@ -16,34 +16,53 @@ internal object HarmCategorySerializer :
 @Serializable(HarmCategorySerializer::class)
 internal enum class HarmCategory {
     UNKNOWN,
-    @SerialName("HARM_CATEGORY_HARASSMENT") HARASSMENT,
-    @SerialName("HARM_CATEGORY_HATE_SPEECH") HATE_SPEECH,
-    @SerialName("HARM_CATEGORY_SEXUALLY_EXPLICIT") SEXUALLY_EXPLICIT,
-    @SerialName("HARM_CATEGORY_DANGEROUS_CONTENT") DANGEROUS_CONTENT
+    @SerialName("HARM_CATEGORY_HARASSMENT")
+    HARASSMENT,
+    @SerialName("HARM_CATEGORY_HATE_SPEECH")
+    HATE_SPEECH,
+    @SerialName("HARM_CATEGORY_SEXUALLY_EXPLICIT")
+    SEXUALLY_EXPLICIT,
+    @SerialName("HARM_CATEGORY_DANGEROUS_CONTENT")
+    DANGEROUS_CONTENT
 }
 
 typealias Base64 = String
 
-@Serializable internal data class Content(val role: String? = null, val parts: List<Part>)
+@Serializable
+internal data class Content(
+    @SerialName("role") val role: String? = null,
+    @SerialName("parts") val parts: List<Part>
+)
 
-@Serializable(PartSerializer::class) internal sealed interface Part
+@Serializable(PartSerializer::class)
+internal sealed interface Part
 
-@Serializable internal data class TextPart(val text: String) : Part
+@Serializable
+internal data class TextPart(@SerialName("text") val text: String) : Part
 
-@Serializable internal data class BlobPart(@SerialName("inline_data") val inlineData: Blob) : Part
+@Serializable
+internal data class BlobPart(@SerialName("inline_data") val inlineData: Blob) : Part
 
 @Serializable
 internal data class Blob(
-    @SerialName("mime_type") val mimeType: String,
+    @SerialName("mime_type")
+    val mimeType: String,
+    @SerialName("data")
     val data: Base64,
 )
 
 @Serializable
-internal data class SafetySetting(val category: HarmCategory, val threshold: HarmBlockThreshold)
+internal data class SafetySetting(
+    @SerialName("category")
+    val category: HarmCategory,
+    @SerialName("threshold")
+    val threshold: HarmBlockThreshold
+)
 
 @Serializable
 internal enum class HarmBlockThreshold {
-    @SerialName("HARM_BLOCK_THRESHOLD_UNSPECIFIED") UNSPECIFIED,
+    @SerialName("HARM_BLOCK_THRESHOLD_UNSPECIFIED")
+    UNSPECIFIED,
     BLOCK_LOW_AND_ABOVE,
     BLOCK_MEDIUM_AND_ABOVE,
     BLOCK_ONLY_HIGH,

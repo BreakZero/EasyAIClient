@@ -18,47 +18,66 @@ internal object FinishReasonSerializer :
 
 @Serializable
 internal data class PromptFeedback(
+    @SerialName("blockReason")
     val blockReason: BlockReason? = null,
+    @SerialName("safetyRatings")
     val safetyRatings: List<SafetyRating>? = null,
 )
 
 @Serializable(BlockReasonSerializer::class)
 internal enum class BlockReason {
     UNKNOWN,
-    @SerialName("BLOCKED_REASON_UNSPECIFIED") UNSPECIFIED,
+    @SerialName("BLOCKED_REASON_UNSPECIFIED")
+    UNSPECIFIED,
     SAFETY,
     OTHER
 }
 
 @Serializable
 internal data class Candidate(
+    @SerialName("content")
     val content: Content? = null,
+    @SerialName("finishReason")
     val finishReason: FinishReason? = null,
+    @SerialName("safetyRatings")
     val safetyRatings: List<SafetyRating>? = null,
+    @SerialName("citationMetadata")
     val citationMetadata: CitationMetadata? = null
 )
 
-@Serializable internal data class CitationMetadata(val citationSources: List<CitationSources>)
+@Serializable
+internal data class CitationMetadata(
+    @SerialName("citationSources")
+    val citationSources: List<CitationSources>
+)
 
 @Serializable
 internal data class CitationSources(
+    @SerialName("startIndex")
     val startIndex: Int,
+    @SerialName("endIndex")
     val endIndex: Int,
+    @SerialName("uri")
     val uri: String,
+    @SerialName("license")
     val license: String
 )
 
 @Serializable
 internal data class SafetyRating(
+    @SerialName("category")
     val category: HarmCategory,
+    @SerialName("probability")
     val probability: HarmProbability,
+    @SerialName("blocked")
     val blocked: Boolean? = null // TODO(): any reason not to default to false?
 )
 
 @Serializable(HarmProbabilitySerializer::class)
 internal enum class HarmProbability {
     UNKNOWN,
-    @SerialName("HARM_PROBABILITY_UNSPECIFIED") UNSPECIFIED,
+    @SerialName("HARM_PROBABILITY_UNSPECIFIED")
+    UNSPECIFIED,
     NEGLIGIBLE,
     LOW,
     MEDIUM,
@@ -67,12 +86,19 @@ internal enum class HarmProbability {
 
 @Serializable(FinishReasonSerializer::class)
 internal enum class FinishReason {
+    @SerialName("UNKNOWN")
     UNKNOWN,
-    @SerialName("FINISH_REASON_UNSPECIFIED") UNSPECIFIED,
+    @SerialName("FINISH_REASON_UNSPECIFIED")
+    UNSPECIFIED,
+    @SerialName("STOP")
     STOP,
+    @SerialName("MAX_TOKENS")
     MAX_TOKENS,
+    @SerialName("SAFETY")
     SAFETY,
+    @SerialName("RECITATION")
     RECITATION,
+    @SerialName("OTHER")
     OTHER
 }
 
