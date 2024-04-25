@@ -9,36 +9,43 @@ import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.data.plugins.MultiModalPlugin
 import org.easy.ai.data.repository.ChatRepository
-import org.easy.ai.data.repository.LocalChatRepository
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.data.repository.OfflineChatRepository
+import org.easy.ai.data.repository.OfflineUserDataRepository
+import org.easy.ai.data.repository.UserDataRepository
+import org.easy.ai.model.AiModel
 import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ModelPlatformQualifier(val model: ModelPlatform)
+annotation class ModelPlatformQualifier(val model: AiModel)
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataModule {
     @Binds
-    abstract fun bindLocalChatRepository(
-        localChatRepository: LocalChatRepository
+    abstract fun bindOfflineChatRepository(
+        offlineChatRepository: OfflineChatRepository
     ): ChatRepository
 
     @Binds
-    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    abstract fun bindOfflineUserDataRepository(
+        offlineUserDataRepository: OfflineUserDataRepository
+    ): UserDataRepository
+
+    @Binds
+    @ModelPlatformQualifier(AiModel.GEMINI)
     abstract fun bindGeminiChatPlugin(
         geminiModel: GeminiModelRepository
     ): ChatPlugin
 
     @Binds
-    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    @ModelPlatformQualifier(AiModel.GEMINI)
     abstract fun bindChatGPTChatPlugin(
         chatGptModel: ChatGPTModelRepository
     ): ChatPlugin
 
     @Binds
-    @ModelPlatformQualifier(ModelPlatform.GEMINI)
+    @ModelPlatformQualifier(AiModel.GEMINI)
     abstract fun bindGeminiMultiModalPlugin(
         geminiModel: GeminiModelRepository
     ): MultiModalPlugin

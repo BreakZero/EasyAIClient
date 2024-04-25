@@ -18,17 +18,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.easy.ai.model.AIModel
+import org.easy.ai.model.AiModel
 
 @Composable
 internal fun ModelList(
     modifier: Modifier = Modifier,
-    default: AIModel,
-    models: List<AIModel>,
+    default: AiModel,
+    models: List<AiModel>,
     onDismiss: () -> Unit,
-    onSelected: (AIModel) -> Unit
+    onSelected: (AiModel) -> Unit
 ) {
-    var selectedItem: AIModel by remember {
+    var selectedItem: AiModel by remember {
         mutableStateOf(default)
     }
     AlertDialog(

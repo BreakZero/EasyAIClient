@@ -4,7 +4,7 @@ import androidx.room.migration.Migration
 
 internal val MIGRATION_1_2 = Migration(1, 2) {
     it.execSQL(
-        "ALTER TABLE 'tb_chat' ADD COLUMN 'model_platform' TEXT NOT NULL"
+        "ALTER TABLE 'tb_chat' ADD COLUMN 'model_platform' TEXT NOT NULL DEFAULT 'GEMINI'"
     )
     it.execSQL(
         """

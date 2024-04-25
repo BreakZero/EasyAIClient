@@ -9,7 +9,7 @@ import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.Participant
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -63,5 +63,5 @@ class AiModelResourceDaoTest {
 }
 
 private fun newChatEntity(id: Int): ChatEntity {
-    return ChatEntity(chatId = "_id$id", chatName = "_name$id", ModelPlatform.GEMINI, createAt = 1L)
+    return ChatEntity(chatId = "_id$id", chatName = "_name$id", AiModel.GEMINI, createAt = 1L)
 }

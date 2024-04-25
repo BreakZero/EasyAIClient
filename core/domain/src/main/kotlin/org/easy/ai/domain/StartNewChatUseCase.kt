@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.map
 import org.easy.ai.data.aimodel.ChatGPTModelRepository
 import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.datastore.UserPreferencesDataSource
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import javax.inject.Inject
 
 class StartNewChatUseCase @Inject internal constructor(
@@ -14,36 +14,36 @@ class StartNewChatUseCase @Inject internal constructor(
     private val chatGPTRepository: ChatGPTModelRepository
 ) {
     operator fun invoke(
-        modelPlatform: ModelPlatform = ModelPlatform.GEMINI
+        aiModel: AiModel = AiModel.GEMINI
     ): Flow<Chat> {
         return userPreferencesDataSource.userData.map { userData ->
-            val (model, apiKey) = getApiKeyByPriority(modelPlatform, userData.apiKeys)
+            val (model, apiKey) = getApiKeyByPriority(aiModel, userData.apiKeys)
             if (apiKey.isNullOrBlank()) throw IllegalStateException("api key not set yet.")
             Chat(
                 apiKey = apiKey,
                 chatPlugin = when (model) {
-                    ModelPlatform.GEMINI -> geminiModelRepository
-                    ModelPlatform.CHAT_GPT -> chatGPTRepository
+                    AiModel.GEMINI -> geminiModelRepository
+                    AiModel.CHAT_GPT -> chatGPTRepository
                 }
             )
         }
     }
 
     private fun getApiKeyByPriority(
-        modelPlatform: ModelPlatform? = null,
+        aiModel: AiModel? = null,
         apiKeys: Map<String, String>
-    ): Pair<ModelPlatform, String?> {
+    ): Pair<AiModel, String?> {
         if (apiKeys.isEmpty()) throw IllegalStateException("Not api key setting up yet...")
         val result = when {
-            modelPlatform != null -> Pair(modelPlatform, apiKeys[modelPlatform.name])
-            apiKeys.containsKey(ModelPlatform.GEMINI.name) -> Pair(
-                ModelPlatform.GEMINI,
-                apiKeys[ModelPlatform.GEMINI.name]
+            aiModel != null -> Pair(aiModel, apiKeys[aiModel.name])
+            apiKeys.containsKey(AiModel.GEMINI.name) -> Pair(
+                AiModel.GEMINI,
+                apiKeys[AiModel.GEMINI.name]
             )
 
-            apiKeys.containsKey(ModelPlatform.CHAT_GPT.name) -> Pair(
-                ModelPlatform.CHAT_GPT,
-                apiKeys[ModelPlatform.CHAT_GPT.name]
+            apiKeys.containsKey(AiModel.CHAT_GPT.name) -> Pair(
+                AiModel.CHAT_GPT,
+                apiKeys[AiModel.CHAT_GPT.name]
             )
 
             else -> throw IllegalStateException("No supported model: ${apiKeys.keys} ")

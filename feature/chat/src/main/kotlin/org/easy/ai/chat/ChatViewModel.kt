@@ -17,21 +17,21 @@ import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.model.ChatMessageContent
 import org.easy.ai.data.model.ChatUiModel
-import org.easy.ai.data.repository.LocalChatRepository
+import org.easy.ai.data.repository.OfflineChatRepository
 import org.easy.ai.domain.Chat
 import org.easy.ai.domain.StartNewChatUseCase
 import org.easy.ai.model.ChatMessageUiModel
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.Participant
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val localChatRepository: LocalChatRepository,
+    private val offlineChatRepository: OfflineChatRepository,
     startNewChatUseCase: StartNewChatUseCase,
 ) : BaseViewModel<ChatEvent>() {
-    private val _allLocalChatStream = localChatRepository.getAllChats()
+    private val _allLocalChatStream = offlineChatRepository.getAllChats()
     private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
     private val _chatHistory = MutableStateFlow(emptyList<ChatMessageUiModel>())
     private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
@@ -61,7 +61,7 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun onChatSelected(uiChat: ChatUiModel?) {
         val newHistory = uiChat?.let {
-            localChatRepository.getMessagesByChat(it.chatId)
+            offlineChatRepository.getMessagesByChat(it.chatId)
         } ?: emptyList()
         chat.release(newHistory.map {
             ChatMessageContent(message = it.text, participant = it.participant)
@@ -85,12 +85,12 @@ class ChatViewModel @Inject constructor(
                     )
                 }
                 _selectedChat.value?.let {
-                    localChatRepository.saveMessage(
+                    offlineChatRepository.saveMessage(
                         chatId = it.chatId,
                         text = userMessage,
                         participant = Participant.USER
                     )
-                    localChatRepository.saveMessage(
+                    offlineChatRepository.saveMessage(
                         chatId = it.chatId,
                         text = content.message,
                         participant = content.participant
@@ -111,16 +111,16 @@ class ChatViewModel @Inject constructor(
         if (_selectedChat.value != null || _chatHistory.value.isEmpty()) return
         val chatId = UUID.randomUUID().toString()
         val chatName = _chatHistory.value.first().text
-        localChatRepository.saveChat(
+        offlineChatRepository.saveChat(
             chatId = chatId,
             name = chatName,
-            platform = ModelPlatform.GEMINI
+            platform = AiModel.GEMINI
         )
         _chatHistory.value.onEach {
-            localChatRepository.saveMessage(chatId, it.text, it.participant)
+            offlineChatRepository.saveMessage(chatId, it.text, it.participant)
         }
         _selectedChat.update {
-            localChatRepository.getChatById(chatId)
+            offlineChatRepository.getChatById(chatId)
         }
     }
 
@@ -142,7 +142,7 @@ class ChatViewModel @Inject constructor(
 
             is ChatEvent.OnDeleteChat -> {
                 viewModelScope.launch {
-                    localChatRepository.deleteChatById(event.chatId)
+                    offlineChatRepository.deleteChatById(event.chatId)
                     onChatSelected(null)
                 }
             }

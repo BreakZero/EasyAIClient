@@ -9,40 +9,39 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
-import org.easy.ai.data.repository.UserPreferencesRepository
-import org.easy.ai.model.AIModel
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.data.repository.UserDataRepository
+import org.easy.ai.model.AiModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val offlineUserDataRepository: UserDataRepository
 ) : BaseViewModel<SettingsEvent>() {
     private val _defaultUiState = MutableStateFlow(SettingsUiState())
 
     val settingsUiState =
-        combine(_defaultUiState, userPreferencesRepository.userData) { defaultState, userData ->
+        combine(_defaultUiState, offlineUserDataRepository.userData) { defaultState, userData ->
             defaultState.copy(
-                apiKey = userData.apiKeys[ModelPlatform.GEMINI.name].orEmpty(),
-                model = AIModel.fromModelName(userData.modelName),
+                apiKey = userData.apiKeys[AiModel.GEMINI.name].orEmpty(),
+                model = userData.activatedModel,
                 isAutomaticSaveChat = userData.isAutomaticSaveChat
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), SettingsUiState())
 
-    private fun updateAiModel(modelName: String) {
+    private fun updateAiModel(model: AiModel) {
         viewModelScope.launch {
-            userPreferencesRepository.updateAiModel(modelName)
+            offlineUserDataRepository.selectedAiModel(model)
         }
     }
 
     private fun updateApiKey(apiKey: String) {
         viewModelScope.launch {
-            userPreferencesRepository.updateApiKey(apiKey)
+            offlineUserDataRepository.setAiModelApiKey(AiModel.GEMINI, apiKey)
         }
     }
 
     private fun updateAutomaticSave(isAutomatic: Boolean) {
-        viewModelScope.launch { userPreferencesRepository.updateAutomaticSaveChat(isAutomatic) }
+
     }
 
 
@@ -64,7 +63,7 @@ class SettingsViewModel @Inject constructor(
                 _defaultUiState.update { it.copy(isModelListShowed = false) }
             }
 
-            is SettingsEvent.SavedModel -> updateAiModel(event.model.name)
+            is SettingsEvent.SavedModel -> updateAiModel(event.model)
             is SettingsEvent.SavedApiKey -> updateApiKey(event.apiKey)
             is SettingsEvent.AutomaticSaveChatChanged -> updateAutomaticSave(event.isChecked)
         }

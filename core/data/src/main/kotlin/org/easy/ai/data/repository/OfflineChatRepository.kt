@@ -10,12 +10,12 @@ import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
 import org.easy.ai.model.ChatMessageUiModel
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.Participant
 import java.util.UUID
 import javax.inject.Inject
 
-class LocalChatRepository @Inject constructor(
+class OfflineChatRepository @Inject constructor(
     private val chatDao: ChatDao,
     private val messageDao: MessageDao
 ) : ChatRepository {
@@ -23,7 +23,7 @@ class LocalChatRepository @Inject constructor(
         return chatDao.getAllChats().map { it.map(ChatEntity::asExternalModel) }
     }
 
-    override suspend fun saveChat(chatId: String?, name: String, platform: ModelPlatform) {
+    override suspend fun saveChat(chatId: String?, name: String, platform: AiModel) {
         chatDao.insert(
             ChatEntity(
                 chatId = chatId ?: UUID.randomUUID().toString(),

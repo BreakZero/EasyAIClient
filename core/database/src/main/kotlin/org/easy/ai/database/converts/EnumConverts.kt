@@ -1,15 +1,15 @@
 package org.easy.ai.database.converts
 
 import androidx.room.TypeConverter
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.Participant
 
 class EnumConverts {
     @TypeConverter
-    fun toModelPlatform(value: String) = enumValueOf<ModelPlatform>(value)
+    fun toAiModel(value: String) = enumValueOf<AiModel>(value)
 
     @TypeConverter
-    fun fromModelPlatform(value: ModelPlatform) = value.name
+    fun fromAiModel(value: AiModel) = value.name
 
     @TypeConverter
     fun toParticipant(value: String) = enumValueOf<Participant>(value)

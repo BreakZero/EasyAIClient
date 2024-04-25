@@ -11,7 +11,7 @@ import org.easy.ai.data.testdoubles.TestChatDao
 import org.easy.ai.data.testdoubles.TestMessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.Participant
 import org.junit.After
 import org.junit.Before
@@ -23,9 +23,9 @@ class LocalChatRepositoryTest {
 
     private lateinit var messageDao: TestMessageDao
     private lateinit var chatDao: TestChatDao
-    private lateinit var localChatRepository: LocalChatRepository
+    private lateinit var localChatRepository: OfflineChatRepository
 
-    private val mockChat = ChatEntity("chat_id", "chat_name", ModelPlatform.GEMINI, 888)
+    private val mockChat = ChatEntity("chat_id", "chat_name", AiModel.GEMINI, 888)
     private val mockMessage = MessageEntity(
         messageId = 0L,
         participant = Participant.USER,
@@ -38,7 +38,7 @@ class LocalChatRepositoryTest {
     fun setup() {
         messageDao = TestMessageDao()
         chatDao = TestChatDao()
-        localChatRepository = LocalChatRepository(chatDao, messageDao)
+        localChatRepository = OfflineChatRepository(chatDao, messageDao)
     }
 
     @After
@@ -78,7 +78,7 @@ class LocalChatRepositoryTest {
         localChatRepository.saveChat(
             chatId = "saving-chat",
             name = "saving_chat",
-            platform = ModelPlatform.GEMINI
+            platform = AiModel.GEMINI
         )
         assertEquals(
             1,
@@ -91,7 +91,7 @@ class LocalChatRepositoryTest {
         localChatRepository.saveChat(
             chatId = null,
             name = "saving_chat",
-            platform = ModelPlatform.GEMINI
+            platform = AiModel.GEMINI
         )
         assertEquals(
             "saving_chat",
@@ -104,7 +104,7 @@ class LocalChatRepositoryTest {
         localChatRepository.saveChat(
             chatId = "saving-chat",
             name = "saving_chat",
-            platform = ModelPlatform.GEMINI
+            platform = AiModel.GEMINI
         )
         localChatRepository.saveMessage(
             "saving-chat",

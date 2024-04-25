@@ -2,7 +2,7 @@ package org.easy.ai.datastore
 
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
-import org.easy.ai.model.ModelPlatform
+import org.easy.ai.model.AiModel
 import org.easy.ai.model.UserData
 import javax.inject.Inject
 
@@ -11,37 +11,31 @@ class UserPreferencesDataSource @Inject constructor(
 ) {
     val userData = userPreferences.data.map {
         UserData(
-            modelName = it.modelName,
+            activatedModel = when (it.activatedModel) {
+                AiModelProto.AI_CHAT_GPT -> AiModel.CHAT_GPT
+                else -> AiModel.GEMINI
+            },
             apiKeys = it.apiKeysMap,
             isAutomaticSaveChat = it.automaticSaveChat
         )
     }
 
-    suspend fun addApiKey(modelPlatform: ModelPlatform, apiKey: String) {
+    suspend fun addApiKey(aiModel: AiModel, apiKey: String) {
         userPreferences.updateData {
             it.copy {
-                apiKeys.put(modelPlatform.name, apiKey)
+                apiKeys.put(aiModel.name, apiKey)
             }
         }
     }
 
-    suspend fun updateAiModel(modelName: String) {
-        userPreferences.updateData {
-            it.copy { this.modelName = modelName }
-        }
-    }
-
-    suspend fun updateApiKey(apiKey: String) {
+    suspend fun updateAiModel(aiModel: AiModel) {
         userPreferences.updateData {
             it.copy {
-                apiKeys.put(ModelPlatform.GEMINI.name, apiKey)
+                activatedModel = when (aiModel) {
+                    AiModel.GEMINI -> AiModelProto.AI_GEMINI
+                    AiModel.CHAT_GPT -> AiModelProto.AI_CHAT_GPT
+                }
             }
-        }
-    }
-
-    suspend fun updateAutomaticSaveChat(isAutomaticSave: Boolean) {
-        userPreferences.updateData {
-            it.copy { this.automaticSaveChat = isAutomaticSave }
         }
     }
 }

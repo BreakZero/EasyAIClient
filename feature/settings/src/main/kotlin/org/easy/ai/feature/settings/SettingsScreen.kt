@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
 import org.easy.ai.feature.settings.components.ModelList
-import org.easy.ai.model.AIModel
+import org.easy.ai.model.AiModel
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
 
@@ -134,7 +134,7 @@ internal fun SettingsScreen(
         }
         if (settingsUiState.isModelListShowed) {
             ModelList(
-                models = AIModel.values().toList(),
+                models = AiModel.values().toList(),
                 default = settingsUiState.model,
                 onDismiss = { onEvent(SettingsEvent.HideModelList) },
                 onSelected = {
