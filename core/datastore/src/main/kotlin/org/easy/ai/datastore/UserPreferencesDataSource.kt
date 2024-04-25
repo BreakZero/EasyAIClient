@@ -13,7 +13,8 @@ class UserPreferencesDataSource @Inject constructor(
         UserData(
             activatedModel = when (it.activatedModel) {
                 AiModelProto.AI_CHAT_GPT -> AiModel.CHAT_GPT
-                else -> AiModel.GEMINI
+                AiModelProto.AI_GEMINI -> AiModel.GEMINI
+                null, AiModelProto.UNRECOGNIZED -> null
             },
             apiKeys = it.apiKeysMap,
             isAutomaticSaveChat = it.automaticSaveChat

@@ -29,7 +29,9 @@ fun NavGraphBuilder.attachSettingsGraph(navController: NavController) {
         }
 
         composable(aiModelManagerRoute) {
-            AiModelManagerRoute()
+            AiModelManagerRoute(
+                popBack = navController::popBackStack
+            )
         }
     }
 }

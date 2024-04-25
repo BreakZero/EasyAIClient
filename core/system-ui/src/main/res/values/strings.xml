@@ -11,4 +11,6 @@
     <string name="text_text_generator">Text Generator</string>
     <string name="action_go_to_settings">Go to Settings</string>
     <string name="text_supported_model">Supported Models</string>
+    <string name="text_ai_model_manager">Manage Ai Model</string>
+    <string name="text_activated_ai">Current Activated</string>
 </resources>

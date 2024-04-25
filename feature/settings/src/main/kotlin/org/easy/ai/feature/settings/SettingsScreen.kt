@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,9 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.easy.ai.common.ObserveAsEvents
-import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
-import org.easy.ai.feature.settings.components.ModelList
-import org.easy.ai.model.AiModel
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
 
@@ -42,7 +38,7 @@ fun SettingsRoute(
     val settingsUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
 
     ObserveAsEvents(flow = settingsViewModel.navigationEvents) {
-        when(it) {
+        when (it) {
             is SettingsEvent.ToAiModelManager -> navigateToAiModels()
             else -> Unit
         }
@@ -86,48 +82,22 @@ internal fun SettingsScreen(
                         onEvent(SettingsEvent.ToAiModelManager)
                     }),
                 headlineContent = {
-                    Text(text = stringResource(id = R.string.text_choose_model))
+                    Column {
+                        Text(
+                            style = MaterialTheme.typography.titleMedium,
+                            text = stringResource(id = R.string.text_ai_model_manager)
+                        )
+                        Text(
+                            style = MaterialTheme.typography.labelSmall,
+                            text = stringResource(id = R.string.text_activated_ai)
+                        )
+                    }
                 },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = settingsUiState.model.name)
+                        Text(text = settingsUiState.activatedAiModel?.name.orEmpty())
                         Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
                     }
-                }
-            )
-            ListItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onEvent(SettingsEvent.ShowApiKeyEditor)
-                    },
-                headlineContent = {
-                    Text(text = stringResource(id = R.string.text_enter_apikey))
-                },
-                trailingContent = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "******")
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-            ListItem(
-                modifier = Modifier.clickable { },
-                headlineContent = {
-                    Text(text = stringResource(id = R.string.text_automatic_save_chat))
-                },
-                trailingContent = {
-                    Switch(
-                        checked = settingsUiState.isAutomaticSaveChat,
-                        onCheckedChange = {
-                            onEvent(SettingsEvent.AutomaticSaveChatChanged(it))
-                        }
-                    )
                 }
             )
 
@@ -139,26 +109,6 @@ internal fun SettingsScreen(
                     Text(text = "About EasyAI")
                 }
             )
-        }
-        if (settingsUiState.isApiKeyEditorShowed) {
-            ApiKeyEditorDialog(
-                initialKey = settingsUiState.apiKey,
-                applyApiKeyChanged = {
-                    onEvent(SettingsEvent.SavedApiKey(it))
-                },
-                onDismiss = {
-                    onEvent(SettingsEvent.HideApiKeyEditor)
-                }
-            )
-        }
-        if (settingsUiState.isModelListShowed) {
-            ModelList(
-                models = AiModel.values().toList(),
-                default = settingsUiState.model,
-                onDismiss = { onEvent(SettingsEvent.HideModelList) },
-                onSelected = {
-                    onEvent(SettingsEvent.SavedModel(it))
-                })
         }
     }
 }
