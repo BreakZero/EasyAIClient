@@ -66,6 +66,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.SavedModel -> updateAiModel(event.model)
             is SettingsEvent.SavedApiKey -> updateApiKey(event.apiKey)
             is SettingsEvent.AutomaticSaveChatChanged -> updateAutomaticSave(event.isChecked)
+            is SettingsEvent.ToAiModelManager -> dispatchNavigationEvent(event)
         }
     }
 }

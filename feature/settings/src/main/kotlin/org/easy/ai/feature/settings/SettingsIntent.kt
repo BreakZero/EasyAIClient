@@ -21,4 +21,6 @@ sealed interface SettingsEvent {
     data class AutomaticSaveChatChanged(val isChecked: Boolean): SettingsEvent
     data class SavedModel(val model: AiModel) : SettingsEvent
     data class SavedApiKey(val apiKey: String) : SettingsEvent
+
+    data object ToAiModelManager: SettingsEvent
 }

@@ -1,7 +1,6 @@
 package org.easy.ai.feature.settings
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.easy.ai.common.ObserveAsEvents
 import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
 import org.easy.ai.feature.settings.components.ModelList
 import org.easy.ai.model.AiModel
@@ -35,9 +35,19 @@ import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
 
 @Composable
-fun SettingsRoute() {
+fun SettingsRoute(
+    navigateToAiModels: () -> Unit
+) {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val settingsUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(flow = settingsViewModel.navigationEvents) {
+        when(it) {
+            is SettingsEvent.ToAiModelManager -> navigateToAiModels()
+            else -> Unit
+        }
+    }
+
     SettingsScreen(
         settingsUiState,
         onEvent = settingsViewModel::onEvent
@@ -73,7 +83,7 @@ internal fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = {
-                        onEvent(SettingsEvent.ShowModelList)
+                        onEvent(SettingsEvent.ToAiModelManager)
                     }),
                 headlineContent = {
                     Text(text = stringResource(id = R.string.text_choose_model))
@@ -118,6 +128,15 @@ internal fun SettingsScreen(
                             onEvent(SettingsEvent.AutomaticSaveChatChanged(it))
                         }
                     )
+                }
+            )
+
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { },
+                headlineContent = {
+                    Text(text = "About EasyAI")
                 }
             )
         }

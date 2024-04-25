@@ -10,4 +10,5 @@
     <string name="text_multimodal">Multi Modal</string>
     <string name="text_text_generator">Text Generator</string>
     <string name="action_go_to_settings">Go to Settings</string>
+    <string name="text_supported_model">Supported Models</string>
 </resources>
