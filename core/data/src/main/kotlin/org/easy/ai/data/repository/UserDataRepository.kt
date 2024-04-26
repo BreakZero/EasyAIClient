@@ -9,5 +9,5 @@ interface UserDataRepository {
 
     suspend fun setAiModelApiKey(model: AiModel, apiKey: String)
 
-    suspend fun selectedAiModel(model: AiModel)
+    suspend fun setDefaultChatAiModel(model: AiModel)
 }

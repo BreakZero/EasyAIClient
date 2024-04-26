@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.window.DialogProperties
+import org.easy.ai.model.AiModel
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.EasyAITheme
 
@@ -22,9 +23,10 @@ import org.easy.ai.system.ui.EasyAITheme
 @Composable
 internal fun ApiKeyEditorDialog(
     modifier: Modifier = Modifier,
+    aiModel: AiModel,
     initialKey: String,
     onDismiss: () -> Unit,
-    applyApiKeyChanged: (String) -> Unit
+    applyApiKeyChanged: (AiModel, String) -> Unit
 ) {
     val apiKeyTextField = rememberTextFieldState(initialKey)
     AlertDialog(
@@ -32,7 +34,7 @@ internal fun ApiKeyEditorDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(onClick = {
-                applyApiKeyChanged(apiKeyTextField.text.toString())
+                applyApiKeyChanged(aiModel, apiKeyTextField.text.toString())
                 onDismiss()
             }, enabled = apiKeyTextField.text.isNotBlank()) {
                 Text(text = "Confirm")
@@ -44,7 +46,7 @@ internal fun ApiKeyEditorDialog(
             }
         },
         properties = DialogProperties(),
-        title = {},
+        title = { Text(text = "Enter ${aiModel.name} API Key") },
         text = {
             BasicTextField2(
                 modifier = Modifier.fillMaxWidth(),
@@ -72,7 +74,7 @@ internal fun ApiKeyEditorDialog(
 @Composable
 private fun ApiEditor_Preview() {
     EasyAITheme {
-        ApiKeyEditorDialog(initialKey = "", onDismiss = { /*TODO*/ }) {
+        ApiKeyEditorDialog(initialKey = "", aiModel = AiModel.GEMINI, onDismiss = { /*TODO*/ }) { _,_ ->
 
         }
     }

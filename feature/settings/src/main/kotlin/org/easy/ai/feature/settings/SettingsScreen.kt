@@ -1,7 +1,6 @@
 package org.easy.ai.feature.settings
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,14 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -28,18 +26,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.easy.ai.feature.settings.components.ApiKeyEditorDialog
-import org.easy.ai.feature.settings.components.ModelList
-import org.easy.ai.model.AiModel
+import org.easy.ai.common.ObserveAsEvents
+import org.easy.ai.feature.settings.components.AiModelListDialog
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
 
 @Composable
-fun SettingsRoute() {
+fun SettingsRoute(
+    navigateToAiModels: () -> Unit,
+    popBack: () -> Unit
+) {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val settingsUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(flow = settingsViewModel.navigationEvents) {
+        when (it) {
+            SettingsEvent.NavigateToAiModelManager -> navigateToAiModels()
+            SettingsEvent.NavigateToAbout -> {}
+            else -> Unit
+        }
+    }
+
     SettingsScreen(
         settingsUiState,
+        popBack = popBack,
         onEvent = settingsViewModel::onEvent
     )
 }
@@ -49,13 +59,14 @@ fun SettingsRoute() {
 @Composable
 internal fun SettingsScreen(
     settingsUiState: SettingsUiState,
+    popBack: () -> Unit,
     onEvent: (SettingsEvent) -> Unit
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(navigationIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = popBack) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = null
@@ -73,73 +84,66 @@ internal fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = {
-                        onEvent(SettingsEvent.ShowModelList)
+                        onEvent(SettingsEvent.NavigateToAiModelManager)
                     }),
                 headlineContent = {
-                    Text(text = stringResource(id = R.string.text_choose_model))
+                    Text(
+                        style = MaterialTheme.typography.titleMedium,
+                        text = stringResource(id = R.string.text_ai_model_manager)
+                    )
+                },
+                trailingContent = {
+                    Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                }
+            )
+
+            ListItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+                        onEvent(SettingsEvent.OpenSelector)
+                    }),
+                headlineContent = {
+                    Column {
+                        Text(
+                            style = MaterialTheme.typography.titleMedium,
+                            text = stringResource(id = R.string.text_default_chat_model)
+                        )
+                        Text(
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.typography.labelSmall.color.copy(alpha = 0.6f),
+                            text = stringResource(id = R.string.text_the_ai_using_for_chat)
+                        )
+                    }
                 },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = settingsUiState.model.name)
+                        Text(text = settingsUiState.defaultChatAi?.name.orEmpty())
                         Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
                     }
                 }
             )
+
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        onEvent(SettingsEvent.ShowApiKeyEditor)
-                    },
+                    .clickable { onEvent(SettingsEvent.NavigateToAbout) },
                 headlineContent = {
-                    Text(text = stringResource(id = R.string.text_enter_apikey))
-                },
-                trailingContent = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = "******")
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
-            ListItem(
-                modifier = Modifier.clickable { },
-                headlineContent = {
-                    Text(text = stringResource(id = R.string.text_automatic_save_chat))
-                },
-                trailingContent = {
-                    Switch(
-                        checked = settingsUiState.isAutomaticSaveChat,
-                        onCheckedChange = {
-                            onEvent(SettingsEvent.AutomaticSaveChatChanged(it))
-                        }
+                    Text(
+                        style = MaterialTheme.typography.titleMedium, text = "About EasyAI"
                     )
                 }
             )
         }
-        if (settingsUiState.isApiKeyEditorShowed) {
-            ApiKeyEditorDialog(
-                initialKey = settingsUiState.apiKey,
-                applyApiKeyChanged = {
-                    onEvent(SettingsEvent.SavedApiKey(it))
-                },
-                onDismiss = {
-                    onEvent(SettingsEvent.HideApiKeyEditor)
+
+        if (settingsUiState.showAiSelector) {
+            AiModelListDialog(
+                default = settingsUiState.defaultChatAi,
+                onDismiss = { onEvent(SettingsEvent.CloseSelector) },
+                onSelected = {
+                    onEvent(SettingsEvent.OnChatAiChanged(it))
                 }
             )
-        }
-        if (settingsUiState.isModelListShowed) {
-            ModelList(
-                models = AiModel.values().toList(),
-                default = settingsUiState.model,
-                onDismiss = { onEvent(SettingsEvent.HideModelList) },
-                onSelected = {
-                    onEvent(SettingsEvent.SavedModel(it))
-                })
         }
     }
 }
@@ -150,6 +154,7 @@ private fun SettingsScreen_Preview() {
     Surface(modifier = Modifier.fillMaxSize()) {
         SettingsScreen(
             settingsUiState = SettingsUiState(),
+            popBack = {},
             onEvent = {}
         )
     }
