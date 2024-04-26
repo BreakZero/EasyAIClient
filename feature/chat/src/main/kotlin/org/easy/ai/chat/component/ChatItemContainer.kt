@@ -40,21 +40,17 @@ internal fun ChatItemContainer(
 
     val swipeToDismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            when (it) {
-                SwipeToDismissBoxValue.StartToEnd -> false
-                SwipeToDismissBoxValue.EndToStart -> {
-                    onDelete()
-                    true
-                }
-
-                SwipeToDismissBoxValue.Settled -> false
+            if (it == SwipeToDismissBoxValue.EndToStart) {
+                onDelete()
             }
+            false
         }
     )
 
     SwipeToDismissBox(
         modifier = modifier.clip(RoundedCornerShape(MaterialTheme.localDim.spaceSmall)),
         state = swipeToDismissState,
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
             Box(
                 contentAlignment = Alignment.CenterEnd,
