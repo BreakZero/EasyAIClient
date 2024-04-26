@@ -11,7 +11,7 @@
 > 由于没有拿到Chat GPT的API Key，暂时没有验证，无法提供正确的功能测试和使用。
 
 ### 技术和架构
-EasyAI使用Clear架构设计(参考(nowinandroid)[https://github.com/android/nowinandroid]), MVI的架构模式开发。
+EasyAI使用Clear架构设计(参考[nowinandroid](https://github.com/android/nowinandroid)), MVI的架构模式开发。
 在设计上，使用插件整合的方式实现快速支持AI插件功能实现。
 
 ### 目前支持功能
