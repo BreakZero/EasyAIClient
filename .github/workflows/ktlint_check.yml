@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  unit_test_coverage:
+  code_style_check:
     runs-on: macos-latest
 
     steps:
