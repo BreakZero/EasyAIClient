@@ -34,13 +34,11 @@ import org.easy.ai.system.ui.localDim
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PluginListRoute(
-    onPluginClick: (Plugin) -> Unit,
-    popBack: () -> Unit
-) {
+internal fun PluginListRoute(onPluginClick: (Plugin) -> Unit, popBack: () -> Unit) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Supported Plugins") },
+            TopAppBar(
+                title = { Text(text = "Supported Plugins") },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
                         Icon(
@@ -48,8 +46,9 @@ internal fun PluginListRoute(
                             contentDescription = null
                         )
                     }
-                })
-        },
+                }
+            )
+        }
     ) { paddingValues ->
         val plugins = remember {
             supportedPlugins()
@@ -75,7 +74,6 @@ internal fun PluginListRoute(
         }
     }
 }
-
 
 @Composable
 internal fun PluginView(
@@ -105,7 +103,8 @@ internal fun PluginView(
                             .background(MaterialTheme.colorScheme.secondaryContainer)
                             .padding(4.dp),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        style = MaterialTheme.typography.labelSmall, text = it.name
+                        style = MaterialTheme.typography.labelSmall,
+                        text = it.name
                     )
                 }
             }
@@ -118,7 +117,6 @@ internal fun PluginView(
 private fun PluginView_Preview() {
     EasyAITheme {
         PluginView(plugin = supportedPlugins().first()) {
-
         }
     }
 }

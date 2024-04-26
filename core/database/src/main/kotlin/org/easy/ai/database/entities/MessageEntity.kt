@@ -9,7 +9,8 @@ import androidx.room.Relation
 import org.easy.ai.model.Participant
 
 @Entity(
-    tableName = "tb_message", foreignKeys = [
+    tableName = "tb_message",
+    foreignKeys = [
         ForeignKey(
             entity = ChatEntity::class,
             parentColumns = arrayOf("chat_id"),

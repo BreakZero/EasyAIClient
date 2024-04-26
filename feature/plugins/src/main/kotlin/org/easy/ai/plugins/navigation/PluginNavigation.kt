@@ -20,9 +20,7 @@ fun NavController.navigateToMultiModal(navOptions: NavOptions? = null) {
     this.navigate(multiModalRoute, navOptions)
 }
 
-fun NavGraphBuilder.attachPluginRoutes(
-    navController: NavController
-) {
+fun NavGraphBuilder.attachPluginRoutes(navController: NavController) {
     navigation(route = pluginEntryRoute, startDestination = pluginListRoute) {
         composable(pluginListRoute) {
             PluginListRoute(

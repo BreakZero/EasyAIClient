@@ -65,7 +65,9 @@ internal fun AiModelListDialog(
                             }
                             .padding(MaterialTheme.localDim.spaceSmall),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceSmall)
+                        horizontalArrangement = Arrangement.spacedBy(
+                            MaterialTheme.localDim.spaceSmall
+                        )
                     ) {
                         RadioButton(
                             selected = selectedItem == model,
@@ -80,7 +82,9 @@ internal fun AiModelListDialog(
                             if (model == AiModel.CHAT_GPT) {
                                 Text(
                                     style = MaterialTheme.typography.labelSmall,
-                                    text = stringResource(id = R.string.text_ai_model_not_supported_yet)
+                                    text = stringResource(
+                                        id = R.string.text_ai_model_not_supported_yet
+                                    )
                                 )
                             }
                         }

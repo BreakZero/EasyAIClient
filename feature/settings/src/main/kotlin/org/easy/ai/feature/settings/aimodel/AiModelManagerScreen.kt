@@ -27,9 +27,7 @@ import org.easy.ai.system.ui.R
 import org.easy.ai.system.ui.localDim
 
 @Composable
-internal fun AiModelManagerRoute(
-    popBack: () -> Unit
-) {
+internal fun AiModelManagerRoute(popBack: () -> Unit) {
     val viewModel: AiModelManagerViewModel = hiltViewModel()
     val aiModels by viewModel.aiModels.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

@@ -16,18 +16,18 @@ internal data class GenerateContentResponse(
     @SerialName("candidates")
     val candidates: List<Candidate>? = null,
     @SerialName("promptFeedback")
-    val promptFeedback: PromptFeedback? = null,
+    val promptFeedback: PromptFeedback? = null
 ) : Response {
     val text: String? by lazy { firstPartAs<TextPart>()?.text }
 
     private inline fun <reified T : Part> firstPartAs(): T? {
-        val _candidates = candidates.orEmpty()
-        if (_candidates.isEmpty()) {
+        val candidates_ = candidates.orEmpty()
+        if (candidates_.isEmpty()) {
             warn("No candidates were found, but was asked to get a candidate.")
             return null
         }
 
-        val (parts, otherParts) = _candidates.first().content!!.parts.partition { it is T }
+        val (parts, otherParts) = candidates_.first().content!!.parts.partition { it is T }
         val type = T::class.simpleName ?: "of the part type you asked for"
 
         if (parts.isEmpty()) {

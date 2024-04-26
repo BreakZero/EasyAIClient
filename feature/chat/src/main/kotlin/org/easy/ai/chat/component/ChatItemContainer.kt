@@ -34,9 +34,13 @@ internal fun ChatItemContainer(
     onItemClick: (ChatUiModel) -> Unit,
     onDelete: () -> Unit
 ) {
-    val colors = if (isSelected) ListItemDefaults.colors(
-        containerColor = MaterialTheme.colorScheme.primaryContainer
-    ) else ListItemDefaults.colors()
+    val colors = if (isSelected) {
+        ListItemDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    } else {
+        ListItemDefaults.colors()
+    }
 
     val swipeToDismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
@@ -60,7 +64,8 @@ internal fun ChatItemContainer(
             ) {
                 Icon(
                     modifier = Modifier.minimumInteractiveComponentSize(),
-                    imageVector = Icons.Default.Delete, contentDescription = null
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null
                 )
             }
         }

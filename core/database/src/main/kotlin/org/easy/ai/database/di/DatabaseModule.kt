@@ -16,9 +16,7 @@ import org.easy.ai.database.migration.MIGRATION_3_4
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     @Provides
-    fun providesDatabase(
-        @ApplicationContext context: Context
-    ): EasyAIDatabase {
+    fun providesDatabase(@ApplicationContext context: Context): EasyAIDatabase {
         return Room.databaseBuilder(context, EasyAIDatabase::class.java, "easy_ai.db")
             .addMigrations(
                 MIGRATION_1_2,

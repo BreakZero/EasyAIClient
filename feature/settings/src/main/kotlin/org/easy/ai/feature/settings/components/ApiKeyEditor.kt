@@ -74,8 +74,11 @@ internal fun ApiKeyEditorDialog(
 @Composable
 private fun ApiEditor_Preview() {
     EasyAITheme {
-        ApiKeyEditorDialog(initialKey = "", aiModel = AiModel.GEMINI, onDismiss = { /*TODO*/ }) { _,_ ->
-
+        ApiKeyEditorDialog(
+            initialKey = "",
+            aiModel = AiModel.GEMINI,
+            onDismiss = { /*TODO*/ }
+        ) { _, _ ->
         }
     }
 }

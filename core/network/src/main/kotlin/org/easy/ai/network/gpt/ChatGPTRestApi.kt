@@ -1,4 +1,3 @@
 package org.easy.ai.network.gpt
 
-interface ChatGPTRestApi {
-}
+interface ChatGPTRestApi

@@ -1,7 +1,7 @@
 package org.easy.ai.plugins.index
 
-import org.easy.ai.model.AiModel
 import javax.annotation.concurrent.Immutable
+import org.easy.ai.model.AiModel
 
 @Immutable
 data class Plugin(
@@ -17,4 +17,3 @@ internal fun supportedPlugins(): List<Plugin> {
         )
     )
 }
-

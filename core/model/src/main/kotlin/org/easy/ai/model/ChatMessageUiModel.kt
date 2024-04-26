@@ -1,11 +1,14 @@
 package org.easy.ai.model
 
 enum class Participant {
-    USER, MODEL
+    USER,
+    MODEL
 }
 
 enum class MessageType {
-    ERROR, PENDING, SUCCESS
+    ERROR,
+    PENDING,
+    SUCCESS
 }
 
 data class ChatMessage(

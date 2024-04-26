@@ -3,6 +3,7 @@ package org.easy.ai.feature.settings.aimodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.data.repository.UserDataRepository
 import org.easy.ai.model.AiModel
-import javax.inject.Inject
 
 @HiltViewModel
 internal class AiModelManagerViewModel @Inject constructor(

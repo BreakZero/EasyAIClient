@@ -2,6 +2,7 @@ package org.easy.ai.feature.settings
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.repository.UserDataRepository
-import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
@@ -34,7 +34,9 @@ class SettingsViewModel @Inject constructor(
 
             SettingsEvent.OpenSelector -> selectorSwitcher.update { true }
             SettingsEvent.CloseSelector -> selectorSwitcher.update { false }
-            SettingsEvent.NavigateToAiModelManager, SettingsEvent.NavigateToAbout -> dispatchNavigationEvent(event)
+            SettingsEvent.NavigateToAiModelManager, SettingsEvent.NavigateToAbout -> dispatchNavigationEvent(
+                event
+            )
         }
     }
 }

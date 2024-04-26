@@ -23,10 +23,13 @@ class ImagePicker @Inject constructor(
                     activityContext.contentResolver.openInputStream(uri)?.use { it.readBytes() }
                 }
                 onContentPicker(imagesByte)
-            })
+            }
+        )
     }
 
     fun startImagePicker() {
-        contentLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        contentLauncher.launch(
+            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
     }
 }

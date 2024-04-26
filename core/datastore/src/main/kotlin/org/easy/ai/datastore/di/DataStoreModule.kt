@@ -9,6 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import org.easy.ai.common.network.Dispatcher
@@ -16,7 +17,6 @@ import org.easy.ai.common.network.EasyDispatchers
 import org.easy.ai.common.network.di.ApplicationScope
 import org.easy.ai.datastore.UserPreferences
 import org.easy.ai.datastore.UserPreferencesSerializer
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

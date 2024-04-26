@@ -16,9 +16,11 @@ fun EasyAIClientApp(
     windowSizeClass: WindowSizeClass,
     appState: EasyAIClientAppState = rememberAppState(windowSizeClass = windowSizeClass)
 ) {
-    Surface(modifier = Modifier.semantics {
-        testTagsAsResourceId = true
-    }) {
+    Surface(
+        modifier = Modifier.semantics {
+            testTagsAsResourceId = true
+        }
+    ) {
         EasyBackground {
             EasyAIHost(appState = appState)
         }

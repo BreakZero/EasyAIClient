@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import org.easy.ai.data.aimodel.ChatGPTModelRepository
 import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.data.plugins.ChatPlugin
@@ -13,7 +14,6 @@ import org.easy.ai.data.repository.OfflineChatRepository
 import org.easy.ai.data.repository.OfflineUserDataRepository
 import org.easy.ai.data.repository.UserDataRepository
 import org.easy.ai.model.AiModel
-import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
@@ -34,19 +34,13 @@ abstract class DataModule {
 
     @Binds
     @ModelPlatformQualifier(AiModel.GEMINI)
-    abstract fun bindGeminiChatPlugin(
-        geminiModel: GeminiModelRepository
-    ): ChatPlugin
+    abstract fun bindGeminiChatPlugin(geminiModel: GeminiModelRepository): ChatPlugin
 
     @Binds
     @ModelPlatformQualifier(AiModel.GEMINI)
-    abstract fun bindChatGPTChatPlugin(
-        chatGptModel: ChatGPTModelRepository
-    ): ChatPlugin
+    abstract fun bindChatGPTChatPlugin(chatGptModel: ChatGPTModelRepository): ChatPlugin
 
     @Binds
     @ModelPlatformQualifier(AiModel.GEMINI)
-    abstract fun bindGeminiMultiModalPlugin(
-        geminiModel: GeminiModelRepository
-    ): MultiModalPlugin
+    abstract fun bindGeminiMultiModalPlugin(geminiModel: GeminiModelRepository): MultiModalPlugin
 }

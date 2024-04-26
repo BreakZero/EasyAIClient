@@ -12,12 +12,8 @@ import org.easy.ai.database.dao.MessageDao
 @InstallIn(SingletonComponent::class)
 object DaosModule {
     @Provides
-    fun providesChatDao(
-        database: EasyAIDatabase
-    ): ChatDao = database.chatDao()
+    fun providesChatDao(database: EasyAIDatabase): ChatDao = database.chatDao()
 
     @Provides
-    fun providesMessageDao(
-        database: EasyAIDatabase
-    ): MessageDao = database.messageDao()
+    fun providesMessageDao(database: EasyAIDatabase): MessageDao = database.messageDao()
 }

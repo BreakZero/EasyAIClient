@@ -59,18 +59,16 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import org.easy.ai.common.tools.ImagePicker
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.EasyAITheme
 import org.easy.ai.system.ui.localDim
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun MultiModalRoute(
-    popBack: () -> Unit
-) {
+internal fun MultiModalRoute(popBack: () -> Unit) {
     val multiModalViewModel: MultiModalViewModel = hiltViewModel()
     val imagePicker = ImagePicker(LocalContext.current)
     imagePicker.RegisterPicker(multiModalViewModel::onImageChanged)
@@ -99,7 +97,8 @@ private fun MultiModalScreen(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("Gemini Multi Modal") },
+            TopAppBar(
+                title = { Text("Gemini Multi Modal") },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
                         Icon(
@@ -107,7 +106,8 @@ private fun MultiModalScreen(
                             contentDescription = null
                         )
                     }
-                })
+                }
+            )
         },
         bottomBar = {
             Button(
@@ -187,7 +187,8 @@ private fun MultiModalScreen(
                     modifier = Modifier
                         .weight(1.0f)
                         .verticalScroll(rememberScrollState()),
-                    style = MaterialTheme.typography.titleMedium, text = it
+                    style = MaterialTheme.typography.titleMedium,
+                    text = it
                 )
             }
         }
@@ -205,9 +206,7 @@ internal fun rememberBitmapFromBytes(imageBytes: List<ByteArray>?): List<ImageBi
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PromptEditor(
-    prompt: TextFieldState
-) {
+private fun PromptEditor(prompt: TextFieldState) {
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -222,33 +221,35 @@ private fun PromptEditor(
             lineLimits = TextFieldLineLimits.MultiLine(3, 8),
             scrollState = scrollState,
             textStyle = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.weight(1.0f),
+            modifier = Modifier.weight(1.0f)
         )
         val direction = LayoutDirection.Rtl
         CompositionLocalProvider(LocalLayoutDirection provides direction) {
-            Slider(modifier = Modifier
-                .graphicsLayer {
-                    rotationZ = 270f
-                    transformOrigin = TransformOrigin(0f, 0f)
-                }
-
-                .layout { measurable, constraints ->
-                    val placeable = measurable.measure(
-                        Constraints(
-                            minWidth = constraints.minHeight,
-                            maxWidth = constraints.maxHeight,
-                            minHeight = constraints.minWidth,
-                            maxHeight = constraints.maxHeight,
-                        )
-                    )
-                    layout(placeable.height, placeable.width) {
-                        placeable.place(-placeable.width, 0)
+            Slider(
+                modifier = Modifier
+                    .graphicsLayer {
+                        rotationZ = 270f
+                        transformOrigin = TransformOrigin(0f, 0f)
                     }
-                }
-                .weight(.2f),
-                value = scrollState.value.toFloat(), onValueChange = {
+                    .layout { measurable, constraints ->
+                        val placeable = measurable.measure(
+                            Constraints(
+                                minWidth = constraints.minHeight,
+                                maxWidth = constraints.maxHeight,
+                                minHeight = constraints.minWidth,
+                                maxHeight = constraints.maxHeight
+                            )
+                        )
+                        layout(placeable.height, placeable.width) {
+                            placeable.place(-placeable.width, 0)
+                        }
+                    }
+                    .weight(.2f),
+                value = scrollState.value.toFloat(),
+                onValueChange = {
                     coroutineScope.launch { scrollState.scrollTo(it.roundToInt()) }
-                }, valueRange = 0f..scrollState.maxValue.toFloat()
+                },
+                valueRange = 0f..scrollState.maxValue.toFloat()
             )
         }
     }
@@ -258,8 +259,7 @@ private fun PromptEditor(
 @ThemePreviews
 @Composable
 private fun PromptEditor_Preview() {
-    EasyAITheme(
-    ) {
+    EasyAITheme {
         PromptEditor(rememberTextFieldState())
     }
 }

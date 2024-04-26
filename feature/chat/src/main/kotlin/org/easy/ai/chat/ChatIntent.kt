@@ -13,9 +13,9 @@ data class ChattingUiState(
 )
 
 sealed interface ChatUiState {
-    data object Initialed: ChatUiState
+    data object Initialed : ChatUiState
 
-    data object NoApiSetup: ChatUiState
+    data object NoApiSetup : ChatUiState
 }
 
 sealed interface ChatEvent {
@@ -24,6 +24,6 @@ sealed interface ChatEvent {
     data class SelectedChat(val chat: ChatUiModel?) : ChatEvent
     data object OnPluginsClicked : ChatEvent
 
-    data object OnSaveChat: ChatEvent
-    data class OnDeleteChat(val chatId: String): ChatEvent
+    data object OnSaveChat : ChatEvent
+    data class OnDeleteChat(val chatId: String) : ChatEvent
 }

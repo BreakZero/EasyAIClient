@@ -4,7 +4,7 @@ import android.util.Log
 
 class GenerateContentResponse(
     val candidates: List<Candidate>,
-    val promptFeedback: PromptFeedback?,
+    val promptFeedback: PromptFeedback?
 ) {
     /** Convenience field representing the first text part in the response, if it exists. */
     val text: String? by lazy { firstPartAs<TextPart>()?.text }

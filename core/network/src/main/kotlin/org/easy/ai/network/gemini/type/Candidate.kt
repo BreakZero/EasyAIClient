@@ -42,7 +42,7 @@ enum class HarmProbability {
     MEDIUM,
 
     /** Probability for harm is high. */
-    HIGH,
+    HIGH
 }
 
 /** Rating for a particular [HarmCategory] with a provided [HarmProbability]. */

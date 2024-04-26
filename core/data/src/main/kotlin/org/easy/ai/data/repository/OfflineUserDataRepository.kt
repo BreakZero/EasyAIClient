@@ -1,14 +1,14 @@
 package org.easy.ai.data.repository
 
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import org.easy.ai.datastore.UserPreferencesDataSource
 import org.easy.ai.model.AiModel
 import org.easy.ai.model.UserData
-import javax.inject.Inject
 
 class OfflineUserDataRepository @Inject constructor(
     private val userDataSource: UserPreferencesDataSource
-) : UserDataRepository{
+) : UserDataRepository {
     override val userData: Flow<UserData>
         get() = userDataSource.userData
 

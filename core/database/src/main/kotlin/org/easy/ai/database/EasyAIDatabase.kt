@@ -19,7 +19,6 @@ import org.easy.ai.database.migration.AutoMigration4To5
     ],
     exportSchema = true
 )
-
 @TypeConverters(EnumConverts::class)
 abstract class EasyAIDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao

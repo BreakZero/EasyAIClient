@@ -15,13 +15,12 @@ internal data class AiModelUiState(
     val selectedKey: String = ""
 )
 
-
 sealed interface AiModelUiEvent {
     data class ClickEdit(
         val aiModel: AiModel,
         val initKey: String
     ) : AiModelUiEvent
 
-    data object EditDone: AiModelUiEvent
-    data class UpdateApiKey(val aiModel: AiModel, val apiKey: String): AiModelUiEvent
+    data object EditDone : AiModelUiEvent
+    data class UpdateApiKey(val aiModel: AiModel, val apiKey: String) : AiModelUiEvent
 }

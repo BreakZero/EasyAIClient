@@ -18,12 +18,12 @@ import org.easy.ai.network.gemini.internal.GenerateContentRequest
 import org.easy.ai.network.gemini.internal.GenerateContentResponse
 import org.easy.ai.network.gemini.internal.Request
 import org.easy.ai.network.gemini.type.Content
+import org.easy.ai.network.gemini.type.Content as PublicContent
 import org.easy.ai.network.gemini.type.FinishReason
 import org.easy.ai.network.gemini.type.PromptBlockedException
 import org.easy.ai.network.gemini.type.ResponseStoppedException
 import org.easy.ai.network.gemini.util.toInternal
 import org.easy.ai.network.gemini.util.toPublic
-import org.easy.ai.network.gemini.type.Content as PublicContent
 
 class GeminiRestApiController internal constructor(
     private val httpClient: HttpClient
@@ -33,11 +33,12 @@ class GeminiRestApiController internal constructor(
         vararg content: PublicContent
     ): org.easy.ai.network.gemini.type.GenerateContentResponse {
         val request = constructRequest(*content)
-        val response = httpClient.post("models/gemini-pro:generateContent") {
-            applyCommonConfiguration(apiKey, request)
-        }.also {
-            validateResponse(it)
-        }.body<GenerateContentResponse>()
+        val response =
+            httpClient.post("models/gemini-pro:generateContent") {
+                applyCommonConfiguration(apiKey, request)
+            }.also {
+                validateResponse(it)
+            }.body<GenerateContentResponse>()
 
         return response.toPublic().validate()
     }
@@ -47,11 +48,12 @@ class GeminiRestApiController internal constructor(
         vararg content: Content
     ): org.easy.ai.network.gemini.type.GenerateContentResponse {
         val request = constructRequest(*content)
-        val response = httpClient.post("models/gemini-pro-vision:generateContent") {
-            applyCommonConfiguration(apiKey, request)
-        }.also {
-            validateResponse(it)
-        }.body<GenerateContentResponse>()
+        val response =
+            httpClient.post("models/gemini-pro-vision:generateContent") {
+                applyCommonConfiguration(apiKey, request)
+            }.also {
+                validateResponse(it)
+            }.body<GenerateContentResponse>()
 
         return response.toPublic().validate()
     }
