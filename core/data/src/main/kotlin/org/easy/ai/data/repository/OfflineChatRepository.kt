@@ -4,13 +4,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.model.asExternalModel
-import org.easy.ai.data.model.asUiModel
 import org.easy.ai.database.dao.ChatDao
 import org.easy.ai.database.dao.MessageDao
 import org.easy.ai.database.entities.ChatEntity
 import org.easy.ai.database.entities.MessageEntity
-import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.AiModel
+import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
 import java.util.UUID
 import javax.inject.Inject
@@ -52,8 +51,8 @@ class OfflineChatRepository @Inject constructor(
         messageDao.insert(entity)
     }
 
-    override suspend fun getMessagesByChat(chatId: String): List<ChatMessageUiModel> {
-        return messageDao.getChatHistoryByChatId(chatId).messages.map(MessageEntity::asUiModel)
+    override suspend fun getMessagesByChat(chatId: String): List<ChatMessage> {
+        return messageDao.getChatHistoryByChatId(chatId).messages.map(MessageEntity::asExternalModel)
     }
 }
 

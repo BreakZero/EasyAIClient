@@ -4,15 +4,4 @@ data class UserData(
     val apiKeys: Map<String, String>,
     val defaultChatModel: AiModel? = null,
     val isAutomaticSaveChat: Boolean
-) {
-    fun validate(): UserDataValidateResult {
-        return when {
-            apiKeys.isEmpty() -> UserDataValidateResult.API_KEY_NULL
-            else -> UserDataValidateResult.NORMAL
-        }
-    }
-}
-
-enum class UserDataValidateResult {
-    MODEL_NAME_NULL, API_KEY_NULL, NORMAL
-}
+)

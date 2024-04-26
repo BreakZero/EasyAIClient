@@ -3,9 +3,9 @@ package org.easy.ai.data.aimodel
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import org.easy.ai.data.model.ChatMessageContent
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.data.plugins.MultiModalPlugin
+import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
 import org.easy.ai.network.gemini.type.content
@@ -16,14 +16,14 @@ class GeminiModelRepository @Inject internal constructor(
 ) : ChatPlugin, MultiModalPlugin {
     override suspend fun sendMessage(
         apiKey: String,
-        history: List<ChatMessageContent>
-    ): ChatMessageContent {
+        history: List<ChatMessage>
+    ): ChatMessage {
         val content = history.map {
-            content(it.participant.name.lowercase()) { text(it.message) }
+            content(it.participant.name.lowercase()) { text(it.content) }
         }
         val response = geminiRestApi.generateContent(apiKey, *content.toTypedArray())
-        return ChatMessageContent(
-            message = response.text.orEmpty(),
+        return ChatMessage(
+            content = response.text.orEmpty(),
             participant = Participant.MODEL
         )
     }

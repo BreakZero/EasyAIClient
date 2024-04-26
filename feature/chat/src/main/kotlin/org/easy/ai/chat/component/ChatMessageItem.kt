@@ -22,24 +22,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.easy.ai.model.ChatMessageUiModel
+import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
 import org.easy.ai.system.ui.localDim
 
 @Composable
 internal fun ChatMessageItemView(
     modifier: Modifier = Modifier,
-    message: ChatMessageUiModel
+    message: ChatMessage
 ) {
     val isUser = message.participant == Participant.USER
-    if (isUser) UserMessage(modifier = modifier, text = message.text, isPending = message.isPending)
-    else ModelMessage(modifier = modifier, text = message.text)
+    if (isUser) UserMessage(modifier = modifier, message = message)
+    else ModelMessage(modifier = modifier, message = message)
 }
 
 @Composable
 private fun ModelMessage(
     modifier: Modifier = Modifier,
-    text: String,
+    message: ChatMessage
 ) {
     val shape = RoundedCornerShape(
         topEnd = MaterialTheme.localDim.spaceSmall,
@@ -60,7 +61,7 @@ private fun ModelMessage(
                 SelectionContainer(
                     modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
                 ) {
-                    Text(text = text)
+                    Text(text = message.content)
                 }
             }
         }
@@ -70,8 +71,7 @@ private fun ModelMessage(
 @Composable
 private fun UserMessage(
     modifier: Modifier = Modifier,
-    text: String,
-    isPending: Boolean
+    message: ChatMessage
 ) {
     val shape = RoundedCornerShape(
         topEnd = MaterialTheme.localDim.default,
@@ -91,7 +91,7 @@ private fun UserMessage(
                 shape = shape
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceExtraSmall)) {
-                    if (isPending) {
+                    if (message.type == MessageType.PENDING) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .padding(MaterialTheme.localDim.spaceExtraSmall)
@@ -101,7 +101,7 @@ private fun UserMessage(
                     SelectionContainer(
                         modifier = Modifier.padding(MaterialTheme.localDim.spaceSmall)
                     ) {
-                        Text(text = text)
+                        Text(text = message.content)
                     }
                 }
             }

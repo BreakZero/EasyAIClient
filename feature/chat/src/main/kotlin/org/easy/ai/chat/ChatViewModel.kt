@@ -1,6 +1,5 @@
 package org.easy.ai.chat
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +14,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
-import org.easy.ai.data.model.ChatMessageContent
 import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.repository.OfflineChatRepository
 import org.easy.ai.domain.Chat
 import org.easy.ai.domain.StartNewChatUseCase
 import org.easy.ai.model.AiModel
-import org.easy.ai.model.ChatMessageUiModel
+import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
 import java.util.UUID
 import javax.inject.Inject
@@ -32,8 +31,8 @@ class ChatViewModel @Inject constructor(
     startNewChatUseCase: StartNewChatUseCase,
 ) : BaseViewModel<ChatEvent>() {
     private val _allLocalChatStream = offlineChatRepository.getAllChats()
-    private val _pendingMessage = MutableStateFlow<ChatMessageUiModel?>(null)
-    private val _chatHistory = MutableStateFlow(emptyList<ChatMessageUiModel>())
+    private val _pendingMessage = MutableStateFlow<ChatMessage?>(null)
+    private val _chatHistory = MutableStateFlow(emptyList<ChatMessage>())
     private val _selectedChat = MutableStateFlow<ChatUiModel?>(null)
 
     private lateinit var chat: Chat
@@ -63,42 +62,43 @@ class ChatViewModel @Inject constructor(
         val newHistory = uiChat?.let {
             offlineChatRepository.getMessagesByChat(it.chatId)
         } ?: emptyList()
-        chat.release(newHistory.map {
-            ChatMessageContent(message = it.text, participant = it.participant)
-        })
+        chat.release(newHistory)
         _selectedChat.update { uiChat }
         _chatHistory.update { newHistory }
     }
 
     private fun sendMessage(userMessage: String) {
-        val uiMessageModel = ChatMessageUiModel(
-            text = userMessage, participant = Participant.USER, isPending = true
+        val sendingMessage = ChatMessage(
+            content = userMessage, participant = Participant.USER, type = MessageType.PENDING
         )
-        _pendingMessage.update { uiMessageModel }
+        _pendingMessage.update { sendingMessage }
 
         chat.sendMessageStream(userMessage)
-            .onEach { content ->
-                _chatHistory.update {
-                    it + uiMessageModel.copy(isPending = false) + ChatMessageUiModel(
-                        text = content.message,
-                        participant = content.participant
-                    )
+            .onEach { message ->
+                if (message.type == MessageType.ERROR) {
+                    // handle error response, ignore save into local
+                    _chatHistory.update {
+                        it + sendingMessage.copy(type = MessageType.ERROR) + message
+                    }
+                } else {
+                    // handle success response, save into local
+                    _selectedChat.value?.run {
+                        offlineChatRepository.saveMessage(
+                            chatId = chatId,
+                            text = userMessage,
+                            participant = Participant.USER
+                        )
+                        offlineChatRepository.saveMessage(
+                            chatId = chatId,
+                            text = message.content,
+                            participant = message.participant
+                        )
+                    }
+                    _chatHistory.update {
+                        it + sendingMessage.copy(type = MessageType.SUCCESS) + message
+                    }
                 }
-                _selectedChat.value?.let {
-                    offlineChatRepository.saveMessage(
-                        chatId = it.chatId,
-                        text = userMessage,
-                        participant = Participant.USER
-                    )
-                    offlineChatRepository.saveMessage(
-                        chatId = it.chatId,
-                        text = content.message,
-                        participant = content.participant
-                    )
-                }
-            }.catch {
-                Log.w("===", it.message.orEmpty())
-            }.onCompletion { resMessage ->
+            }.onCompletion { _ ->
                 clearPendingMessage()
             }.launchIn(viewModelScope)
     }
@@ -110,14 +110,14 @@ class ChatViewModel @Inject constructor(
     private suspend fun saveChat() {
         if (_selectedChat.value != null || _chatHistory.value.isEmpty()) return
         val chatId = UUID.randomUUID().toString()
-        val chatName = _chatHistory.value.first().text
+        val chatName = _chatHistory.value.first().content
         offlineChatRepository.saveChat(
             chatId = chatId,
             name = chatName,
             platform = AiModel.GEMINI
         )
         _chatHistory.value.onEach {
-            offlineChatRepository.saveMessage(chatId, it.text, it.participant)
+            offlineChatRepository.saveMessage(chatId, it.content, it.participant)
         }
         _selectedChat.update {
             offlineChatRepository.getChatById(chatId)
@@ -143,7 +143,9 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.OnDeleteChat -> {
                 viewModelScope.launch {
                     offlineChatRepository.deleteChatById(event.chatId)
-                    onChatSelected(null)
+                    if (_selectedChat.value?.chatId == event.chatId){
+                        onChatSelected(null)
+                    }
                 }
             }
 
