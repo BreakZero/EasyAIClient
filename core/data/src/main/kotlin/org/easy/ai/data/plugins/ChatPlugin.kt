@@ -1,7 +1,7 @@
 package org.easy.ai.data.plugins
 
-import org.easy.ai.data.model.ChatMessageContent
+import org.easy.ai.model.ChatMessage
 
 interface ChatPlugin {
-    suspend fun sendMessage(apiKey: String, history: List<ChatMessageContent>): ChatMessageContent
+    suspend fun sendMessage(apiKey: String, history: List<ChatMessage>): ChatMessage
 }

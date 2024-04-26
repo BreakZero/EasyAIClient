@@ -2,8 +2,8 @@ package org.easy.ai.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import org.easy.ai.data.model.ChatUiModel
-import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.AiModel
+import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
 
 interface ChatRepository {
@@ -16,5 +16,5 @@ interface ChatRepository {
 
     suspend fun saveMessage(chatId: String, text: String, participant: Participant)
 
-    suspend fun getMessagesByChat(chatId: String): List<ChatMessageUiModel>
+    suspend fun getMessagesByChat(chatId: String): List<ChatMessage>
 }

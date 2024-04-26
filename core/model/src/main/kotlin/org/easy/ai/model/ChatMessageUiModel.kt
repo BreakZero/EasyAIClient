@@ -1,10 +1,15 @@
 package org.easy.ai.model
 
 enum class Participant {
-    USER, MODEL, ERROR
+    USER, MODEL
 }
-data class ChatMessageUiModel(
-    val text: String = "",
+
+enum class MessageType {
+    ERROR, PENDING, SUCCESS
+}
+
+data class ChatMessage(
+    val content: String,
     val participant: Participant = Participant.USER,
-    var isPending: Boolean = false
+    val type: MessageType = MessageType.PENDING
 )

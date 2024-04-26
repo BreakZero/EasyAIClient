@@ -2,14 +2,14 @@ package org.easy.ai.chat
 
 import androidx.compose.runtime.Stable
 import org.easy.ai.data.model.ChatUiModel
-import org.easy.ai.model.ChatMessageUiModel
+import org.easy.ai.model.ChatMessage
 
 @Stable
 data class ChattingUiState(
     val chats: List<ChatUiModel> = emptyList(),
     val selectedChat: ChatUiModel? = null,
-    val pendingMessage: ChatMessageUiModel? = null,
-    val chatHistory: List<ChatMessageUiModel> = emptyList()
+    val pendingMessage: ChatMessage? = null,
+    val chatHistory: List<ChatMessage> = emptyList()
 )
 
 sealed interface ChatUiState {

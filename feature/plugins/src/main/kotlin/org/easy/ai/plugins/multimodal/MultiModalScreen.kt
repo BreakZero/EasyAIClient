@@ -178,8 +178,8 @@ private fun MultiModalScreen(
             uiState.error?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.errorContainer
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.error
                 )
             }
             uiState.generateResult?.let {
