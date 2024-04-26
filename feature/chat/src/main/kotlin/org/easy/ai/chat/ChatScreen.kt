@@ -361,7 +361,7 @@ internal fun MessageInput(
                             isError = false,
                             interactionSource = interactionSource,
                             colors = TextFieldDefaults.colors(),
-                            shape = RoundedCornerShape(26.dp)
+                            shape = RoundedCornerShape(MaterialTheme.localDim.spaceMedium)
                         )
                     }
                 )
