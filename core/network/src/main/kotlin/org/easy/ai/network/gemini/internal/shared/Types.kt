@@ -17,12 +17,16 @@ internal object HarmCategorySerializer :
 internal enum class HarmCategory {
     @SerialName("UNKNOWN")
     UNKNOWN,
+
     @SerialName("HARM_CATEGORY_HARASSMENT")
     HARASSMENT,
+
     @SerialName("HARM_CATEGORY_HATE_SPEECH")
     HATE_SPEECH,
+
     @SerialName("HARM_CATEGORY_SEXUALLY_EXPLICIT")
     SEXUALLY_EXPLICIT,
+
     @SerialName("HARM_CATEGORY_DANGEROUS_CONTENT")
     DANGEROUS_CONTENT
 }
@@ -39,17 +43,21 @@ internal data class Content(
 internal sealed interface Part
 
 @Serializable
-internal data class TextPart(@SerialName("text") val text: String) : Part
+internal data class TextPart(
+    @SerialName("text") val text: String
+) : Part
 
 @Serializable
-internal data class BlobPart(@SerialName("inline_data") val inlineData: Blob) : Part
+internal data class BlobPart(
+    @SerialName("inline_data") val inlineData: Blob
+) : Part
 
 @Serializable
 internal data class Blob(
     @SerialName("mime_type")
     val mimeType: String,
     @SerialName("data")
-    val data: Base64,
+    val data: Base64
 )
 
 @Serializable
@@ -67,7 +75,7 @@ internal enum class HarmBlockThreshold {
     BLOCK_LOW_AND_ABOVE,
     BLOCK_MEDIUM_AND_ABOVE,
     BLOCK_ONLY_HIGH,
-    BLOCK_NONE,
+    BLOCK_NONE
 }
 
 internal object PartSerializer : JsonContentPolymorphicSerializer<Part>(Part::class) {

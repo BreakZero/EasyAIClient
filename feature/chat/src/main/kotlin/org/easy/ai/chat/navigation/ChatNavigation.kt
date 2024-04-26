@@ -12,10 +12,7 @@ fun NavController.navigateToChat(navOptions: NavOptions? = null) {
     this.navigate(ChatRoute, navOptions)
 }
 
-fun NavGraphBuilder.attachChat(
-    navigateToPlugins: () -> Unit,
-    navigateToSettings: () -> Unit
-) {
+fun NavGraphBuilder.attachChat(navigateToPlugins: () -> Unit, navigateToSettings: () -> Unit) {
     composable(ChatRoute) {
         ChatRoute(navigateToSettings = navigateToSettings, navigateToPlugins = navigateToPlugins)
     }

@@ -17,7 +17,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-
 class LocalChatRepositoryTest {
     private val testScope = TestScope(UnconfinedTestDispatcher())
 

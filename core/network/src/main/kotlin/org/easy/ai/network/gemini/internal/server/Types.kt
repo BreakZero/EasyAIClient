@@ -21,12 +21,13 @@ internal data class PromptFeedback(
     @SerialName("blockReason")
     val blockReason: BlockReason? = null,
     @SerialName("safetyRatings")
-    val safetyRatings: List<SafetyRating>? = null,
+    val safetyRatings: List<SafetyRating>? = null
 )
 
 @Serializable(BlockReasonSerializer::class)
 internal enum class BlockReason {
     UNKNOWN,
+
     @SerialName("BLOCKED_REASON_UNSPECIFIED")
     UNSPECIFIED,
     SAFETY,
@@ -77,14 +78,19 @@ internal data class SafetyRating(
 internal enum class HarmProbability {
     @SerialName("UNKNOWN")
     UNKNOWN,
+
     @SerialName("HARM_PROBABILITY_UNSPECIFIED")
     UNSPECIFIED,
+
     @SerialName("NEGLIGIBLE")
     NEGLIGIBLE,
+
     @SerialName("LOW")
     LOW,
+
     @SerialName("MEDIUM")
     MEDIUM,
+
     @SerialName("HIGH")
     HIGH
 }
@@ -95,14 +101,19 @@ internal enum class FinishReason {
 //    UNKNOWN,
     @SerialName("FINISH_REASON_UNSPECIFIED")
     UNSPECIFIED,
+
     @SerialName("STOP")
     STOP,
+
     @SerialName("MAX_TOKENS")
     MAX_TOKENS,
+
     @SerialName("SAFETY")
     SAFETY,
+
     @SerialName("RECITATION")
     RECITATION,
+
     @SerialName("OTHER")
     OTHER
 }
@@ -110,5 +121,5 @@ internal enum class FinishReason {
 @Serializable
 internal data class GRpcError(
     val code: Int,
-    val message: String,
+    val message: String
 )

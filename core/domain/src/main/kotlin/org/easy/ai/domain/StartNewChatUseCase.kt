@@ -1,12 +1,12 @@
 package org.easy.ai.domain
 
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.aimodel.ChatGPTModelRepository
 import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.data.repository.UserDataRepository
 import org.easy.ai.model.AiModel
-import javax.inject.Inject
 
 class StartNewChatUseCase @Inject internal constructor(
     private val offlineUserDataRepository: UserDataRepository,

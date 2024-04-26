@@ -28,20 +28,17 @@ import org.easy.ai.model.Participant
 import org.easy.ai.system.ui.localDim
 
 @Composable
-internal fun ChatMessageItemView(
-    modifier: Modifier = Modifier,
-    message: ChatMessage
-) {
+internal fun ChatMessageItemView(modifier: Modifier = Modifier, message: ChatMessage) {
     val isUser = message.participant == Participant.USER
-    if (isUser) UserMessage(modifier = modifier, message = message)
-    else ModelMessage(modifier = modifier, message = message)
+    if (isUser) {
+        UserMessage(modifier = modifier, message = message)
+    } else {
+        ModelMessage(modifier = modifier, message = message)
+    }
 }
 
 @Composable
-private fun ModelMessage(
-    modifier: Modifier = Modifier,
-    message: ChatMessage
-) {
+private fun ModelMessage(modifier: Modifier = Modifier, message: ChatMessage) {
     val shape = RoundedCornerShape(
         topEnd = MaterialTheme.localDim.spaceSmall,
         bottomEnd = MaterialTheme.localDim.spaceSmall,
@@ -69,10 +66,7 @@ private fun ModelMessage(
 }
 
 @Composable
-private fun UserMessage(
-    modifier: Modifier = Modifier,
-    message: ChatMessage
-) {
+private fun UserMessage(modifier: Modifier = Modifier, message: ChatMessage) {
     val shape = RoundedCornerShape(
         topEnd = MaterialTheme.localDim.default,
         bottomEnd = MaterialTheme.localDim.spaceSmall,
@@ -90,7 +84,11 @@ private fun UserMessage(
                 colors = background,
                 shape = shape
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceExtraSmall)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(
+                        MaterialTheme.localDim.spaceExtraSmall
+                    )
+                ) {
                     if (message.type == MessageType.PENDING) {
                         CircularProgressIndicator(
                             modifier = Modifier

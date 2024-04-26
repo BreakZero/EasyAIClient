@@ -65,16 +65,13 @@ import org.easy.ai.chat.component.ChatDrawer
 import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
-import org.easy.ai.system.ui.localDim
 import org.easy.ai.system.ui.R as UiR
+import org.easy.ai.system.ui.localDim
 
 private val DrawerWidth = 300.dp
 
 @Composable
-internal fun ChatRoute(
-    navigateToPlugins: () -> Unit,
-    navigateToSettings: () -> Unit
-) {
+internal fun ChatRoute(navigateToPlugins: () -> Unit, navigateToSettings: () -> Unit) {
     val chatViewModel: ChatViewModel = hiltViewModel()
     val chatUiState by chatViewModel.chatUiState.collectAsStateWithLifecycle()
     val contentUiState by chatViewModel.chatContentUiState.collectAsStateWithLifecycle()
@@ -173,7 +170,8 @@ internal fun ChatScreen(
                     this.shadowElevation = 32f
                 }
                 .draggable(
-                    draggableState, Orientation.Horizontal,
+                    draggableState,
+                    Orientation.Horizontal,
                     onDragStarted = {
                         focusManager.clearFocus()
                     },
@@ -191,10 +189,14 @@ internal fun ChatScreen(
                             // checking if the difference between the target and actual is + or -
                             val targetDifference = (actualTargetX - targetOffsetX)
                             val canReachTargetWithDecay =
-                                (targetOffsetX > actualTargetX && velocity > 0f &&
-                                        targetDifference > 0f) ||
-                                        (targetOffsetX < actualTargetX && velocity < 0 &&
-                                                targetDifference < 0f)
+                                (
+                                    targetOffsetX > actualTargetX && velocity > 0f &&
+                                        targetDifference > 0f
+                                    ) ||
+                                    (
+                                        targetOffsetX < actualTargetX && velocity < 0 &&
+                                            targetDifference < 0f
+                                        )
                             if (canReachTargetWithDecay) {
                                 translationX.animateDecay(
                                     initialVelocity = velocity,
@@ -331,10 +333,7 @@ private fun ChatContent(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-internal fun MessageInput(
-    modifier: Modifier = Modifier,
-    onMessageSend: (String) -> Unit
-) {
+internal fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String) -> Unit) {
     val textFieldState = rememberTextFieldState()
     Row(
         modifier = modifier

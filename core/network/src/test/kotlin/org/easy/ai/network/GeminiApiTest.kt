@@ -36,46 +36,46 @@ class GeminiApiTest {
 
     @Before
     fun setup() {
-        val mockEngine = MockEngine { request ->
-            println("=== ${request.headers["x-goog-api-key"]}")
-            val type = request.headers["x-goog-api-key"]
-            when(type) {
-                "error" -> {
-                    respond(
-                        content = ByteReadChannel(mockErrorResponse),
-                        status = HttpStatusCode.BadRequest,
-                        headers = headersOf(HttpHeaders.ContentType, "application/json")
-                    )
+        val mockEngine =
+            MockEngine { request ->
+                println("=== ${request.headers["x-goog-api-key"]}")
+                val type = request.headers["x-goog-api-key"]
+                when (type) {
+                    "error" -> {
+                        respond(
+                            content = ByteReadChannel(mockErrorResponse),
+                            status = HttpStatusCode.BadRequest,
+                            headers = headersOf(HttpHeaders.ContentType, "application/json")
+                        )
+                    }
+                    else -> {
+                        respond(
+                            content = ByteReadChannel(geminiGenerateContentNormal),
+                            status = HttpStatusCode.OK,
+                            headers = headersOf(HttpHeaders.ContentType, "application/json")
+                        )
+                    }
                 }
-                else -> {
-                    respond(
-                        content = ByteReadChannel(geminiGenerateContentNormal),
-                        status = HttpStatusCode.OK,
-                        headers = headersOf(HttpHeaders.ContentType, "application/json")
-                    )
+            }
+        val httpClient =
+            HttpClient(mockEngine) {
+                install(ContentNegotiation) {
+                    json(JSON)
+                }
+                install(Logging) {
+                    logger = Logger.SIMPLE
+                    level = LogLevel.BODY
+                }
+                defaultRequest {
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        host = "test_host"
+                        path("v1/")
+                    }
+                    contentType(ContentType.Application.Json)
+                    header("x-goog-api-client", "easyai-android")
                 }
             }
-
-
-        }
-        val httpClient = HttpClient(mockEngine) {
-            install(ContentNegotiation) {
-                json(JSON)
-            }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.BODY
-            }
-            defaultRequest {
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = "test_host"
-                    path("v1/")
-                }
-                contentType(ContentType.Application.Json)
-                header("x-goog-api-client", "easyai-android")
-            }
-        }
         apiController = GeminiRestApiController(httpClient)
     }
 
@@ -90,7 +90,7 @@ class GeminiApiTest {
 
     @Test
     fun test_vision_success_response() = testScope.runTest {
-        val response = apiController.generateContentByVision("", content {  })
+        val response = apiController.generateContentByVision("", content { })
         Assert.assertEquals(
             "mock success response.",
             response.text
@@ -99,6 +99,6 @@ class GeminiApiTest {
 
     @Test(expected = NetworkErrorException::class)
     fun test_null_response() = testScope.runTest {
-        apiController.generateContent("error", content {  })
+        apiController.generateContent("error", content { })
     }
 }

@@ -6,7 +6,9 @@ import org.easy.ai.database.entities.MessageEntity
 
 class TestMessageDao : MessageDao {
     override suspend fun getChatHistoryByChatId(chatId: String): ChatHistory {
-        val chat = DataHolder.chatTable.find { it.chatId == chatId } ?: throw NoSuchElementException("not chat be found: $chatId")
+        val chat = DataHolder.chatTable.find {
+            it.chatId == chatId
+        } ?: throw NoSuchElementException("not chat be found: $chatId")
         val message = DataHolder.messageTable.filter { it.chatId == chatId }
         return ChatHistory(
             chat = chat,

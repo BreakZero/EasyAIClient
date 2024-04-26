@@ -29,5 +29,3 @@ val MaterialTheme.localDim: Dimensions
     @Composable
     @ReadOnlyComposable
     get() = LocalDim.current
-
-

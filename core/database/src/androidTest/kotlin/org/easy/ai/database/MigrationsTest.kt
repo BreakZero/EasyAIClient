@@ -4,17 +4,20 @@ import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory
 import androidx.test.platform.app.InstrumentationRegistry
+import java.io.IOException
 import org.easy.ai.database.migration.MIGRATION_1_2
 import org.easy.ai.database.migration.MIGRATION_2_3
 import org.easy.ai.database.migration.MIGRATION_3_4
 import org.junit.Rule
 import org.junit.Test
-import java.io.IOException
 
 class MigrationsTest {
     private val TEST_DB = "migration_test"
     private val ALL_MIGRATIONS = arrayOf(
-        MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        MIGRATION_1_2,
+        MIGRATION_2_3,
+        MIGRATION_3_4
+    )
 
     @get:Rule
     val helper: MigrationTestHelper = MigrationTestHelper(

@@ -28,7 +28,8 @@ import org.easy.ai.system.ui.R
 import org.easy.ai.system.ui.localDim
 
 internal enum class DrawerState {
-    Open, Closed
+    Open,
+    Closed
 }
 
 @Composable
@@ -100,7 +101,7 @@ internal fun ChatDrawer(
             headlineContent = {
                 Text(
                     text = stringResource(id = R.string.text_settings),
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium
                 )
             },
             leadingContent = {

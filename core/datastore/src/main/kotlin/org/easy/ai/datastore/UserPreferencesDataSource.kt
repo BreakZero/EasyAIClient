@@ -1,10 +1,10 @@
 package org.easy.ai.datastore
 
 import androidx.datastore.core.DataStore
+import javax.inject.Inject
 import kotlinx.coroutines.flow.map
 import org.easy.ai.model.AiModel
 import org.easy.ai.model.UserData
-import javax.inject.Inject
 
 class UserPreferencesDataSource @Inject constructor(
     private val userPreferences: DataStore<UserPreferences>

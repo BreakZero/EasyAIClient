@@ -1,5 +1,7 @@
 package org.easy.ai.data.repository
 
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.easy.ai.data.model.ChatUiModel
@@ -11,8 +13,6 @@ import org.easy.ai.database.entities.MessageEntity
 import org.easy.ai.model.AiModel
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
-import java.util.UUID
-import javax.inject.Inject
 
 class OfflineChatRepository @Inject constructor(
     private val chatDao: ChatDao,
@@ -52,7 +52,8 @@ class OfflineChatRepository @Inject constructor(
     }
 
     override suspend fun getMessagesByChat(chatId: String): List<ChatMessage> {
-        return messageDao.getChatHistoryByChatId(chatId).messages.map(MessageEntity::asExternalModel)
+        return messageDao.getChatHistoryByChatId(
+            chatId
+        ).messages.map(MessageEntity::asExternalModel)
     }
 }
-

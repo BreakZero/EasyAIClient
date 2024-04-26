@@ -2,6 +2,8 @@ package org.easy.ai.chat
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.UUID
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -22,13 +24,11 @@ import org.easy.ai.model.AiModel
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
-import java.util.UUID
-import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val offlineChatRepository: OfflineChatRepository,
-    startNewChatUseCase: StartNewChatUseCase,
+    startNewChatUseCase: StartNewChatUseCase
 ) : BaseViewModel<ChatEvent>() {
     private val _allLocalChatStream = offlineChatRepository.getAllChats()
     private val _pendingMessage = MutableStateFlow<ChatMessage?>(null)
@@ -69,7 +69,9 @@ class ChatViewModel @Inject constructor(
 
     private fun sendMessage(userMessage: String) {
         val sendingMessage = ChatMessage(
-            content = userMessage, participant = Participant.USER, type = MessageType.PENDING
+            content = userMessage,
+            participant = Participant.USER,
+            type = MessageType.PENDING
         )
         _pendingMessage.update { sendingMessage }
 
@@ -143,7 +145,7 @@ class ChatViewModel @Inject constructor(
             is ChatEvent.OnDeleteChat -> {
                 viewModelScope.launch {
                     offlineChatRepository.deleteChatById(event.chatId)
-                    if (_selectedChat.value?.chatId == event.chatId){
+                    if (_selectedChat.value?.chatId == event.chatId) {
                         onChatSelected(null)
                     }
                 }

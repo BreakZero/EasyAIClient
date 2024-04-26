@@ -15,25 +15,24 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import kotlin.math.tan
 import org.easy.ai.system.theme.GradientColors
 import org.easy.ai.system.theme.LocalBackgroundTheme
 import org.easy.ai.system.theme.LocalGradientColors
 import org.easy.ai.system.ui.localDim
-import kotlin.math.tan
 
 @Composable
-fun EasyBackground(
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+fun EasyBackground(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val color = LocalBackgroundTheme.current.color
     val tonalElevation = LocalBackgroundTheme.current.tonalElevation
     Surface(
         color = if (color == Color.Unspecified) Color.Transparent else color,
         tonalElevation = if (tonalElevation == Dp.Unspecified) MaterialTheme.localDim.default else tonalElevation,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize()
     ) {
-        CompositionLocalProvider(LocalAbsoluteTonalElevation provides MaterialTheme.localDim.default) {
+        CompositionLocalProvider(
+            LocalAbsoluteTonalElevation provides MaterialTheme.localDim.default
+        ) {
             content()
         }
     }
@@ -43,7 +42,7 @@ fun EasyBackground(
 fun EasyGradientBackground(
     modifier: Modifier = Modifier,
     gradientColors: GradientColors = LocalGradientColors.current,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val currentTopColor by rememberUpdatedState(gradientColors.top)
     val currentBottomColor by rememberUpdatedState(gradientColors.bottom)
@@ -53,7 +52,7 @@ fun EasyGradientBackground(
         } else {
             gradientColors.container
         },
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize()
     ) {
         Box(
             Modifier
@@ -64,7 +63,7 @@ fun EasyGradientBackground(
                     val offset = size.height * tan(
                         Math
                             .toRadians(11.06)
-                            .toFloat(),
+                            .toFloat()
                     )
 
                     val start = Offset(size.width / 2 + offset / 2, 0f)
@@ -79,7 +78,7 @@ fun EasyGradientBackground(
                         },
                         0.724f to Color.Transparent,
                         start = start,
-                        end = end,
+                        end = end
                     )
                     // Create the bottom gradient that fades in before the halfway point vertically
                     val bottomGradient = Brush.linearGradient(
@@ -90,7 +89,7 @@ fun EasyGradientBackground(
                             currentBottomColor
                         },
                         start = start,
-                        end = end,
+                        end = end
                     )
 
                     onDrawBehind {
@@ -98,7 +97,7 @@ fun EasyGradientBackground(
                         drawRect(topGradient)
                         drawRect(bottomGradient)
                     }
-                },
+                }
         ) {
             content()
         }

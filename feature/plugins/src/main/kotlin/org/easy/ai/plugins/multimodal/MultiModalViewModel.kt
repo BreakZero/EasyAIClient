@@ -5,6 +5,7 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import org.easy.ai.domain.MultiModalGeneratingUseCase
-import javax.inject.Inject
 
 @OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
@@ -62,7 +62,13 @@ internal class MultiModalViewModel @Inject constructor(
         val images = _uiState.value.images
         multiModalGeneratingUseCase(promptTextField.text.toString(), images)
             .onEach { result ->
-                _uiState.update { it.copy(inProgress = false, generateResult = result, error = null) }
+                _uiState.update {
+                    it.copy(
+                        inProgress = false,
+                        generateResult = result,
+                        error = null
+                    )
+                }
             }.catch { error ->
                 _uiState.update {
                     it.copy(

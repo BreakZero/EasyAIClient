@@ -2,7 +2,7 @@ package org.easy.ai.network.gemini.type
 
 class PromptFeedback(
     val blockReason: BlockReason?,
-    val safetyRatings: List<SafetyRating>,
+    val safetyRatings: List<SafetyRating>
 )
 
 /** Describes why content was blocked. */

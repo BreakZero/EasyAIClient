@@ -18,10 +18,10 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
+import javax.inject.Qualifier
 import kotlinx.serialization.json.Json
 import org.easy.ai.network.gemini.GeminiRestApi
 import org.easy.ai.network.gemini.GeminiRestApiController
-import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -31,11 +31,12 @@ annotation class GeminiRestHttpClient
 @Retention(AnnotationRetention.BINARY)
 annotation class ChatGPTRestHttpClient
 
-internal val JSON = Json {
-    prettyPrint = true
-    ignoreUnknownKeys = true
-    isLenient = true
-}
+internal val JSON =
+    Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
 
 private fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient {
     return HttpClient {
@@ -75,7 +76,6 @@ object NetworkModule {
         return httpClient {
             defaultRequest {
                 url {
-
                 }
                 contentType(ContentType.Application.Json)
             }
@@ -83,9 +83,7 @@ object NetworkModule {
     }
 
     @Provides
-    fun providesGeminiRestApi(
-        @GeminiRestHttpClient httpClient: HttpClient
-    ): GeminiRestApi {
+    fun providesGeminiRestApi(@GeminiRestHttpClient httpClient: HttpClient): GeminiRestApi {
         return GeminiRestApiController(httpClient)
     }
 }

@@ -6,7 +6,7 @@ import javax.inject.Qualifier
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Dispatcher(val dispatcher: EasyDispatchers)
 
-enum class EasyDispatchers{
+enum class EasyDispatchers {
     Default,
-    IO,
+    IO
 }

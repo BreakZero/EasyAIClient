@@ -32,10 +32,7 @@ import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
 
 @Composable
-fun SettingsRoute(
-    navigateToAiModels: () -> Unit,
-    popBack: () -> Unit
-) {
+fun SettingsRoute(navigateToAiModels: () -> Unit, popBack: () -> Unit) {
     val settingsViewModel: SettingsViewModel = hiltViewModel()
     val settingsUiState by settingsViewModel.settingsUiState.collectAsStateWithLifecycle()
 
@@ -130,7 +127,8 @@ internal fun SettingsScreen(
                     .clickable { onEvent(SettingsEvent.NavigateToAbout) },
                 headlineContent = {
                     Text(
-                        style = MaterialTheme.typography.titleMedium, text = "About EasyAI"
+                        style = MaterialTheme.typography.titleMedium,
+                        text = "About EasyAI"
                     )
                 }
             )
