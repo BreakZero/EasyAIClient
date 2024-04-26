@@ -14,29 +14,31 @@ plugins {
 }
 
 subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+    if (this.name !in listOf("feature", "core")) {
+        apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        version.set("1.2.1")
-        debug.set(true)
-        outputToConsole.set(true)
-        verbose.set(true)
-        android.set(false)
-        outputToConsole.set(true)
-        outputColorName.set("RED")
-        ignoreFailures.set(true)
-        enableExperimentalRules.set(true)
+        configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+            version.set("1.2.1")
+            debug.set(true)
+            outputToConsole.set(true)
+//        verbose.set(true)
+            android.set(true)
+            outputToConsole.set(true)
+            outputColorName.set("RED")
+            ignoreFailures.set(true)
+            enableExperimentalRules.set(false)
 
-        reporters {
-            reporter(ReporterType.PLAIN)
-            reporter(ReporterType.CHECKSTYLE)
-        }
-        kotlinScriptAdditionalPaths {
-            include(fileTree("scripts/"))
-        }
-        filter {
-            exclude("**/generated/**", "**/build.gradle.kts")
-            include("**/kotlin/**")
+            reporters {
+                reporter(ReporterType.PLAIN)
+                reporter(ReporterType.CHECKSTYLE)
+            }
+            kotlinScriptAdditionalPaths {
+                include(fileTree("scripts/"))
+            }
+            filter {
+                exclude("**/generated/**", "**/build.gradle.kts")
+                include("**/kotlin/**")
+            }
         }
     }
 }
