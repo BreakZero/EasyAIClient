@@ -14,7 +14,7 @@ class MultiModalGeneratingUseCase @Inject internal constructor(
     operator fun invoke(prompt: String, images: List<ByteArray>): Flow<String> {
         return userPreferencesDataSource.userData.map { userData ->
             val apiKey = userData.apiKeys[AiModel.GEMINI.name] ?: throw IllegalStateException(
-                "api key not set yet."
+                "${AiModel.GEMINI.name}'s api key not set yet."
             )
             geminiModelRepository.generateContent(apiKey, prompt, images)
         }

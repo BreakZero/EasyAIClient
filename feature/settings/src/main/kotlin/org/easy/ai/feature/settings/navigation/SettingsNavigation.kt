@@ -23,9 +23,10 @@ fun NavController.entryToSettings(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.attachSettingsGraph(navController: NavController) {
     navigation(route = settingsEntryRoute, startDestination = settingsIndexRoute) {
         composable(settingsIndexRoute) {
-            SettingsRoute {
-                navController.navigateToAiModels()
-            }
+            SettingsRoute(
+                popBack = navController::popBackStack,
+                navigateToAiModels = navController::navigateToAiModels
+            )
         }
 
         composable(aiModelManagerRoute) {

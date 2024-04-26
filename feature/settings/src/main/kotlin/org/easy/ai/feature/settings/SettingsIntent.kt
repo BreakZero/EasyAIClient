@@ -5,10 +5,15 @@ import org.easy.ai.model.AiModel
 
 @Stable
 data class SettingsUiState(
-    val activatedAiModel: AiModel? = null
+    val defaultChatAi: AiModel? = null,
+    val showAiSelector: Boolean = false
 )
 
 sealed interface SettingsEvent {
-    data class AutomaticSaveChatChanged(val isChecked: Boolean): SettingsEvent
-    data object ToAiModelManager: SettingsEvent
+    data class OnChatAiChanged(val aiModel: AiModel): SettingsEvent
+
+    data object OpenSelector: SettingsEvent
+    data object CloseSelector: SettingsEvent
+    data object NavigateToAbout: SettingsEvent
+    data object NavigateToAiModelManager: SettingsEvent
 }

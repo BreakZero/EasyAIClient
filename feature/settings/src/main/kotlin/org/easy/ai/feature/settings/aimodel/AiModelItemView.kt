@@ -59,7 +59,6 @@ private fun AiModelItem_Preview() {
         AiModelItem(
             aiModelInfo = AiModelUiModel(
                 aiModel = AiModel.GEMINI,
-                isActivated = true,
                 apiKey = "quehwoiqjgefjadskfj"
             )
         ) {}

@@ -11,7 +11,7 @@ class UserPreferencesDataSource @Inject constructor(
 ) {
     val userData = userPreferences.data.map {
         UserData(
-            activatedModel = when (it.activatedModel) {
+            defaultChatModel = when (it.defaultChatModel) {
                 AiModelProto.AI_CHAT_GPT -> AiModel.CHAT_GPT
                 AiModelProto.AI_GEMINI -> AiModel.GEMINI
                 null, AiModelProto.UNRECOGNIZED -> null
@@ -29,10 +29,10 @@ class UserPreferencesDataSource @Inject constructor(
         }
     }
 
-    suspend fun updateAiModel(aiModel: AiModel) {
+    suspend fun updateChatAiModel(aiModel: AiModel) {
         userPreferences.updateData {
             it.copy {
-                activatedModel = when (aiModel) {
+                defaultChatModel = when (aiModel) {
                     AiModel.GEMINI -> AiModelProto.AI_GEMINI
                     AiModel.CHAT_GPT -> AiModelProto.AI_CHAT_GPT
                 }

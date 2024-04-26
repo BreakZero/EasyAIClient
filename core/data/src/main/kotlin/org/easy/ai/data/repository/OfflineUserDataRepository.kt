@@ -16,7 +16,7 @@ class OfflineUserDataRepository @Inject constructor(
         userDataSource.addApiKey(model, apiKey)
     }
 
-    override suspend fun selectedAiModel(model: AiModel) {
-        userDataSource.updateAiModel(model)
+    override suspend fun setDefaultChatAiModel(model: AiModel) {
+        userDataSource.updateChatAiModel(model)
     }
 }

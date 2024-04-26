@@ -13,4 +13,8 @@
     <string name="text_supported_model">Supported Models</string>
     <string name="text_ai_model_manager">Manage Ai Model</string>
     <string name="text_activated_ai">Current Activated</string>
+    <string name="text_default_chat_model">Default AI for Chat</string>
+    <string name="text_the_ai_using_for_chat">Using current ai for chat feature</string>
+    <string name="text_ai_model_not_supported_yet">This Ai model no support yet. Will coming soon.</string>
+    <string name="text_no_api_key_for_chat">If you want to using chat, please set the API Key for Chat Ai Model that you choose.</string>
 </resources>

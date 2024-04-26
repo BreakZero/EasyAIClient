@@ -6,7 +6,6 @@ import org.easy.ai.model.AiModel
 @Stable
 internal data class AiModelUiModel(
     val aiModel: AiModel,
-    val isActivated: Boolean,
     val apiKey: String
 )
 

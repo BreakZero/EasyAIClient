@@ -18,7 +18,7 @@ import javax.inject.Inject
 internal class AiModelManagerViewModel @Inject constructor(
     private val userDataRepository: UserDataRepository
 ) : ViewModel() {
-    private val supportedAiModels = AiModel.entries.toTypedArray()
+    private val supportedAiModels = AiModel.entries
 
     private val _uiState = MutableStateFlow(AiModelUiState())
     val uiState = _uiState.asStateFlow()
@@ -27,8 +27,7 @@ internal class AiModelManagerViewModel @Inject constructor(
         supportedAiModels.map {
             AiModelUiModel(
                 aiModel = it,
-                apiKey = userData.apiKeys[it.name].orEmpty(),
-                isActivated = userData.activatedModel == it
+                apiKey = userData.apiKeys[it.name].orEmpty()
             )
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

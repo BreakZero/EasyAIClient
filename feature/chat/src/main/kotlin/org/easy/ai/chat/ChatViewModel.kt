@@ -20,8 +20,8 @@ import org.easy.ai.data.model.ChatUiModel
 import org.easy.ai.data.repository.OfflineChatRepository
 import org.easy.ai.domain.Chat
 import org.easy.ai.domain.StartNewChatUseCase
-import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.AiModel
+import org.easy.ai.model.ChatMessageUiModel
 import org.easy.ai.model.Participant
 import java.util.UUID
 import javax.inject.Inject

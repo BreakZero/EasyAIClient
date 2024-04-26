@@ -4,7 +4,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -133,7 +132,7 @@ internal fun ChatScreen(
             }
         }
         ChatDrawer(
-            chats = contentUiState.chats,
+            chats = if (chatUiState is ChatUiState.Initialed) contentUiState.chats else null,
             defaultChat = contentUiState.selectedChat,
             onChatSelected = {
                 onEvent(ChatEvent.SelectedChat(it))
@@ -243,7 +242,7 @@ private fun ChatContent(
                     }
                 },
                 actions = {
-                    if (contentUiState.selectedChat == null) {
+                    if (contentUiState.selectedChat == null && chatUiState is ChatUiState.Initialed) {
                         IconButton(onClick = {
                             onEvent(ChatEvent.OnSaveChat)
                         }) {
@@ -304,8 +303,17 @@ private fun ChatContent(
                         .padding(paddings),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Oops, Please config your environment first")
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = MaterialTheme.localDim.spaceMedium),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error,
+                            text = stringResource(id = UiR.string.text_no_api_key_for_chat)
+                        )
                         TextButton(onClick = {
                             onEvent(ChatEvent.OnSettingsClicked)
                         }) {
