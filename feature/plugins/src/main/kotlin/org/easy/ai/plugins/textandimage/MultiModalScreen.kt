@@ -131,7 +131,7 @@ private fun MultiModalScreen(
                 .padding(horizontal = MaterialTheme.localDim.spaceMedium)
         ) {
             PromptEditor(prompt)
-            Spacer(modifier = Modifier.height(MaterialTheme.localDim.space24))
+            Spacer(modifier = Modifier.height(MaterialTheme.localDim.space12))
             val images = rememberBitmapFromBytes(imageBytes = uiState.images)
             LazyVerticalGrid(
                 modifier = Modifier.fillMaxWidth(),
@@ -182,7 +182,7 @@ private fun MultiModalScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             }
-            uiState.generateResult?.let {
+            uiState.promptResult?.let {
                 Text(
                     modifier = Modifier
                         .weight(1.0f)

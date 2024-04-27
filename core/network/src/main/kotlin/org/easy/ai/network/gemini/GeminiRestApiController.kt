@@ -14,11 +14,13 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import org.easy.ai.network.di.JSON
+import org.easy.ai.network.error.GoogleGenerativeAIException
 import org.easy.ai.network.error.PromptBlockedException
 import org.easy.ai.network.error.ResponseStoppedException
 import org.easy.ai.network.gemini.internal.CountTokensRequest
@@ -62,7 +64,8 @@ class GeminiRestApiController internal constructor(
             applyCommonConfiguration(apiKey, request)
         }.map {
             it.validate()
-        }.map { it.toResult() }
+        }.map(GenerateContentResponse::toResult)
+            .catch { throw GoogleGenerativeAIException.from(it) }
     }
 
     private fun HttpRequestBuilder.applyCommonConfiguration(apiKey: String, request: Request) {
@@ -118,7 +121,7 @@ private inline fun <reified R : Response> HttpClient.postStream(
             val channel = it.bodyAsChannel()
             val flow = JSON.decodeToFlow<R>(channel)
 
-            flow.collect { res -> send(res) }
+            flow.collect { res -> trySend(res) }
         }
     }
 }

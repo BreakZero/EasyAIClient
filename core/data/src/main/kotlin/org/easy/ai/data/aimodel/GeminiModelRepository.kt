@@ -47,7 +47,7 @@ class GeminiModelRepository @Inject internal constructor(
             text(prompt)
         }
         val model = images?.let { "gemini-pro-vision" } ?: "gemini-pro"
-        val response = geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
-        return response.map { it.text.orEmpty() }
+        return geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
+            .map { it.text.orEmpty() }
     }
 }

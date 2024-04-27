@@ -1,6 +1,5 @@
 package org.easy.ai.domain
 
-import java.util.concurrent.Semaphore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -9,6 +8,7 @@ import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
+import java.util.concurrent.Semaphore
 
 class Chat internal constructor(
     private val history: MutableList<ChatMessage> = ArrayList(),
@@ -67,7 +67,9 @@ class Chat internal constructor(
         val response = chatPlugin.sendMessage(
             apiKey = apiKey,
             // filter for migration error message from previous version data
-            history = history.filter { it.participant in Participant.entries.toTypedArray() } + message
+            history = history.filter {
+                it.participant in Participant.entries.toTypedArray()
+            } + message
         )
         // add into history if send successful
         history.add(message)
