@@ -11,7 +11,7 @@ class TextAndImageGeneratingUseCase @Inject internal constructor(
     private val userPreferencesDataSource: UserPreferencesDataSource,
     private val geminiModelRepository: GeminiModelRepository
 ) {
-    operator fun invoke(prompt: String, images: List<ByteArray>): Flow<String> {
+    operator fun invoke(prompt: String, images: List<ByteArray>?): Flow<String> {
         return userPreferencesDataSource.userData.flatMapConcat { userData ->
             val apiKey = userData.apiKeys[AiModel.GEMINI.name] ?: throw IllegalStateException(
                 "${AiModel.GEMINI.name}'s api key not set yet."

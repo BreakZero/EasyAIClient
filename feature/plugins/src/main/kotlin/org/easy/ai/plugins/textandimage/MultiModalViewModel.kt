@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import org.easy.ai.domain.TextAndImageGeneratingUseCase
@@ -40,11 +39,8 @@ internal class MultiModalViewModel @Inject constructor(
             return "prompt can not be empty..."
         }
         with(_uiState.value) {
-            if (images.isEmpty()) {
-                return "images can not be empty..."
-            }
             val promptSize = promptTextField.text.toString().encodeToByteArray().size
-            val totalSize = images.sumOf { image -> image.size } + promptSize
+            val totalSize = (images?.sumOf { image -> image.size } ?: 0) + promptSize
             if (totalSize > CONTENT_LIMIT_SIZE) {
                 return "the entire prompt is too large, 4MB limited"
             }
