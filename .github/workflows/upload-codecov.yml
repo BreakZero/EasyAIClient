@@ -2,6 +2,8 @@ name: upload codecov
 
 on:
   push:
+    branches-ignore:
+      - main
   pull_request:
 
 jobs:
