@@ -20,7 +20,8 @@ class GeminiModelRepository @Inject internal constructor(
         val content = history.map {
             content(it.participant.name.lowercase()) { text(it.content) }
         }
-        val response = geminiRestApi.generateContent(apiKey, "gemini-pro", *content.toTypedArray())
+        val response =
+            geminiRestApi.generateContent(apiKey, "gemini-1.5-pro-latest", *content.toTypedArray())
         return ChatMessage(
             content = response.text.orEmpty(),
             participant = Participant.MODEL
@@ -40,14 +41,15 @@ class GeminiModelRepository @Inject internal constructor(
             content {
                 text(prompt)
                 bitmaps.map(::image)
-            }.also {
-                bitmaps.forEach { it.recycle() }
             }
         } ?: content {
             text(prompt)
         }
-        val model = images?.let { "gemini-pro-vision" } ?: "gemini-pro"
-        return geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
-            .map { it.text.orEmpty() }
+
+        val model = images?.let { "gemini-pro-vision" } ?: "gemini-1.5-pro-latest"
+        val response = geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
+
+
+        return response.map { it.text.orEmpty() }
     }
 }
