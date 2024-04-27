@@ -1,4 +1,4 @@
-[![Android Release Build](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml/badge.svg)](https://github.com/BreakZero/EasyAIClient/actions/workflows/android-build-release.yml)
+[![Code Style Checking](https://github.com/BreakZero/EasyAIClient/actions/workflows/ktlint_check.yml/badge.svg?branch=main)](https://github.com/BreakZero/EasyAIClient/actions/workflows/ktlint_check.yml)
 
 ### 模块单元测试覆盖率
 - **_data_**: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)
@@ -18,7 +18,7 @@ EasyAI使用Clear架构设计(参考[nowinandroid](https://github.com/android/no
 ### 目前支持功能
 
 - [x] Gemini聊天功能
-- [x] 聊天的保存和删除功能 
+- [x] 聊天的保存和删除功能
 - [x] 设置管理AI Model API Key功能
 - [x] Gemini Multi Modal分析功能
 - [x] 选择默认聊天AI Model
