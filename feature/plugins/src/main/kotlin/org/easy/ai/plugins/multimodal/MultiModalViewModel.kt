@@ -1,4 +1,4 @@
-package org.easy.ai.plugins.textandimage
+package org.easy.ai.plugins.multimodal
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState

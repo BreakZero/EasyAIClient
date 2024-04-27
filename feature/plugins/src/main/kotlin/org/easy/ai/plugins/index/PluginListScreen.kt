@@ -99,9 +99,9 @@ internal fun PluginView(
                 plugin.supportedAis.forEach {
                     Text(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.secondary)
-                            .padding(4.dp),
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f))
+                            .padding(6.dp),
                         color = MaterialTheme.colorScheme.onSecondary,
                         style = MaterialTheme.typography.labelSmall,
                         text = it.name
