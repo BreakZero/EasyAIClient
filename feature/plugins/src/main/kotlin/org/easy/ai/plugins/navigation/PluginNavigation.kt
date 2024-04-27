@@ -6,7 +6,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import org.easy.ai.plugins.index.PluginListRoute
-import org.easy.ai.plugins.multimodal.MultiModalRoute
+import org.easy.ai.plugins.textandimage.MultiModalRoute
 
 internal const val pluginEntryRoute = "plugin_entry_route"
 internal const val pluginListRoute = "plugin_list_route"

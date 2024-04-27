@@ -1,4 +1,4 @@
-package org.easy.ai.plugins.multimodal
+package org.easy.ai.plugins.textandimage
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi

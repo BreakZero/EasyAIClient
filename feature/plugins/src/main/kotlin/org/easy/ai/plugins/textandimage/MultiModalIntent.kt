@@ -1,4 +1,4 @@
-package org.easy.ai.plugins.multimodal
+package org.easy.ai.plugins.textandimage
 
 import androidx.compose.runtime.Stable
 

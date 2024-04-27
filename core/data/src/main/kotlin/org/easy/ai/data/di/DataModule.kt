@@ -8,7 +8,7 @@ import javax.inject.Qualifier
 import org.easy.ai.data.aimodel.ChatGPTModelRepository
 import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.data.plugins.ChatPlugin
-import org.easy.ai.data.plugins.MultiModalPlugin
+import org.easy.ai.data.plugins.TextAndImagePlugin
 import org.easy.ai.data.repository.ChatRepository
 import org.easy.ai.data.repository.OfflineChatRepository
 import org.easy.ai.data.repository.OfflineUserDataRepository
@@ -42,5 +42,5 @@ abstract class DataModule {
 
     @Binds
     @ModelPlatformQualifier(AiModel.GEMINI)
-    abstract fun bindGeminiMultiModalPlugin(geminiModel: GeminiModelRepository): MultiModalPlugin
+    abstract fun bindGeminiMultiModalPlugin(geminiModel: GeminiModelRepository): TextAndImagePlugin
 }
