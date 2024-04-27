@@ -1,7 +1,8 @@
-name: Android Release Build
+name: Android New Release
 on:
   push:
-    branches: main
+    branches:
+      - main
     tags:
       - v*
 permissions:
