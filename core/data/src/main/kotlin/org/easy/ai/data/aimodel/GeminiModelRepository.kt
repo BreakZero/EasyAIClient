@@ -10,7 +10,7 @@ import org.easy.ai.data.plugins.TextAndImagePlugin
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
-import org.easy.ai.network.gemini.type.content
+import org.easy.ai.network.model.content
 import javax.inject.Inject
 
 class GeminiModelRepository @Inject internal constructor(

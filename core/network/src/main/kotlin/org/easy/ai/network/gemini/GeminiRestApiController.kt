@@ -19,20 +19,20 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import org.easy.ai.network.di.JSON
+import org.easy.ai.network.error.PromptBlockedException
+import org.easy.ai.network.error.ResponseStoppedException
 import org.easy.ai.network.gemini.internal.CountTokensRequest
 import org.easy.ai.network.gemini.internal.GRpcErrorResponse
 import org.easy.ai.network.gemini.internal.GenerateContentRequest
 import org.easy.ai.network.gemini.internal.GenerateContentResponse
 import org.easy.ai.network.gemini.internal.Request
 import org.easy.ai.network.gemini.internal.Response
-import org.easy.ai.network.gemini.type.Content
-import org.easy.ai.network.gemini.type.FinishReason
-import org.easy.ai.network.gemini.type.PromptBlockedException
-import org.easy.ai.network.gemini.type.ResponseStoppedException
+import org.easy.ai.network.gemini.internal.server.FinishReason
 import org.easy.ai.network.gemini.util.toInternal
-import org.easy.ai.network.gemini.util.toPublic
+import org.easy.ai.network.gemini.util.toResult
+import org.easy.ai.network.model.PromptResponse
 import org.easy.ai.network.util.decodeToFlow
-import org.easy.ai.network.gemini.type.Content as PublicContent
+import org.easy.ai.network.model.Content as PublicContent
 
 class GeminiRestApiController internal constructor(
     private val httpClient: HttpClient
@@ -41,29 +41,28 @@ class GeminiRestApiController internal constructor(
         apiKey: String,
         model: String,
         vararg content: PublicContent
-    ): org.easy.ai.network.gemini.type.GenerateContentResponse {
+    ): PromptResponse {
         val request = constructRequest(*content)
-        val response =
-            httpClient.post("models/$model:generateContent") {
-                applyCommonConfiguration(apiKey, request)
-            }.also {
-                validateResponse(it)
-            }.body<GenerateContentResponse>()
+        val response = httpClient.post("models/$model:generateContent") {
+            applyCommonConfiguration(apiKey, request)
+        }.also {
+            validateResponse(it)
+        }.body<GenerateContentResponse>().validate()
 
-        return response.toPublic().validate()
+        return response.toResult()
     }
 
     override fun generateContentStream(
         apiKey: String,
         model: String,
-        vararg content: Content
-    ): Flow<org.easy.ai.network.gemini.type.GenerateContentResponse> {
+        vararg content: PublicContent
+    ): Flow<PromptResponse> {
         val request = constructRequest(*content)
         return httpClient.postStream<GenerateContentResponse>("models/$model:streamGenerateContent?alt=sse") {
             applyCommonConfiguration(apiKey, request)
         }.map {
-            it.toPublic().validate()
-        }
+            it.validate()
+        }.map { it.toResult() }
     }
 
     private fun HttpRequestBuilder.applyCommonConfiguration(apiKey: String, request: Request) {
@@ -95,14 +94,14 @@ private suspend fun validateResponse(response: HttpResponse) {
     }
 }
 
-private fun org.easy.ai.network.gemini.type.GenerateContentResponse.validate() = apply {
-    if (candidates.isEmpty() && promptFeedback == null) {
+private fun GenerateContentResponse.validate() = apply {
+    if ((candidates?.isEmpty() != false) && promptFeedback == null) {
         throw SerializationException("Error deserializing response, found no valid fields")
     }
     promptFeedback?.blockReason?.let { throw PromptBlockedException(this) }
     candidates
-        .mapNotNull { it.finishReason }
-        .firstOrNull { it != FinishReason.STOP }
+        ?.mapNotNull { it.finishReason }
+        ?.firstOrNull { it != FinishReason.STOP }
         ?.let { throw ResponseStoppedException(this) }
 }
 

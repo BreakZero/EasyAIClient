@@ -1,4 +1,4 @@
-package org.easy.ai.network.gemini.type
+package org.easy.ai.network.model
 
 import android.graphics.Bitmap
 
