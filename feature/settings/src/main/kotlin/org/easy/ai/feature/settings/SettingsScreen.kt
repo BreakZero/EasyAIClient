@@ -108,7 +108,6 @@ internal fun SettingsScreen(
                         )
                         Text(
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.typography.labelSmall.color.copy(alpha = 0.6f),
                             text = stringResource(id = R.string.text_the_ai_using_for_chat)
                         )
                     }
