@@ -111,7 +111,7 @@ class LocalChatRepositoryTest {
             participant = Participant.MODEL
         )
         assertEquals(
-            localChatRepository.getMessagesByChat("saving-chat").first().text,
+            localChatRepository.getMessagesByChat("saving-chat").first().content,
             "message content"
         )
     }
