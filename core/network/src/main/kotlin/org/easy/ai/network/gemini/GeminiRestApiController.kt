@@ -6,10 +6,17 @@ import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import org.easy.ai.network.di.JSON
 import org.easy.ai.network.gemini.internal.CountTokensRequest
@@ -17,24 +24,27 @@ import org.easy.ai.network.gemini.internal.GRpcErrorResponse
 import org.easy.ai.network.gemini.internal.GenerateContentRequest
 import org.easy.ai.network.gemini.internal.GenerateContentResponse
 import org.easy.ai.network.gemini.internal.Request
+import org.easy.ai.network.gemini.internal.Response
 import org.easy.ai.network.gemini.type.Content
-import org.easy.ai.network.gemini.type.Content as PublicContent
 import org.easy.ai.network.gemini.type.FinishReason
 import org.easy.ai.network.gemini.type.PromptBlockedException
 import org.easy.ai.network.gemini.type.ResponseStoppedException
 import org.easy.ai.network.gemini.util.toInternal
 import org.easy.ai.network.gemini.util.toPublic
+import org.easy.ai.network.util.decodeToFlow
+import org.easy.ai.network.gemini.type.Content as PublicContent
 
 class GeminiRestApiController internal constructor(
     private val httpClient: HttpClient
 ) : GeminiRestApi {
     override suspend fun generateContent(
         apiKey: String,
+        model: String,
         vararg content: PublicContent
     ): org.easy.ai.network.gemini.type.GenerateContentResponse {
         val request = constructRequest(*content)
         val response =
-            httpClient.post("models/gemini-pro:generateContent") {
+            httpClient.post("models/$model:generateContent") {
                 applyCommonConfiguration(apiKey, request)
             }.also {
                 validateResponse(it)
@@ -43,19 +53,17 @@ class GeminiRestApiController internal constructor(
         return response.toPublic().validate()
     }
 
-    override suspend fun generateContentByVision(
+    override fun generateContentStream(
         apiKey: String,
+        model: String,
         vararg content: Content
-    ): org.easy.ai.network.gemini.type.GenerateContentResponse {
+    ): Flow<org.easy.ai.network.gemini.type.GenerateContentResponse> {
         val request = constructRequest(*content)
-        val response =
-            httpClient.post("models/gemini-pro-vision:generateContent") {
-                applyCommonConfiguration(apiKey, request)
-            }.also {
-                validateResponse(it)
-            }.body<GenerateContentResponse>()
-
-        return response.toPublic().validate()
+        return httpClient.postStream<GenerateContentResponse>("models/$model:streamGenerateContent?alt=sse") {
+            applyCommonConfiguration(apiKey, request)
+        }.map {
+            it.toPublic().validate()
+        }
     }
 
     private fun HttpRequestBuilder.applyCommonConfiguration(apiKey: String, request: Request) {
@@ -96,4 +104,22 @@ private fun org.easy.ai.network.gemini.type.GenerateContentResponse.validate() =
         .mapNotNull { it.finishReason }
         .firstOrNull { it != FinishReason.STOP }
         ?.let { throw ResponseStoppedException(this) }
+}
+
+private inline fun <reified R : Response> HttpClient.postStream(
+    url: String,
+    crossinline config: HttpRequestBuilder.() -> Unit = {},
+): Flow<R> = channelFlow {
+    launch(CoroutineName("postStream")) {
+        preparePost(url) {
+            config()
+        }.execute {
+            validateResponse(it)
+
+            val channel = it.bodyAsChannel()
+            val flow = JSON.decodeToFlow<R>(channel)
+
+            flow.collect { res -> send(res) }
+        }
+    }
 }

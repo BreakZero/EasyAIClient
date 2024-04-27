@@ -1,4 +1,4 @@
-package org.easy.ai.plugins.multimodal
+package org.easy.ai.plugins.textandimage
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import org.easy.ai.domain.MultiModalGeneratingUseCase
+import org.easy.ai.domain.TextAndImageGeneratingUseCase
 
 @OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
 internal class MultiModalViewModel @Inject constructor(
-    private val multiModalGeneratingUseCase: MultiModalGeneratingUseCase
+    private val multiModalGeneratingUseCase: TextAndImageGeneratingUseCase
 ) : ViewModel() {
     companion object {
         private const val CONTENT_LIMIT_SIZE = 4 * 1024 * 1024
@@ -39,11 +39,8 @@ internal class MultiModalViewModel @Inject constructor(
             return "prompt can not be empty..."
         }
         with(_uiState.value) {
-            if (images.isEmpty()) {
-                return "images can not be empty..."
-            }
             val promptSize = promptTextField.text.toString().encodeToByteArray().size
-            val totalSize = images.sumOf { image -> image.size } + promptSize
+            val totalSize = (images?.sumOf { image -> image.size } ?: 0) + promptSize
             if (totalSize > CONTENT_LIMIT_SIZE) {
                 return "the entire prompt is too large, 4MB limited"
             }
@@ -60,12 +57,14 @@ internal class MultiModalViewModel @Inject constructor(
         }
         _uiState.update { it.copy(inProgress = true, generateResult = null) }
         val images = _uiState.value.images
+        val genResult = StringBuilder()
         multiModalGeneratingUseCase(promptTextField.text.toString(), images)
             .onEach { result ->
+                genResult.append(result)
                 _uiState.update {
                     it.copy(
                         inProgress = false,
-                        generateResult = result,
+                        generateResult = genResult.toString(),
                         error = null
                     )
                 }

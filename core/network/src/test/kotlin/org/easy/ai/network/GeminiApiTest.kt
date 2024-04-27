@@ -48,6 +48,7 @@ class GeminiApiTest {
                             headers = headersOf(HttpHeaders.ContentType, "application/json")
                         )
                     }
+
                     else -> {
                         respond(
                             content = ByteReadChannel(geminiGenerateContentNormal),
@@ -81,7 +82,7 @@ class GeminiApiTest {
 
     @Test
     fun test_success_response() = testScope.runTest {
-        val response = apiController.generateContent("", content { })
+        val response = apiController.generateContent("", "", content { })
         Assert.assertEquals(
             "mock success response.",
             response.text
@@ -90,7 +91,7 @@ class GeminiApiTest {
 
     @Test
     fun test_vision_success_response() = testScope.runTest {
-        val response = apiController.generateContentByVision("", content { })
+        val response = apiController.generateContent("", "", content { })
         Assert.assertEquals(
             "mock success response.",
             response.text
@@ -99,6 +100,6 @@ class GeminiApiTest {
 
     @Test(expected = NetworkErrorException::class)
     fun test_null_response() = testScope.runTest {
-        apiController.generateContent("error", content { })
+        apiController.generateContent("error", "", content { })
     }
 }

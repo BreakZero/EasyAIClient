@@ -1,4 +1,4 @@
-package org.easy.ai.plugins.multimodal
+package org.easy.ai.plugins.textandimage
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -98,7 +98,7 @@ private fun MultiModalScreen(
             .fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Gemini Multi Modal") },
+                title = { Text("Gemini Text And Image Input") },
                 navigationIcon = {
                     IconButton(onClick = popBack) {
                         Icon(
