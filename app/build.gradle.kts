@@ -53,6 +53,9 @@ android {
             excludes.add("META-INF/versions/9/previous-compilation-data.bin")
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 fun keyStoreProperties(): Properties {
@@ -79,4 +82,6 @@ dependencies {
     implementation(projects.feature.chat)
     implementation(projects.feature.settings)
     implementation(projects.feature.plugins)
+
+    implementation(libs.timber)
 }

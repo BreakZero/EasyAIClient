@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.map
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.data.plugins.TextAndImagePlugin
 import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
 import org.easy.ai.network.model.content
@@ -28,6 +29,23 @@ class GeminiModelRepository @Inject internal constructor(
         )
     }
 
+    override fun sendMessageStream(apiKey: String, history: List<ChatMessage>): Flow<ChatMessage> {
+        val content = history.map {
+            content(it.participant.name.lowercase()) { text(it.content) }
+        }
+        val responseStream = geminiRestApi.generateContentStream(
+            apiKey,
+            "gemini-1.5-pro-latest",
+            *content.toTypedArray()
+        )
+        return responseStream.map {
+            ChatMessage.success(
+                content = it.text.orEmpty(),
+                participant = Participant.MODEL
+            )
+        }
+    }
+
     override fun generateContentStream(
         apiKey: String,
         prompt: String,
@@ -46,9 +64,8 @@ class GeminiModelRepository @Inject internal constructor(
             text(prompt)
         }
 
-        val model = images?.let { "gemini-pro-vision" } ?: "gemini-1.5-pro-latest"
+        val model = "gemini-1.5-pro-latest"
         val response = geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
-
 
         return response.map { it.text.orEmpty() }
     }

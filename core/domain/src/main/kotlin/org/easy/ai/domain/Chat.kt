@@ -1,13 +1,12 @@
 package org.easy.ai.domain
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.model.ChatMessage
-import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
+import timber.log.Timber
 import java.util.concurrent.Semaphore
 
 class Chat internal constructor(
@@ -27,13 +26,17 @@ class Chat internal constructor(
     suspend fun sendMessage(prompt: ChatMessage): ChatMessage {
         attemptLock()
         val response = try {
-            getMessageResponse(apiKey, prompt)
-        } catch (e: Exception) {
-            ChatMessage(
-                content = e.message ?: "unknown error from service",
-                participant = Participant.MODEL,
-                type = MessageType.ERROR
+            val response = chatPlugin.sendMessage(
+                apiKey = apiKey,
+                // filter for migration error message from previous version data
+                history = history.takeUseful() + prompt
             )
+            // add into history if send successful
+            history.add(prompt)
+            history.add(response)
+            return response
+        } catch (e: Exception) {
+            ChatMessage.error(e)
         } finally {
             lock.release()
         }
@@ -47,34 +50,30 @@ class Chat internal constructor(
 
     fun sendMessageStream(prompt: ChatMessage): Flow<ChatMessage> {
         attemptLock()
-        return flow {
-            val response = getMessageResponse(apiKey, prompt)
-            emit(response)
-        }.catch { error ->
-            ChatMessage(
-                content = error.message ?: "unknown error from service",
-                participant = Participant.MODEL,
-                type = MessageType.ERROR
-            ).also {
-                emit(it)
+        val historyWithPrompt = history.takeUseful() + prompt
+        val resultTemp = StringBuilder()
+        return chatPlugin.sendMessageStream(apiKey, historyWithPrompt)
+            .onEach {
+                resultTemp.append(it.content)
+            }.onCompletion { error ->
+                Timber.e(error)
+                if (error == null) {
+                    history.add(prompt)
+                    history.add(
+                        ChatMessage.success(
+                            content = resultTemp.toString(),
+                            participant = Participant.MODEL
+                        )
+                    )
+                }
+                lock.release()
             }
-        }.onCompletion {
-            lock.release()
-        }
     }
 
-    private suspend fun getMessageResponse(apiKey: String, message: ChatMessage): ChatMessage {
-        val response = chatPlugin.sendMessage(
-            apiKey = apiKey,
-            // filter for migration error message from previous version data
-            history = history.filter {
-                it.participant in Participant.entries.toTypedArray()
-            } + message
-        )
-        // add into history if send successful
-        history.add(message)
-        history.add(response)
-        return response
+    private fun List<ChatMessage>.takeUseful(): List<ChatMessage> {
+        return this.filter {
+            (it.participant in Participant.entries.toTypedArray())
+        }
     }
 
     fun sendMessageStream(prompt: String): Flow<ChatMessage> {
