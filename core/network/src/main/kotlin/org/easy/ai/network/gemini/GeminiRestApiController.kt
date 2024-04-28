@@ -1,6 +1,5 @@
 package org.easy.ai.network.gemini
 
-import android.accounts.NetworkErrorException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder

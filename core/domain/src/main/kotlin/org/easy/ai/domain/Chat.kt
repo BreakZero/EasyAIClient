@@ -71,9 +71,11 @@ class Chat internal constructor(
     }
 
     private fun List<ChatMessage>.takeUseful(): List<ChatMessage> {
-        return this.filter {
+        val filterHistory = this.filter {
             (it.participant in Participant.entries.toTypedArray())
         }
+        val size = filterHistory.size
+        return if (size > 16) filterHistory.takeLast(16) else filterHistory
     }
 
     fun sendMessageStream(prompt: String): Flow<ChatMessage> {
