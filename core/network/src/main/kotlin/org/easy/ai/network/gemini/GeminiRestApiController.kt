@@ -21,8 +21,12 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationException
 import org.easy.ai.network.di.JSON
 import org.easy.ai.network.error.GoogleGenerativeAIException
+import org.easy.ai.network.error.InvalidAPIKeyException
 import org.easy.ai.network.error.PromptBlockedException
+import org.easy.ai.network.error.QuotaExceededException
 import org.easy.ai.network.error.ResponseStoppedException
+import org.easy.ai.network.error.ServerException
+import org.easy.ai.network.error.UnsupportedUserLocationException
 import org.easy.ai.network.gemini.internal.CountTokensRequest
 import org.easy.ai.network.gemini.internal.GRpcErrorResponse
 import org.easy.ai.network.gemini.internal.GenerateContentRequest
@@ -84,17 +88,25 @@ class GeminiRestApiController internal constructor(
 }
 
 private suspend fun validateResponse(response: HttpResponse) {
-    if (response.status != HttpStatusCode.OK) {
-        val text = response.bodyAsText()
-        val message =
-            try {
-                JSON.decodeFromString<GRpcErrorResponse>(text).error.message
-            } catch (e: Throwable) {
-                "Unexpected Response:\n$text"
-            }
-
-        throw NetworkErrorException(message)
+    if (response.status == HttpStatusCode.OK) return
+    val text = response.bodyAsText()
+    val message =
+        try {
+            JSON.decodeFromString<GRpcErrorResponse>(text).error.message
+        } catch (e: Throwable) {
+            "Unexpected Response:\n$text"
+        }
+    if (message.contains("API key not valid")) {
+        throw InvalidAPIKeyException(message)
     }
+    // TODO (b/325117891): Use a better method than string matching.
+    if (message == "User location is not supported for the API use.") {
+        throw UnsupportedUserLocationException()
+    }
+    if (message.contains("quota")) {
+        throw QuotaExceededException(message)
+    }
+    throw ServerException(message)
 }
 
 private fun GenerateContentResponse.validate() = apply {

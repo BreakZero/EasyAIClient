@@ -31,19 +31,28 @@ sealed class GoogleGenerativeAIException(message: String, cause: Throwable? = nu
     }
 }
 
+class ServerException(message: String, cause: Throwable? = null) :
+    GoogleGenerativeAIException(message, cause)
+
+class InvalidAPIKeyException(message: String, cause: Throwable? = null) :
+    GoogleGenerativeAIException(message, cause)
+
+class UnsupportedUserLocationException(cause: Throwable? = null) :
+    GoogleGenerativeAIException("User location is not supported for the API use.", cause)
+
+
 class PromptBlockedException internal constructor(
     response: GenerateContentResponse,
     cause: Throwable? = null
-) :
-    RuntimeException(
-        "Prompt was blocked: ${response.promptFeedback?.blockReason?.name}",
-        cause
-    )
+) : GoogleGenerativeAIException(
+    "Prompt was blocked: ${response.promptFeedback?.blockReason?.name}",
+    cause
+)
 
 class ResponseStoppedException internal constructor(
     response: GenerateContentResponse,
     cause: Throwable? = null
-) : RuntimeException(
+) : GoogleGenerativeAIException(
     "Content generation stopped. Reason: ${response.candidates?.first()?.finishReason?.name}",
     cause
 )
@@ -52,6 +61,9 @@ class SerializationException(message: String, cause: Throwable? = null) :
     GoogleGenerativeAIException(message, cause)
 
 class RequestTimeoutException(message: String, cause: Throwable? = null) :
+    GoogleGenerativeAIException(message, cause)
+
+class QuotaExceededException(message: String, cause: Throwable? = null) :
     GoogleGenerativeAIException(message, cause)
 
 class UnknownException(message: String, cause: Throwable? = null) :
