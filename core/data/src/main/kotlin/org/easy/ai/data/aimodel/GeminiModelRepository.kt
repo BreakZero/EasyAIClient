@@ -8,9 +8,10 @@ import kotlinx.coroutines.flow.map
 import org.easy.ai.data.plugins.ChatPlugin
 import org.easy.ai.data.plugins.TextAndImagePlugin
 import org.easy.ai.model.ChatMessage
+import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
 import org.easy.ai.network.gemini.GeminiRestApi
-import org.easy.ai.network.gemini.type.content
+import org.easy.ai.network.model.content
 import javax.inject.Inject
 
 class GeminiModelRepository @Inject internal constructor(
@@ -20,11 +21,29 @@ class GeminiModelRepository @Inject internal constructor(
         val content = history.map {
             content(it.participant.name.lowercase()) { text(it.content) }
         }
-        val response = geminiRestApi.generateContent(apiKey, "gemini-pro", *content.toTypedArray())
+        val response =
+            geminiRestApi.generateContent(apiKey, "gemini-1.5-pro-latest", *content.toTypedArray())
         return ChatMessage(
             content = response.text.orEmpty(),
             participant = Participant.MODEL
         )
+    }
+
+    override fun sendMessageStream(apiKey: String, history: List<ChatMessage>): Flow<ChatMessage> {
+        val content = history.map {
+            content(it.participant.name.lowercase()) { text(it.content) }
+        }
+        val responseStream = geminiRestApi.generateContentStream(
+            apiKey,
+            "gemini-1.5-pro-latest",
+            *content.toTypedArray()
+        )
+        return responseStream.map {
+            ChatMessage.success(
+                content = it.text.orEmpty(),
+                participant = Participant.MODEL
+            )
+        }
     }
 
     override fun generateContentStream(
@@ -40,14 +59,14 @@ class GeminiModelRepository @Inject internal constructor(
             content {
                 text(prompt)
                 bitmaps.map(::image)
-            }.also {
-                bitmaps.forEach { it.recycle() }
             }
         } ?: content {
             text(prompt)
         }
-        val model = images?.let { "gemini-pro-vision" } ?: "gemini-pro"
+
+        val model = "gemini-1.5-pro-latest"
         val response = geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
+
         return response.map { it.text.orEmpty() }
     }
 }

@@ -14,4 +14,5 @@ android {
 
 dependencies {
     implementation(libs.kotlinx.coroutines.android)
+    api(libs.timber)
 }

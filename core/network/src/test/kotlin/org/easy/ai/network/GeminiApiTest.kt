@@ -25,7 +25,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.easy.ai.network.di.JSON
 import org.easy.ai.network.gemini.GeminiRestApiController
-import org.easy.ai.network.gemini.type.content
+import org.easy.ai.network.model.content
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

@@ -2,6 +2,15 @@ package org.easy.ai.client
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import timber.log.Timber
 
 @HiltAndroidApp
-class EasyAIClientApplication : Application()
+class EasyAIClientApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+    }
+}

@@ -13,7 +13,7 @@ internal fun supportedPlugins(): List<Plugin> {
     return listOf(
         Plugin(
             supportedAis = listOf(AiModel.GEMINI),
-            name = "Text-and-Image"
+            name = "Multi Modal"
         )
     )
 }

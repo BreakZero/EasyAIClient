@@ -2,8 +2,6 @@ package org.easy.ai.chat
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.UUID
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -12,6 +10,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,6 +23,9 @@ import org.easy.ai.model.AiModel
 import org.easy.ai.model.ChatMessage
 import org.easy.ai.model.MessageType
 import org.easy.ai.model.Participant
+import timber.log.Timber
+import java.util.UUID
+import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
@@ -68,39 +70,59 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun sendMessage(userMessage: String) {
-        val sendingMessage = ChatMessage(
-            content = userMessage,
-            participant = Participant.USER,
-            type = MessageType.PENDING
-        )
-        _pendingMessage.update { sendingMessage }
-
+        val receivingMsg = StringBuilder()
         chat.sendMessageStream(userMessage)
-            .onEach { message ->
-                if (message.type == MessageType.ERROR) {
-                    // handle error response, ignore save into local
-                    _chatHistory.update {
-                        it + sendingMessage.copy(type = MessageType.ERROR) + message
-                    }
-                } else {
-                    // handle success response, save into local
-                    _selectedChat.value?.run {
-                        offlineChatRepository.saveMessage(
-                            chatId = chatId,
-                            text = userMessage,
-                            participant = Participant.USER
+            .onStart {
+                _chatHistory.update {
+                    it + ChatMessage.success(
+                        content = userMessage,
+                        participant = Participant.USER
+                    )
+                }
+                _pendingMessage.update {
+                    ChatMessage(
+                        content = "loading...",
+                        participant = Participant.MODEL
+                    )
+                }
+            }.onEach { message ->
+                receivingMsg.append(message.content).also { fullContent ->
+                    _pendingMessage.update {
+                        ChatMessage.success(
+                            content = fullContent.toString(),
+                            participant = Participant.MODEL
                         )
-                        offlineChatRepository.saveMessage(
-                            chatId = chatId,
-                            text = message.content,
-                            participant = message.participant
-                        )
-                    }
-                    _chatHistory.update {
-                        it + sendingMessage.copy(type = MessageType.SUCCESS) + message
                     }
                 }
-            }.onCompletion { _ ->
+            }.catch { error ->
+                clearPendingMessage()
+                _chatHistory.update {
+                    it + ChatMessage.error(error)
+                }
+            }.onCompletion { error ->
+                Timber.e(error)
+                _pendingMessage.value?.let { finishedPending ->
+                    _chatHistory.update {
+                        it + finishedPending.copy(type = MessageType.SUCCESS)
+                    }
+                }
+                _selectedChat.value?.run {
+                    _pendingMessage.value?.let { finishedPending ->
+                        Timber.v("only save success message into local...")
+                        if (finishedPending.isSuccess()) {
+                            offlineChatRepository.saveMessage(
+                                chatId = chatId,
+                                text = userMessage,
+                                participant = Participant.USER
+                            )
+                            offlineChatRepository.saveMessage(
+                                chatId = chatId,
+                                text = finishedPending.content,
+                                participant = finishedPending.participant
+                            )
+                        }
+                    }
+                }
                 clearPendingMessage()
             }.launchIn(viewModelScope)
     }
@@ -109,10 +131,15 @@ class ChatViewModel @Inject constructor(
         _pendingMessage.update { null }
     }
 
+    private fun String.genChatName(): String {
+        val len = this.length
+        return if (len > 18) "${take(18)}..." else this
+    }
+
     private suspend fun saveChat() {
         if (_selectedChat.value != null || _chatHistory.value.isEmpty()) return
         val chatId = UUID.randomUUID().toString()
-        val chatName = _chatHistory.value.first().content
+        val chatName = _chatHistory.value.first().content.genChatName()
         offlineChatRepository.saveChat(
             chatId = chatId,
             name = chatName,

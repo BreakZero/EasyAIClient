@@ -1,11 +1,11 @@
 package org.easy.ai.domain
 
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapConcat
 import org.easy.ai.data.aimodel.GeminiModelRepository
 import org.easy.ai.datastore.UserPreferencesDataSource
 import org.easy.ai.model.AiModel
+import javax.inject.Inject
 
 class TextAndImageGeneratingUseCase @Inject internal constructor(
     private val userPreferencesDataSource: UserPreferencesDataSource,
