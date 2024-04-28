@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import org.easy.ai.domain.TextAndImageGeneratingUseCase
@@ -55,7 +56,7 @@ internal class MultiModalViewModel @Inject constructor(
             _uiState.update { it.copy(error = error) }
             return
         }
-        _uiState.update { it.copy(inProgress = true, promptResult = null) }
+        _uiState.update { it.copy(inProgress = true, promptResult = null, error = null) }
         val images = _uiState.value.images
         val promptResult = StringBuilder()
         multiModalGeneratingUseCase(promptTextField.text.toString(), images)
@@ -63,7 +64,6 @@ internal class MultiModalViewModel @Inject constructor(
                 promptResult.append(result)
                 _uiState.update {
                     it.copy(
-                        inProgress = false,
                         promptResult = promptResult.toString(),
                         error = null
                     )
@@ -74,6 +74,10 @@ internal class MultiModalViewModel @Inject constructor(
                         inProgress = false,
                         error = error.message ?: "unknown generating error..."
                     )
+                }
+            }.onCompletion {
+                _uiState.update {
+                    it.copy(inProgress = false)
                 }
             }.launchIn(viewModelScope)
     }
