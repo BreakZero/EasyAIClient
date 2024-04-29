@@ -79,9 +79,12 @@ dependencies {
     implementation(libs.androidx.compose.navigation)
 
     implementation(projects.core.systemUi)
+    implementation(projects.core.data)
     implementation(projects.feature.chat)
     implementation(projects.feature.settings)
     implementation(projects.feature.plugins)
+
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.timber)
 }
