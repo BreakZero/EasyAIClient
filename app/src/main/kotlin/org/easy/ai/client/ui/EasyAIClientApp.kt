@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
@@ -31,8 +34,10 @@ fun EasyAIClientApp(
                 testTagsAsResourceId = true
             }
     ) {
+        val snackbarHostState = remember { SnackbarHostState() }
         Scaffold(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
             Row(
                 Modifier
@@ -47,7 +52,6 @@ fun EasyAIClientApp(
             ) {
                 EasyAIHost()
             }
-
         }
     }
 }
