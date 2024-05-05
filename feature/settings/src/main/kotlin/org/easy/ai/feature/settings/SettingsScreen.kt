@@ -127,7 +127,7 @@ internal fun SettingsScreen(
                 headlineContent = {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = "About EasyAI"
+                        text = stringResource(R.string.about_easyai)
                     )
                 }
             )

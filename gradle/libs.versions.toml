@@ -19,7 +19,7 @@ kotlinx-coroutine = "1.7.3"
 
 # For plugins
 org-jetbrains-kotlin = "1.9.22"
-android-gradle-plugin = "8.2.2"
+android-gradle-plugin = "8.4.0"
 protobuf = "3.24.4"
 protobufPlugin = "0.9.4"
 
