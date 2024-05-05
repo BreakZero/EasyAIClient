@@ -49,6 +49,10 @@ internal class MultiModalViewModel @Inject constructor(
         return null
     }
 
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
+    }
+
     fun submitPrompt() {
         val error = validatePrompt()
         if (error != null) {

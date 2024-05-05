@@ -1,6 +1,7 @@
 package org.easy.ai.client.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -25,4 +26,7 @@ class EasyAIClientAppState(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
     private val windowSizeClass: WindowSizeClass
-)
+) {
+    val shouldShowNavRail: Boolean
+        get() = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
+}
