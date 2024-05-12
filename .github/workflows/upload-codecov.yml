@@ -48,7 +48,6 @@ jobs:
         run: ./gradlew core:${{ matrix.module }}:createStagingDebugCombinedCoverageReport
 
       - name: Display local test coverage
-        if: matrix.api-level == 30
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
