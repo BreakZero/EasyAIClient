@@ -1,6 +1,6 @@
 package org.easy.ai.network.model
 
-import android.util.Log
+import timber.log.Timber
 
 class PromptResponse(
     val contents: List<Content>,
@@ -31,7 +31,7 @@ class PromptResponse(
         return parts.first() as T
     }
     private fun warn(message: String) {
-        Log.w("GenerateContentResponse", message)
+        Timber.w(message)
     }
 }
 

@@ -24,6 +24,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.easy.ai.network.di.JSON
+import org.easy.ai.network.error.InvalidAPIKeyException
 import org.easy.ai.network.gemini.GeminiRestApiController
 import org.easy.ai.network.model.content
 import org.junit.Assert
@@ -98,7 +99,7 @@ class GeminiApiTest {
         )
     }
 
-    @Test(expected = NetworkErrorException::class)
+    @Test(expected = InvalidAPIKeyException::class)
     fun test_null_response() = testScope.runTest {
         apiController.generateContent("error", "", content { })
     }
