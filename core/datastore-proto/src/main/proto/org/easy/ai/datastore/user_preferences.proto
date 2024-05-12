@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "org/easy/ai/datastore/ai_model.proto";
 
-option java_package = "org.easy.ai.datastore";
+option java_package = "org.easy.ai.datastore.proto";
 option java_multiple_files = true;
 
 message UserPreferences {

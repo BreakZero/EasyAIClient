@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-option java_package = "org.easy.ai.datastore";
+option java_package = "org.easy.ai.datastore.proto";
 option java_multiple_files = true;
 
 enum AiModelProto {

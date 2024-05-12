@@ -3,6 +3,7 @@ package org.easy.ai.datastore
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
+import org.easy.ai.datastore.proto.UserPreferences
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject

@@ -1,5 +1,6 @@
 package org.easy.ai.domain
 
+import android.graphics.Bitmap
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -14,7 +15,7 @@ class TextAndImageGeneratingUseCase @Inject internal constructor(
     private val offlineUserDataRepository: UserDataRepository,
     private val geminiModelRepository: GeminiModelRepository
 ) {
-    operator fun invoke(prompt: String, images: List<ByteArray>?): Flow<String> {
+    operator fun invoke(prompt: String, images: List<Bitmap>?): Flow<String> {
         return channelFlow {
             launch(CoroutineName("GenerateForTextImageInput")) {
                 val userData = offlineUserDataRepository.userData.first()

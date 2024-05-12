@@ -1,7 +1,10 @@
 package org.easy.ai.plugins.multimodal
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -63,7 +66,11 @@ internal class MultiModalViewModel @Inject constructor(
         _uiState.update { it.copy(inProgress = true, promptResult = null, error = null) }
         val images = _uiState.value.images
         val promptResult = StringBuilder()
-        multiModalGeneratingUseCase(promptTextField.text.toString(), images)
+        val bitmaps = images?.map {
+            BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
+                .asAndroidBitmap()
+        }
+        multiModalGeneratingUseCase(promptTextField.text.toString(), bitmaps)
             .onEach { result ->
                 promptResult.append(result)
                 _uiState.update {

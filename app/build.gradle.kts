@@ -1,12 +1,14 @@
+import org.easy.mobile.convention.configureFlavors
 import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    id("org.easy.android.application.compose")
-    id("org.easy.jacoco")
-    id("org.easy.hilt")
+    id("easy.android.application")
+    id("easy.android.application.compose")
+    id("easy.android.jacoco")
+    id("easy.android.hilt")
 }
 
 android {
@@ -14,7 +16,6 @@ android {
 
     defaultConfig {
         applicationId = "org.easy.ai.client"
-        targetSdk = 34
         versionCode = 100000011
         versionName = "v0.1.0"
     }
@@ -56,6 +57,7 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    configureFlavors(this)
 }
 
 fun keyStoreProperties(): Properties {

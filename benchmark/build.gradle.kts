@@ -1,7 +1,9 @@
+import org.easy.mobile.convention.configureFlavors
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
 //    alias(easy.plugins.android.test)
-    id("org.easy.android.test")
+    id("easy.android.test")
 }
 
 android {
@@ -26,6 +28,8 @@ android {
 
     targetProjectPath = ":app"
     experimentalProperties["android.experimental.self-instrumenting"] = true
+
+    configureFlavors(this)
 }
 
 dependencies {

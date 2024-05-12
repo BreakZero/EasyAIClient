@@ -3,9 +3,9 @@ plugins {
 //    alias(easy.plugins.android.compose.library)
 //    alias(easy.plugins.hilt)
 //    alias(easy.plugins.jacoco)
-    id("org.easy.android.library.compose")
-    id("org.easy.hilt")
-    id("org.easy.jacoco")
+    id("easy.android.library")
+    id("easy.android.hilt")
+    id("easy.android.jacoco")
     alias(libs.plugins.kotlin.serialization)
 }
 

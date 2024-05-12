@@ -2,7 +2,7 @@ import dagger.hilt.android.plugin.util.capitalize
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.easy.android.library")
+    id("easy.android.library")
     alias(libs.plugins.protobuf)
 }
 

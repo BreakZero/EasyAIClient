@@ -2,8 +2,8 @@
 plugins {
 //    alias(easy.plugins.android.library)
 //    alias(easy.plugins.hilt)
-    id("org.easy.android.library")
-    id("org.easy.hilt")
+    id("easy.android.library")
+    id("easy.android.hilt")
 }
 
 android {

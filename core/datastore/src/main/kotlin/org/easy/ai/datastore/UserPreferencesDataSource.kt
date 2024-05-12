@@ -3,6 +3,9 @@ package org.easy.ai.datastore
 import androidx.datastore.core.DataStore
 import javax.inject.Inject
 import kotlinx.coroutines.flow.map
+import org.easy.ai.datastore.proto.AiModelProto
+import org.easy.ai.datastore.proto.UserPreferences
+import org.easy.ai.datastore.proto.copy
 import org.easy.ai.model.AiModel
 import org.easy.ai.model.UserData
 
