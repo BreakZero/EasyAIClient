@@ -1,6 +1,5 @@
 package org.easy.ai.network.gemini.util
 
-import android.util.Log
 import kotlin.reflect.KClass
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -9,6 +8,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import timber.log.Timber
 
 /**
  * Serializer for enums that defaults to the first ordinal on unknown types.
@@ -31,16 +31,14 @@ internal class FirstOrdinalSerializer<T : Enum<T>>(private val enumClass: KClass
     }
 
     private fun printWarning(name: String) {
-        Log.e(
-            "FirstOrdinalSerializer",
+        Timber.tag("FirstOrdinalSerializer").e(
             """
         |Unknown enum value found: $name"
         |This usually means the backend was updated, and the SDK needs to be updated to match it.
         |Check if there's a new version for the SDK, otherwise please open an issue on our
         |GitHub to bring it to our attention:
         |https://github.com/google/google-ai-android
-       """
-                .trimMargin()
+       """.trimMargin()
         )
     }
 

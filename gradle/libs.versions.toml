@@ -1,11 +1,11 @@
 [versions]
 androidDesugarJdkLibs = "2.0.4"
 androidx-core-splashscreen = "1.0.1"
-androidx-core-ktx = "1.13.0"
+androidx-core-ktx = "1.13.1"
 androidx-appcompat = "1.6.1"
 androidx-lifecycle = "2.7.0"
 androidx-paging = "3.2.1"
-androidx-dataStore = "1.0.0"
+androidx-dataStore = "1.1.1"
 androidxTracing = "1.2.0"
 androidxWindowManager = "1.2.0"
 androidxWork = "2.9.0"
@@ -21,7 +21,7 @@ kotlinx-coroutine = "1.8.0"
 # For plugins
 org-jetbrains-kotlin = "1.9.23"
 android-gradle-plugin = "8.4.0"
-protobuf = "3.24.4"
+protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
 
 # For testing
@@ -38,15 +38,14 @@ coil = "2.6.0"
 koin = "3.4.1"
 ktor = "2.3.10"
 ksp = "1.9.23-1.0.20"
-dagger-hilt = "2.49"
-material = "1.11.0"
+dagger-hilt = "2.51"
 okhttp = "4.12.0"
 uiautomator = "2.3.0"
 benchmark-macro-junit4 = "1.2.3"
 mockito = "5.10.0"
 
-robolectric = "4.10.3"
-roborazzi = "1.5.0"
+robolectric = "4.11.1"
+roborazzi = "1.7.0"
 
 
 [libraries]
@@ -118,9 +117,6 @@ hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testi
 
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
-
-generativeai = { module = "com.google.ai.client.generativeai:generativeai", version = "0.2.0" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version = "2.9.0" }
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }

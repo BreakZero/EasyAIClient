@@ -1,6 +1,5 @@
 package org.easy.ai.network.gemini.internal
 
-import android.util.Log
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.easy.ai.network.gemini.internal.server.Candidate
@@ -8,6 +7,7 @@ import org.easy.ai.network.gemini.internal.server.GRpcError
 import org.easy.ai.network.gemini.internal.server.PromptFeedback
 import org.easy.ai.network.gemini.internal.shared.Part
 import org.easy.ai.network.gemini.internal.shared.TextPart
+import timber.log.Timber
 
 internal sealed interface Response
 
@@ -50,7 +50,7 @@ internal data class GenerateContentResponse(
     }
 
     private fun warn(message: String) {
-        Log.w("GenerateContentResponse", message)
+        Timber.tag("GenerateContentResponse").w(message)
     }
 }
 
