@@ -79,11 +79,11 @@ internal class MultiModalViewModel @Inject constructor(
                         error = null
                     )
                 }
-            }.catch { error ->
+            }.catch { cause ->
                 _uiState.update {
                     it.copy(
                         inProgress = false,
-                        error = error.message ?: "unknown generating error..."
+                        error = cause.message ?: "unknown generating error..."
                     )
                 }
             }.onCompletion {

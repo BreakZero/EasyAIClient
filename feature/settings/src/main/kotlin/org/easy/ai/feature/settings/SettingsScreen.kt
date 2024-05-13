@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,11 +65,11 @@ internal fun SettingsScreen(
             TopAppBar(navigationIcon = {
                 IconButton(onClick = popBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = null
                     )
                 }
-            }, title = { Text(text = stringResource(id = R.string.text_settings)) })
+            }, title = { Text(text = stringResource(id = R.string.core_system_ui_text_settings)) })
         }
     ) { padding ->
         Column(
@@ -86,11 +86,11 @@ internal fun SettingsScreen(
                 headlineContent = {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = stringResource(id = R.string.text_ai_model_manager)
+                        text = stringResource(id = R.string.core_system_ui_ai_model_manager)
                     )
                 },
                 trailingContent = {
-                    Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                 }
             )
 
@@ -104,18 +104,18 @@ internal fun SettingsScreen(
                     Column {
                         Text(
                             style = MaterialTheme.typography.titleMedium,
-                            text = stringResource(id = R.string.text_default_chat_model)
+                            text = stringResource(id = R.string.core_system_ui_default_chat_model)
                         )
                         Text(
                             style = MaterialTheme.typography.labelSmall,
-                            text = stringResource(id = R.string.text_the_ai_using_for_chat)
+                            text = stringResource(id = R.string.core_system_ui_the_ai_using_for_chat)
                         )
                     }
                 },
                 trailingContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = settingsUiState.defaultChatAi?.name.orEmpty())
-                        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                     }
                 }
             )
@@ -127,7 +127,7 @@ internal fun SettingsScreen(
                 headlineContent = {
                     Text(
                         style = MaterialTheme.typography.titleMedium,
-                        text = stringResource(R.string.about_easyai)
+                        text = stringResource(R.string.core_system_ui_about_easyai)
                     )
                 }
             )

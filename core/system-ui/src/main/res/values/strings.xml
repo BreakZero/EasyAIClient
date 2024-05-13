@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_settings">Settings</string>
-    <string name="text_choose_model">Choose model</string>
-    <string name="text_enter_apikey">Enter your Api-Key</string>
-    <string name="text_automatic_save_chat">Automatic save chat</string>
-    <string name="text_new_chat">New Chat</string>
-    <string name="text_tools">Tools</string>
-    <string name="text_plugins">Plugins</string>
-    <string name="text_multimodal">Multi Modal</string>
-    <string name="text_text_generator">Text Generator</string>
-    <string name="action_go_to_settings">Go to Settings</string>
-    <string name="text_supported_model">Supported Models</string>
-    <string name="text_ai_model_manager">Manage Ai Model</string>
-    <string name="text_activated_ai">Current Activated</string>
-    <string name="text_default_chat_model">Default AI for Chat</string>
-    <string name="text_the_ai_using_for_chat">Using current ai for chat feature</string>
-    <string name="text_ai_model_not_supported_yet">This Ai model no support yet. Will coming soon.</string>
-    <string name="text_no_api_key_for_chat">If you want to using chat, please set the API Key for Chat Ai Model that you choose.</string>
-    <string name="about_easyai">About EasyAI</string>
+    <string name="core_system_ui_text_settings">Settings</string>
+    <string name="core_system_ui_text_choose_model">Choose model</string>
+    <string name="core_system_ui_enter_apikey">Enter your Api-Key</string>
+    <string name="core_system_ui_automatic_save_chat">Automatic save chat</string>
+    <string name="core_system_ui_new_chat">New Chat</string>
+    <string name="core_system_ui_tools">Tools</string>
+    <string name="core_system_ui_plugins">Plugins</string>
+    <string name="core_system_ui_multimodal">Multi Modal</string>
+    <string name="core_system_ui_text_generator">Text Generator</string>
+    <string name="core_system_ui_action_go_to_settings">Go to Settings</string>
+    <string name="core_system_ui_supported_model">Supported Models</string>
+    <string name="core_system_ui_ai_model_manager">Manage Ai Model</string>
+    <string name="core_system_ui_activated_ai">Current Activated</string>
+    <string name="core_system_ui_default_chat_model">Default AI for Chat</string>
+    <string name="core_system_ui_the_ai_using_for_chat">Using current ai for chat feature</string>
+    <string name="core_system_ui_ai_model_not_supported_yet">This Ai model no support yet. Will coming soon.</string>
+    <string name="core_system_ui_no_api_key_for_chat">If you want to using chat, please set the API Key for Chat Ai Model that you choose.</string>
+    <string name="core_system_ui_about_easyai">About EasyAI</string>
 </resources>

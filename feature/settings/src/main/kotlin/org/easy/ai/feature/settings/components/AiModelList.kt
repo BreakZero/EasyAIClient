@@ -83,7 +83,7 @@ internal fun AiModelListDialog(
                                 Text(
                                     style = MaterialTheme.typography.labelSmall,
                                     text = stringResource(
-                                        id = R.string.text_ai_model_not_supported_yet
+                                        id = R.string.core_system_ui_ai_model_not_supported_yet
                                     )
                                 )
                             }
