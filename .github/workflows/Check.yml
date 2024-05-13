@@ -15,29 +15,22 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: 'true'
           fetch-depth: 0
 
-      - name: Generate cache key
-        run: ./scripts/checksum.sh . checksum.txt
 
-      - name: Gradle cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches/modules-*
-            ~/.gradle/caches/jars-*
-            ~/.gradle/caches/build-cache-*
-          key: gradle-${{ hashFiles('checksum.txt') }}
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
-          distribution: "temurin"
+          distribution: "zulu"
           java-version: "17"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
 
       - name: checking code style
         env:
