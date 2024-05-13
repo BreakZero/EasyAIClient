@@ -9,6 +9,9 @@ on:
 jobs:
   unit_test_coverage:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        module: [ network, data ]
 
     permissions:
       contents: write
@@ -40,29 +43,22 @@ jobs:
           java-version: "17"
 
       - name: Run local tests for the combined coverage report
-        run: ./gradlew testStagingDebugUnitTest
+        run: ./gradlew core:${{ matrix.module }}:testStagingDebugUnitTest
 
       - name: Generate coverage reports for Staging variants
         env:
           GT_USERNAME: ${{ github.actor }}
           GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew createStagingDebugCombinedCoverageReport
+        run: ./gradlew core:${{ matrix.module }}:createStagingDebugCombinedCoverageReport
 
       - name: Display local test coverage
         id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
-          title: Combined test coverage report
+          title: Test coverage report in ${{ matrix.module }} module
           min-coverage-overall: 30
           min-coverage-changed-files: 60
           paths: |
-            ${{ github.workspace }}/**/build/reports/jacoco/**/*Report.xml
+            ./core/${{ matrix.module }}/build/reports/jacoco/**/*Report.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Upload coverage reports to Codecov
-#        uses: codecov/codecov-action@v4.0.1
-#        with:
-#          token: ${{ secrets.CODECOV_TOKEN }}
-#          codecov_yml_path: ./codecov_rule.yml
-#          flags: ${{ matrix.module }}
-#          files: ./core/${{ matrix.module }}/build/reports/jacoco/createStagingDebugCombinedCoverageReport/createStagingDebugCombinedCoverageReport.xml
+          update-comment: true

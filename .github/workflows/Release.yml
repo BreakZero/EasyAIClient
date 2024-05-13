@@ -1,12 +1,15 @@
-name: Code Style Checking
-
+name: Github Release with tag
 on:
   push:
-  pull_request:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
 
 jobs:
-  code_style_check:
+  release_build:
     runs-on: macos-latest
+    if: startsWith(github.ref, 'refs/tags/')
 
     steps:
       - name: Check out repository
@@ -33,8 +36,22 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: checking code style
+      - name: Build Release apk
         env:
           GT_USERNAME: ${{ github.actor }}
           GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew --continue ktlintCheck
+        run: ./gradlew app:assembleProdRelease
+
+      - name: Build Release bundle
+        env:
+          GT_USERNAME: ${{ github.actor }}
+          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew app:bundleProdRelease
+
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: |
+            app/build/outputs/apk/**/release/*.apk
+            app/build/outputs/bundle/*Release/*.aab
