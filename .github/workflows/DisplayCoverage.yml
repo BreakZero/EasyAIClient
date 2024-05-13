@@ -1,10 +1,14 @@
-name: upload codecov
+name: Display Coverage
 
 on:
   push:
     branches:
       - main
   pull_request:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   unit_test_coverage:

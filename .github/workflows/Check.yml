@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   code_style_check:
     runs-on: macos-latest
