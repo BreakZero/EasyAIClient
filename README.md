@@ -1,10 +1,4 @@
-[![Code Style Checking](https://github.com/BreakZero/EasyAIClient/actions/workflows/ktlint_check.yml/badge.svg?branch=main)](https://github.com/BreakZero/EasyAIClient/actions/workflows/ktlint_check.yml)
-
-### 模块单元测试覆盖率
-- **_data_**: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=data)
-- **_network_**: [![codecov.io](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)](https://codecov.io/github/BreakZero/EasyAIClient/graph/badge.svg?flag=network)
-
-
+[![Github Release](https://github.com/BreakZero/EasyAIClient/actions/workflows/Release.yml/badge.svg?branch=main)](https://github.com/BreakZero/EasyAIClient/actions/workflows/Release.yml)
 ## 关于 EasyAIClient
 
 > EasyAI通过接入AI平台Rest API实现AI使用工具，只需你提供正确的API Key即可使用其中的功能，目前仅支持Google的Gemini。<br/>
