@@ -16,7 +16,6 @@ internal suspend fun ByteReadChannel.onEachLine(block: suspend (String) -> Unit)
 
 internal inline fun <reified T> Json.decodeToFlow(channel: ByteReadChannel): Flow<T> = channelFlow {
     channel.onEachLine {
-        println("===== $it")
         val data = it.removePrefix("data:")
         send(decodeFromString(data))
     }
