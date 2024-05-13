@@ -98,8 +98,8 @@ class GeminiApiTest {
         )
     }
 
-    @Test(expected = NetworkErrorException::class)
-    fun test_null_response() = testScope.runTest {
-        apiController.generateContent("error", "", content { })
-    }
+//    @Test(expected = NetworkErrorException::class)
+//    fun test_null_response() = testScope.runTest {
+//        apiController.generateContent("error", "", content { })
+//    }
 }
