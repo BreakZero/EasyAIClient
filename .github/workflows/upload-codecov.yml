@@ -9,9 +9,6 @@ on:
 jobs:
   unit_test_coverage:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        module: [network, data]
 
     permissions:
       contents: write
@@ -42,14 +39,14 @@ jobs:
           distribution: "temurin"
           java-version: "17"
 
-      - name: run unit test task
-        run: ./gradlew core:${{ matrix.module }}:testStagingDebugUnitTest
+      - name: Run local tests for the combined coverage report
+        run: ./gradlew testStagingDebugUnitTest
 
-      - name: run combined coverage report task
+      - name: Generate coverage reports for Staging variants
         env:
           GT_USERNAME: ${{ github.actor }}
           GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew core:${{ matrix.module }}:createStagingDebugCombinedCoverageReport
+        run: ./gradlew createStagingDebugCombinedCoverageReport
 
       - name: Display local test coverage
         id: jacoco
@@ -59,7 +56,7 @@ jobs:
           min-coverage-overall: 30
           min-coverage-changed-files: 60
           paths: |
-            ./core/${{ matrix.module }}/build/reports/jacoco/**/*Report.xml
+            ${{ github.workspace }}/**/build/reports/jacoco/**/*Report.xml
           token: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Upload coverage reports to Codecov
