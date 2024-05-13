@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,11 +48,11 @@ internal fun AiModelManagerScreen(
             TopAppBar(navigationIcon = {
                 IconButton(onClick = popBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = null
                     )
                 }
-            }, title = { Text(text = stringResource(id = R.string.text_supported_model)) })
+            }, title = { Text(text = stringResource(id = R.string.core_system_ui_supported_model)) })
         }
     ) { paddingValues ->
         LazyColumn(

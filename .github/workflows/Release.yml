@@ -8,50 +8,66 @@ permissions:
 
 jobs:
   release_build:
-    runs-on: macos-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          ls /dev/kvm
+
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           submodules: 'true'
           fetch-depth: 0
 
-      - name: Generate cache key
-        run: ./scripts/checksum.sh . checksum.txt
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v2
 
-      - name: Gradle cache
-        uses: actions/cache@v3
+      - name: Copy CI gradle.properties
+        run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          path: |
-            ~/.gradle/caches/modules-*
-            ~/.gradle/caches/jars-*
-            ~/.gradle/caches/build-cache-*
-          key: gradle-${{ hashFiles('checksum.txt') }}
+          distribution: 'zulu'
+          java-version: 17
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: "17"
+      - name: Install GMD image for baseline profile generation
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
 
-      - name: Build Release apk
-        env:
-          GT_USERNAME: ${{ github.actor }}
-          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Accept Android licenses
+        run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Build release variant
         run: ./gradlew app:assembleProdRelease
-
-      - name: Build Release bundle
-        env:
-          GT_USERNAME: ${{ github.actor }}
-          GT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew app:bundleProdRelease
+          -Pandroid.testInstrumentationRunnerArguments.androidx.benchmark.enabledRules=BaselineProfile
+          -Pandroid.testoptions.manageddevices.emulator.gpu="swiftshader_indirect"
+          -Pandroid.experimental.testOptions.managedDevices.emulator.showKernelLogging=true
+          -Pandroid.experimental.androidTest.numManagedDeviceShards=1
+          -Pandroid.experimental.testOptions.managedDevices.maxConcurrentDevices=1
 
       - name: Create Github Release
-        uses: softprops/action-gh-release@v1
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          generate_release_notes: true
-          files: |
-            app/build/outputs/apk/**/release/*.apk
-            app/build/outputs/bundle/*Release/*.aab
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+      - name: Upload app
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/**/release/*.apk
+          asset_name: app-prod-release.apk
+          asset_content_type: application/vnd.android.package-archive

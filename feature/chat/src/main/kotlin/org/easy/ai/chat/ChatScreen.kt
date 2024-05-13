@@ -24,9 +24,9 @@ import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.clearText
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Send
-import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,8 +65,8 @@ import org.easy.ai.chat.component.ChatDrawer
 import org.easy.ai.chat.component.ChatMessageItemView
 import org.easy.ai.chat.component.DrawerState
 import org.easy.ai.common.ObserveAsEvents
-import org.easy.ai.system.ui.R as UiR
 import org.easy.ai.system.ui.localDim
+import org.easy.ai.system.ui.R as UiR
 
 private val DrawerWidth = 300.dp
 
@@ -240,7 +240,7 @@ private fun ChatContent(
                         modifier = Modifier.testTag("chat_menu"),
                         onClick = onDrawerClicked
                     ) {
-                        Icon(imageVector = Icons.Default.Sort, contentDescription = null)
+                        Icon(imageVector = Icons.AutoMirrored.Filled.Sort, contentDescription = null)
                     }
                 },
                 actions = {
@@ -314,13 +314,13 @@ private fun ChatContent(
                         Text(
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.error,
-                            text = stringResource(id = UiR.string.text_no_api_key_for_chat)
+                            text = stringResource(id = UiR.string.core_system_ui_no_api_key_for_chat)
                         )
                         TextButton(onClick = {
                             onEvent(ChatEvent.OnSettingsClicked)
                         }) {
                             Text(
-                                text = stringResource(id = UiR.string.action_go_to_settings),
+                                text = stringResource(id = UiR.string.core_system_ui_action_go_to_settings),
                                 color = MaterialTheme.colorScheme.scrim
                             )
                         }
@@ -376,7 +376,7 @@ internal fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String)
             enabled = textFieldState.text.isNotBlank()
         ) {
             Icon(
-                imageVector = Icons.Default.Send,
+                imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = null
             )
         }

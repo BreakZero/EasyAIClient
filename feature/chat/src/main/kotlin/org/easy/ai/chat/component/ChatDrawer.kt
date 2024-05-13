@@ -62,7 +62,7 @@ internal fun ChatDrawer(
                             selectedChat = null
                             onChatSelected(null)
                         },
-                    headlineContent = { Text(text = stringResource(id = R.string.text_new_chat)) }
+                    headlineContent = { Text(text = stringResource(id = R.string.core_system_ui_new_chat)) }
                 )
             }
             chats?.let {
@@ -86,7 +86,7 @@ internal fun ChatDrawer(
                 .clickable(onClick = onPluginsClick),
             headlineContent = {
                 Text(
-                    text = stringResource(id = R.string.text_plugins),
+                    text = stringResource(id = R.string.core_system_ui_plugins),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -100,7 +100,7 @@ internal fun ChatDrawer(
                 .clickable(onClick = onSettingsClicked),
             headlineContent = {
                 Text(
-                    text = stringResource(id = R.string.text_settings),
+                    text = stringResource(id = R.string.core_system_ui_text_settings),
                     style = MaterialTheme.typography.titleMedium
                 )
             },
