@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.debounce
@@ -66,6 +67,7 @@ internal fun InputView(
     onSubmit: (String) -> Unit
 ) {
     val configuration = LocalConfiguration.current
+    val focusManager = LocalFocusManager.current
 
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
@@ -192,8 +194,9 @@ internal fun InputView(
                     enabled = !isPromptEmpty,
                     onClick = {
                         onSubmit(enterContent.text.toString())
-                        isFullScreen = false
+                        focusManager.clearFocus()
                         enterContent.clearText()
+                        isFullScreen = false
                     }
                 ) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
