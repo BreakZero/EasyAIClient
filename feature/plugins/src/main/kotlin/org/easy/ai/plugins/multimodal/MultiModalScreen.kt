@@ -74,13 +74,14 @@ internal fun MultiModalRoute(popBack: () -> Unit) {
     imagePicker.RegisterPicker(multiModalViewModel::onImageChanged)
     val uiState by multiModalViewModel.uiState.collectAsStateWithLifecycle()
 
-    MultiModalScreen(
-        prompt = multiModalViewModel.promptTextField,
-        uiState = uiState,
-        onImagePicked = imagePicker::startImagePicker,
-        popBack = popBack,
-        submit = multiModalViewModel::submitPrompt
-    )
+//    MultiModalScreen(
+//        prompt = multiModalViewModel.promptTextField,
+//        uiState = uiState,
+//        onImagePicked = imagePicker::startImagePicker,
+//        popBack = popBack,
+//        submit = multiModalViewModel::submitPrompt
+//    )
+    MultiScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

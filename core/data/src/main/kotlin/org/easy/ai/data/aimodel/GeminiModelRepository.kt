@@ -14,12 +14,12 @@ import javax.inject.Inject
 class GeminiModelRepository @Inject internal constructor(
     private val geminiRestApi: GeminiRestApi
 ) : ChatPlugin, TextAndImagePlugin {
+    private val defaultModel = "gemini-1.5-pro-latest"
     override suspend fun sendMessage(apiKey: String, history: List<ChatMessage>): ChatMessage {
         val content = history.map {
             content(it.participant.name.lowercase()) { text(it.content) }
         }
-        val response =
-            geminiRestApi.generateContent(apiKey, "gemini-1.5-pro-latest", *content.toTypedArray())
+        val response = geminiRestApi.generateContent(apiKey, defaultModel, *content.toTypedArray())
         return ChatMessage(
             content = response.text.orEmpty(),
             participant = Participant.MODEL
@@ -32,7 +32,7 @@ class GeminiModelRepository @Inject internal constructor(
         }
         val responseStream = geminiRestApi.generateContentStream(
             apiKey,
-            "gemini-1.5-pro-latest",
+            defaultModel,
             *content.toTypedArray()
         )
         return responseStream.map {
@@ -57,8 +57,7 @@ class GeminiModelRepository @Inject internal constructor(
             text(prompt)
         }
 
-        val model = "gemini-1.5-pro-latest"
-        val response = geminiRestApi.generateContentStream(apiKey = apiKey, model, content)
+        val response = geminiRestApi.generateContentStream(apiKey = apiKey, defaultModel, content)
 
         return response.map { it.text.orEmpty() }
     }

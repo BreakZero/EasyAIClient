@@ -37,7 +37,7 @@ abstract class DataModule {
     abstract fun bindGeminiChatPlugin(geminiModel: GeminiModelRepository): ChatPlugin
 
     @Binds
-    @ModelPlatformQualifier(AiModel.GEMINI)
+    @ModelPlatformQualifier(AiModel.CHAT_GPT)
     abstract fun bindChatGPTChatPlugin(chatGptModel: ChatGPTModelRepository): ChatPlugin
 
     @Binds
