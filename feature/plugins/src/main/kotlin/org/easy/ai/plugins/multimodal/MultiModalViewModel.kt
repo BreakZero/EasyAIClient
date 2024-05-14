@@ -1,8 +1,6 @@
 package org.easy.ai.plugins.multimodal
 
 import android.graphics.BitmapFactory
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
@@ -18,7 +16,6 @@ import kotlinx.coroutines.flow.update
 import org.easy.ai.domain.TextAndImageGeneratingUseCase
 import javax.inject.Inject
 
-@OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
 internal class MultiModalViewModel @Inject constructor(
     private val multiModalGeneratingUseCase: TextAndImageGeneratingUseCase
@@ -27,63 +24,58 @@ internal class MultiModalViewModel @Inject constructor(
         private const val CONTENT_LIMIT_SIZE = 4 * 1024 * 1024
     }
 
-    val promptTextField = TextFieldState("")
-    private val _uiState = MutableStateFlow(MultiModalUiState())
+    private val _selectedImages: MutableStateFlow<List<ByteArray>?> = MutableStateFlow(null)
+    val selectedImages = _selectedImages.asStateFlow()
 
-    val uiState = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<ModalUiState> = MutableStateFlow(ModalUiState())
+    val modalUiState = _uiState.asStateFlow()
+
 
     fun onImageChanged(imagesByte: List<ByteArray>) {
-        _uiState.update {
-            it.copy(images = imagesByte)
-        }
+        _selectedImages.update { imagesByte }
     }
 
-    private fun validatePrompt(): String? {
-        if (promptTextField.text.toString().isBlank()) {
+    private fun validatePrompt(prompt: String): String? {
+        if (prompt.isBlank()) {
             return "prompt can not be empty..."
         }
-        with(_uiState.value) {
-            val promptSize = promptTextField.text.toString().encodeToByteArray().size
-            val totalSize = (images?.sumOf { image -> image.size } ?: 0) + promptSize
+        return _selectedImages.value?.let {
+            val promptSize = prompt.encodeToByteArray().size
+            val totalSize = it.sumOf { image -> image.size } + promptSize
             if (totalSize > CONTENT_LIMIT_SIZE) {
-                return "the entire prompt is too large, 4MB limited"
-            }
+                "the entire prompt is too large, 4MB limited"
+            } else null
         }
-        return null
     }
 
-    fun clearError() {
-        _uiState.update { it.copy(error = null) }
-    }
-
-    fun submitPrompt() {
-        val error = validatePrompt()
+    fun submit(prompt: String) {
+        val error = validatePrompt(prompt)
         if (error != null) {
             // error handling
-            _uiState.update { it.copy(error = error) }
+            _uiState.update { it.copy(result = error) }
             return
         }
-        _uiState.update { it.copy(inProgress = true, promptResult = null, error = null) }
-        val images = _uiState.value.images
-        val promptResult = StringBuilder()
-        val bitmaps = images?.map {
+        val bitmaps = _selectedImages.value?.map {
             BitmapFactory.decodeByteArray(it, 0, it.size).asImageBitmap()
                 .asAndroidBitmap()
         }
-        multiModalGeneratingUseCase(promptTextField.text.toString(), bitmaps)
+        val promptContent = PromptContent(prompt = prompt, images = bitmaps)
+
+        _selectedImages.update { null }
+
+        _uiState.update { it.copy(inProgress = true, result = null, promptContent = promptContent) }
+
+        val generatedResult = StringBuilder()
+
+        multiModalGeneratingUseCase(prompt, bitmaps)
             .onEach { result ->
-                promptResult.append(result)
-                _uiState.update {
-                    it.copy(
-                        promptResult = promptResult.toString(),
-                        error = null
-                    )
-                }
+                generatedResult.append(result)
+                _uiState.update { it.copy(result = generatedResult.toString()) }
             }.catch { cause ->
                 _uiState.update {
                     it.copy(
                         inProgress = false,
-                        error = cause.message ?: "unknown generating error..."
+                        result = cause.message ?: "unknown generating error..."
                     )
                 }
             }.onCompletion {
