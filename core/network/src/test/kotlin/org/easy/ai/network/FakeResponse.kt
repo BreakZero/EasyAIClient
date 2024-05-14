@@ -2,6 +2,8 @@ package org.easy.ai.network
 
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
+import io.ktor.client.engine.mock.respondOk
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -9,39 +11,10 @@ import io.ktor.http.headersOf
 
 internal const val SUCCESS_TEXT = "here is the success content from api request"
 internal const val INVALID_API_KEY_TEXT = "API key not valid. Please pass a valid API key."
+internal const val LOCATION_NOT_SUPPORTED = "User location is not supported for the API use."
 
-internal enum class ResponseType {
-    SUCCESS, INVALID_API_KEY, STREAM, EMPTY
-}
-
-private fun enumOf(type: String?): ResponseType {
-    return when (type) {
-        ResponseType.SUCCESS.name -> ResponseType.SUCCESS
-        ResponseType.INVALID_API_KEY.name -> ResponseType.INVALID_API_KEY
-        ResponseType.STREAM.name -> ResponseType.STREAM
-        else -> ResponseType.EMPTY
-    }
-}
-
-
-internal fun String?.generateResponse(handleScope: MockRequestHandleScope): HttpResponseData {
-    val typeEnum = enumOf(this)
-    return when (typeEnum) {
-        ResponseType.SUCCESS -> handleScope.buildSuccessResponse(SUCCESS_TEXT)
-
-        ResponseType.INVALID_API_KEY -> handleScope.buildErrorResponse(
-            HttpStatusCode.BadRequest,
-            INVALID_API_KEY_TEXT
-        )
-
-        ResponseType.STREAM -> handleScope.buildStreamResponse(
-            HttpStatusCode.OK,
-            SUCCESS_TEXT,
-            "null"
-        )
-
-        ResponseType.EMPTY -> TODO()
-    }
+internal enum class ExpectedType {
+    UNDEFINED, UNSUPPORTED_LOCATION, EMPTY
 }
 
 internal fun MockRequestHandleScope.buildSuccessResponse(text: String): HttpResponseData {
@@ -83,13 +56,12 @@ internal fun MockRequestHandleScope.buildSuccessResponse(text: String): HttpResp
 """.trimIndent()
     return respond(
         content = content,
-        status = HttpStatusCode.OK,
         headers = headersOf(HttpHeaders.ContentType, "application/json")
     )
 }
 
 internal fun MockRequestHandleScope.buildErrorResponse(
-    statusCode: HttpStatusCode,
+    statusCode: HttpStatusCode = HttpStatusCode.BadRequest,
     text: String
 ): HttpResponseData {
     val content = """
@@ -111,7 +83,7 @@ internal fun MockRequestHandleScope.buildErrorResponse(
         }
     }
 """.trimIndent()
-    return respond(
+    return respondError(
         content = content,
         status = statusCode,
         headers = headersOf(HttpHeaders.ContentType, "application/json")
@@ -119,7 +91,7 @@ internal fun MockRequestHandleScope.buildErrorResponse(
 }
 
 internal fun MockRequestHandleScope.buildStreamResponse(
-    statusCode: HttpStatusCode,
+    statusCode: HttpStatusCode = HttpStatusCode.OK,
     text1: String,
     text2: String
 ): HttpResponseData {
