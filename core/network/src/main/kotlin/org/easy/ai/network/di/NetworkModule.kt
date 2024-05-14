@@ -31,12 +31,11 @@ annotation class GeminiRestHttpClient
 @Retention(AnnotationRetention.BINARY)
 annotation class ChatGPTRestHttpClient
 
-internal val JSON =
-    Json {
-        prettyPrint = true
-        ignoreUnknownKeys = true
-        isLenient = true
-    }
+internal val JSON = Json {
+    prettyPrint = true
+    ignoreUnknownKeys = true
+    isLenient = true
+}
 
 private fun httpClient(config: HttpClientConfig<*>.() -> Unit = {}): HttpClient {
     return HttpClient {

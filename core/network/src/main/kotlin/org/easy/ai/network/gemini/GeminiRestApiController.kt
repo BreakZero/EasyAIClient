@@ -89,12 +89,11 @@ class GeminiRestApiController internal constructor(
 private suspend fun validateResponse(response: HttpResponse) {
     if (response.status == HttpStatusCode.OK) return
     val text = response.bodyAsText()
-    val message =
-        try {
-            JSON.decodeFromString<GRpcErrorResponse>(text).error.message
-        } catch (e: Throwable) {
-            "Unexpected Response:\n$text"
-        }
+    val message = try {
+        JSON.decodeFromString<GRpcErrorResponse>(text).error.message
+    } catch (e: Throwable) {
+        "Unexpected Response:\n$text"
+    }
     if (message.contains("API key not valid")) {
         throw InvalidAPIKeyException(message)
     }
