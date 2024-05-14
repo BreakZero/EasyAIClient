@@ -3,6 +3,7 @@ package org.easy.ai.plugins.multimodal
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
@@ -88,6 +89,7 @@ internal fun MultiScreen(
             modifier = Modifier
                 .padding(it)
                 .padding(horizontal = MaterialTheme.localDim.spaceMedium),
+            contentPadding = PaddingValues(bottom = MaterialTheme.localDim.space12),
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.localDim.spaceMedium)
         ) {
             uiState.promptContent?.let {

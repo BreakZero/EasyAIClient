@@ -53,7 +53,7 @@ internal fun SentPromptView(
                 shape = shape
             ) {
                 Column(
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier.padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(
                         MaterialTheme.localDim.spaceExtraSmall
                     )
@@ -63,7 +63,6 @@ internal fun SentPromptView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(16 / 9F)
-                                .padding(12.dp)
                                 .clip(RoundedCornerShape(12.dp)),
                             images = it.map { it.asImageBitmap() }
                         )
@@ -96,7 +95,7 @@ internal fun AiResultContentView(
                 shape = shape
             ) {
                 Column(
-                    modifier = Modifier.padding(4.dp),
+                    modifier = Modifier.padding(top = 12.dp, start = 12.dp, end = 12.dp),
                     verticalArrangement = Arrangement.spacedBy(
                         MaterialTheme.localDim.spaceExtraSmall
                     )

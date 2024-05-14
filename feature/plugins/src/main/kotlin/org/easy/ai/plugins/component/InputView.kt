@@ -184,10 +184,17 @@ internal fun InputView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Default.Mic, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Default.Mic, contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                     IconButton(onClick = onImagePicked) {
-                        Icon(imageVector = Icons.Outlined.PhotoCamera, contentDescription = null)
+                        Icon(
+                            imageVector = Icons.Outlined.PhotoCamera,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                 }
                 IconButton(
@@ -199,7 +206,10 @@ internal fun InputView(
                         isFullScreen = false
                     }
                 ) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Send,
+                        contentDescription = null
+                    )
                 }
             }
         }
