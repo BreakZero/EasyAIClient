@@ -10,8 +10,8 @@
     <string name="core_system_ui_multimodal">Multi Modal</string>
     <string name="core_system_ui_text_generator">Text Generator</string>
     <string name="core_system_ui_action_go_to_settings">Go to Settings</string>
-    <string name="core_system_ui_supported_model">Supported Models</string>
-    <string name="core_system_ui_ai_model_manager">Manage Ai Model</string>
+    <string name="core_system_ui_supported_model">AI Platform Management</string>
+    <string name="core_system_ui_ai_model_manager">AI Platform Management</string>
     <string name="core_system_ui_activated_ai">Current Activated</string>
     <string name="core_system_ui_default_chat_model">Default AI for Chat</string>
     <string name="core_system_ui_the_ai_using_for_chat">Using current ai for chat feature</string>

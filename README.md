@@ -13,7 +13,7 @@ EasyAI使用Clear架构设计(参考[nowinandroid](https://github.com/android/no
 
 - [x] Gemini聊天功能
 - [x] 聊天的保存和删除功能
-- [x] 设置管理AI Model API Key功能
+- [x] 设置管理AI Platform API Key功能
 - [x] Gemini Multi Modal分析功能
 - [x] 选择默认聊天AI Model
 - [ ] 支持ChatGPT（WIP）
@@ -23,7 +23,6 @@ EasyAI使用Clear架构设计(参考[nowinandroid](https://github.com/android/no
 
 |                                                                             |                                                                             |                                                                             |
 |-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|
-| ![Screenshot_20240426_100053.png](screens%2FScreenshot_20240426_100053.png) | ![Screenshot_20240426_100131.png](screens%2FScreenshot_20240426_100131.png) | ![Screenshot_20240426_100150.png](screens%2FScreenshot_20240426_100150.png) |
-| ![Screenshot_20240426_100234.png](screens%2FScreenshot_20240426_100234.png) | ![Screenshot_20240426_100248.png](screens%2FScreenshot_20240426_100248.png) | ![Screenshot_20240426_100431.png](screens%2FScreenshot_20240426_100431.png) |
-| ![Screenshot_20240426_100443.png](screens%2FScreenshot_20240426_100443.png) | ![Screenshot_20240426_101035.png](screens%2FScreenshot_20240426_101035.png) | ![Screenshot_20240426_101049.png](screens%2FScreenshot_20240426_101049.png) |
-| ![Screenshot_20240426_161356.png](screens%2FScreenshot_20240426_161356.png) |                                                                             |                                                                             |
+| ![Screenshot_20240515_105141.png](screens%2FScreenshot_20240515_105141.png) | ![Screenshot_20240515_105207.png](screens%2FScreenshot_20240515_105207.png) | ![Screenshot_20240515_105628.png](screens%2FScreenshot_20240515_105628.png) |
+| ![Screenshot_20240515_105709.png](screens%2FScreenshot_20240515_105709.png) | ![Screenshot_20240515_110301.png](screens%2FScreenshot_20240515_110301.png) | ![Screenshot_20240515_110325.png](screens%2FScreenshot_20240515_110325.png) |
+| ![Screenshot_20240515_110350.png](screens%2FScreenshot_20240515_110350.png) | ![Screenshot_20240515_110413.png](screens%2FScreenshot_20240515_110413.png) |                                                                             |

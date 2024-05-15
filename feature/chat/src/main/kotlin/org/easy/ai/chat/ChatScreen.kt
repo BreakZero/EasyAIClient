@@ -341,13 +341,12 @@ private fun ChatContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String) -> Unit) {
     val textFieldState = rememberTextFieldState()
     Row(
         modifier = modifier
-            .height(48.dp)
             .clip(RoundedCornerShape(48.dp))
             .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(48.dp)),
         verticalAlignment = Alignment.CenterVertically
@@ -356,8 +355,22 @@ internal fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String)
             state = textFieldState,
             textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
-                .padding(start = 12.dp)
-                .weight(1.0f)
+                .weight(1.0f),
+            decorator = @Composable {
+                val interactionSource = remember { MutableInteractionSource() }
+                TextFieldDefaults.DecorationBox(
+                    value = textFieldState.text.toString(),
+                    innerTextField = it,
+                    enabled = true,
+                    singleLine = false,
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    container = {},
+                    placeholder = {
+                        Text(text = "Enter message")
+                    }
+                )
+            }
         )
         IconButton(
             modifier = Modifier

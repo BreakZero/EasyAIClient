@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -99,7 +98,7 @@ internal fun MultiScreen(
             }
             uiState.result?.let {
                 item {
-                    AiResultContentView(textContent = it)
+                    AiResultContentView(textContent = it, inProgress = uiState.inProgress)
                 }
             }
         }
