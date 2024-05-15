@@ -15,9 +15,9 @@ class ImagePicker @Inject constructor(
     private lateinit var contentLauncher: ActivityResultLauncher<PickVisualMediaRequest>
 
     @Composable
-    fun RegisterPicker(onContentPicker: (List<ByteArray>) -> Unit) {
+    fun RegisterPicker(onContentPicker: (List<ByteArray>) -> Unit, maxItems: Int = 9) {
         this.contentLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickMultipleVisualMedia(9),
+            contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems),
             onResult = { uris ->
                 val imagesByte = uris.mapNotNull { uri ->
                     activityContext.contentResolver.openInputStream(uri)?.use { it.readBytes() }

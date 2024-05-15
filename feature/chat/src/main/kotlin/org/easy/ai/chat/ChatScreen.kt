@@ -4,6 +4,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -12,8 +14,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +30,9 @@ import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.automirrored.filled.Sort
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ScaleFactor
@@ -55,7 +62,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -259,6 +268,7 @@ private fun ChatContent(
                 MessageInput(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = MaterialTheme.localDim.spaceMedium)
                         .padding(bottom = MaterialTheme.localDim.spaceSmall),
                     onMessageSend = { onEvent(ChatEvent.OnMessageSend(it)) }
                 )
@@ -337,31 +347,27 @@ internal fun MessageInput(modifier: Modifier = Modifier, onMessageSend: (String)
     val textFieldState = rememberTextFieldState()
     Row(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(start = MaterialTheme.localDim.spaceSmall),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            .clip(RoundedCornerShape(48.dp))
+            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(48.dp)),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         BasicTextField2(
+            state = textFieldState,
+            textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier
                 .weight(1.0f),
-            state = textFieldState,
             decorator = @Composable {
                 val interactionSource = remember { MutableInteractionSource() }
-                OutlinedTextFieldDefaults.DecorationBox(
+                TextFieldDefaults.DecorationBox(
                     value = textFieldState.text.toString(),
                     innerTextField = it,
                     enabled = true,
                     singleLine = false,
                     visualTransformation = VisualTransformation.None,
                     interactionSource = interactionSource,
-                    container = {
-                        OutlinedTextFieldDefaults.ContainerBox(
-                            enabled = true,
-                            isError = false,
-                            interactionSource = interactionSource,
-                            colors = TextFieldDefaults.colors(),
-                            shape = RoundedCornerShape(MaterialTheme.localDim.spaceMedium)
-                        )
+                    container = {},
+                    placeholder = {
+                        Text(text = "Enter message")
                     }
                 )
             }

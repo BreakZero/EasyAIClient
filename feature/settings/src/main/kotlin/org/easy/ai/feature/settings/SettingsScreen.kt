@@ -8,9 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -30,6 +31,7 @@ import org.easy.ai.common.ObserveAsEvents
 import org.easy.ai.feature.settings.components.AiModelListDialog
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.R
+import org.easy.ai.system.ui.localDim
 
 @Composable
 fun SettingsRoute(navigateToAiModels: () -> Unit, popBack: () -> Unit) {
@@ -65,7 +67,7 @@ internal fun SettingsScreen(
             TopAppBar(navigationIcon = {
                 IconButton(onClick = popBack) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                         contentDescription = null
                     )
                 }
@@ -119,7 +121,7 @@ internal fun SettingsScreen(
                     }
                 }
             )
-
+            HorizontalDivider(modifier = Modifier.padding(vertical = MaterialTheme.localDim.spaceExtraSmall))
             ListItem(
                 modifier = Modifier
                     .fillMaxWidth()
