@@ -4,16 +4,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 import org.easy.ai.chat.ChatRoute
 
-const val ChatRoute = "chat_route"
+@Serializable
+object ChatEntryRoute
 
-fun NavController.navigateToChat(navOptions: NavOptions? = null) {
-    this.navigate(ChatRoute, navOptions)
-}
+fun NavController.navigateToChat(navOptions: NavOptions? = null) =
+    navigate(ChatEntryRoute, navOptions)
 
 fun NavGraphBuilder.attachChat(navigateToPlugins: () -> Unit, navigateToSettings: () -> Unit) {
-    composable(ChatRoute) {
+    composable<ChatEntryRoute> {
         ChatRoute(navigateToSettings = navigateToSettings, navigateToPlugins = navigateToPlugins)
     }
 }

@@ -1,10 +1,9 @@
 package org.easy.ai.feature.settings.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.rememberTextFieldState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,7 +19,7 @@ import org.easy.ai.model.AiModel
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.EasyAITheme
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ApiKeyEditorDialog(
     modifier: Modifier = Modifier,
@@ -49,7 +48,7 @@ internal fun ApiKeyEditorDialog(
         properties = DialogProperties(),
         title = { Text(text = "Enter ${aiModel.name} API Key") },
         text = {
-            BasicTextField2(
+            BasicTextField(
                 modifier = Modifier.fillMaxWidth(),
                 state = apiKeyTextField,
                 decorator = @Composable {

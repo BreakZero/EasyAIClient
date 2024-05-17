@@ -5,24 +5,26 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import kotlinx.serialization.Serializable
 import org.easy.ai.plugins.index.PluginListRoute
 import org.easy.ai.plugins.multimodal.MultiModalRoute
 
-internal const val pluginEntryRoute = "plugin_entry_route"
-internal const val pluginListRoute = "plugin_list_route"
-internal const val multiModalRoute = "_multimodal_route"
+@Serializable
+internal data object PluginEntryRoute
 
-fun NavController.navigateToPlugin(navOptions: NavOptions? = null) {
-    this.navigate(pluginEntryRoute, navOptions)
-}
+@Serializable
+internal data object PluginListRoute
 
-fun NavController.navigateToMultiModal(navOptions: NavOptions? = null) {
-    this.navigate(multiModalRoute, navOptions)
-}
+@Serializable
+internal data object GeminiModalRoute
+
+fun NavController.navigateToPluginList(navOptions: NavOptions? = null) = navigate(PluginListRoute, navOptions)
+
+fun NavController.navigateToMultiModal(navOptions: NavOptions? = null) = navigate(GeminiModalRoute, navOptions)
 
 fun NavGraphBuilder.attachPluginRoutes(navController: NavController) {
-    navigation(route = pluginEntryRoute, startDestination = pluginListRoute) {
-        composable(pluginListRoute) {
+    navigation<PluginEntryRoute>(startDestination = PluginListRoute) {
+        composable<PluginListRoute> {
             PluginListRoute(
                 popBack = navController::navigateUp,
                 onPluginClick = {
@@ -30,8 +32,8 @@ fun NavGraphBuilder.attachPluginRoutes(navController: NavController) {
                 }
             )
         }
-        composable(multiModalRoute) {
-            MultiModalRoute(popBack = navController::navigateUp)
+        composable<GeminiModalRoute> {
+            MultiModalRoute(popBack = navController::popBackStack)
         }
     }
 }

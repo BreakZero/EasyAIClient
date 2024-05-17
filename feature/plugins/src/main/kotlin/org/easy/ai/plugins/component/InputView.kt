@@ -3,7 +3,6 @@ package org.easy.ai.plugins.component
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,10 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.clearText
-import androidx.compose.foundation.text2.input.rememberTextFieldState
-import androidx.compose.foundation.text2.input.textAsFlow
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.CloseFullscreen
@@ -42,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,7 +63,7 @@ internal enum class DisplayLevel {
     MINIMAL, MEDIUM, FULLSCREEN
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun InputView(
     modifier: Modifier = Modifier,
@@ -137,7 +136,7 @@ internal fun InputView(
     val enterContent = rememberTextFieldState()
 
     LaunchedEffect(Unit) {
-        enterContent.textAsFlow().debounce(300)
+        snapshotFlow { enterContent.text }.debounce(300)
             .distinctUntilChanged()
             .collect {
                 isPromptEmpty = it.isBlank()
@@ -184,7 +183,7 @@ internal fun InputView(
                     )
                 }
             }
-            BasicTextField2(
+            BasicTextField(
                 state = enterContent,
                 textStyle = MaterialTheme.typography.titleLarge,
                 modifier = Modifier

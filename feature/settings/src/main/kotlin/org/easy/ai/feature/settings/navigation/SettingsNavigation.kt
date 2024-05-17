@@ -5,31 +5,32 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import kotlinx.serialization.Serializable
 import org.easy.ai.feature.settings.SettingsRoute
 import org.easy.ai.feature.settings.aimodel.AiModelManagerRoute
 
-internal const val settingsEntryRoute = "settings_entry_route"
-internal const val settingsIndexRoute = "settings_route"
-internal const val aiModelManagerRoute = "ai_model_manager_route"
+@Serializable
+internal data object SettingsEntryRoute
 
-internal fun NavController.navigateToAiModels(navOptions: NavOptions? = null) {
-    this.navigate(aiModelManagerRoute, navOptions)
-}
+@Serializable
+internal data object SettingsRoute
 
-fun NavController.entryToSettings(navOptions: NavOptions? = null) {
-    this.navigate(settingsIndexRoute, navOptions)
-}
+@Serializable
+internal data object AiPlatformManagerRoute
+
+internal fun NavController.navigateToAiModels(navOptions: NavOptions? = null) = navigate(AiPlatformManagerRoute, navOptions)
+
+fun NavController.entrySettings(navOptions: NavOptions? = null) = navigate(SettingsRoute, navOptions)
 
 fun NavGraphBuilder.attachSettingsGraph(navController: NavController) {
-    navigation(route = settingsEntryRoute, startDestination = settingsIndexRoute) {
-        composable(settingsIndexRoute) {
+    navigation<SettingsEntryRoute>(startDestination = SettingsRoute) {
+        composable<SettingsRoute> {
             SettingsRoute(
                 popBack = navController::popBackStack,
                 navigateToAiModels = navController::navigateToAiModels
             )
         }
-
-        composable(aiModelManagerRoute) {
+        composable<AiPlatformManagerRoute> {
             AiModelManagerRoute(
                 popBack = navController::popBackStack
             )

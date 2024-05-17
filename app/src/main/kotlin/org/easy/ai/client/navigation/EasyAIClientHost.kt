@@ -3,23 +3,23 @@ package org.easy.ai.client.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import org.easy.ai.chat.navigation.ChatRoute
+import org.easy.ai.chat.navigation.ChatEntryRoute
 import org.easy.ai.chat.navigation.attachChat
 import org.easy.ai.feature.settings.navigation.attachSettingsGraph
-import org.easy.ai.feature.settings.navigation.entryToSettings
+import org.easy.ai.feature.settings.navigation.entrySettings
 import org.easy.ai.plugins.navigation.attachPluginRoutes
-import org.easy.ai.plugins.navigation.navigateToPlugin
+import org.easy.ai.plugins.navigation.navigateToPluginList
 
 @Composable
-fun EasyAIHost(startDestination: String = ChatRoute) {
+fun EasyAIHost() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = ChatEntryRoute) {
         attachChat(
             navigateToSettings = {
-                navController.entryToSettings()
+                navController.entrySettings()
             },
             navigateToPlugins = {
-                navController.navigateToPlugin()
+                navController.navigateToPluginList()
             }
         )
         attachSettingsGraph(navController)

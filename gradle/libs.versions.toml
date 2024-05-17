@@ -3,8 +3,8 @@ androidDesugarJdkLibs = "2.0.4"
 androidx-core-splashscreen = "1.0.1"
 androidx-core-ktx = "1.13.1"
 androidx-appcompat = "1.6.1"
-androidx-lifecycle = "2.7.0"
-androidx-paging = "3.2.1"
+androidx-lifecycle = "2.8.0"
+androidx-paging = "3.3.0"
 androidx-dataStore = "1.1.1"
 androidxTracing = "1.2.0"
 androidxWindowManager = "1.2.0"
@@ -12,14 +12,15 @@ androidxWork = "2.9.0"
 androidx-room = "2.6.1"
 
 compose-bom = "2024.05.00"
-compose-compiler = "1.5.13"
+compose-compiler = "1.5.14"
 compose-activity = "1.9.0"
-compose-navigation = "2.7.7"
+compose-navigation = "2.8.0-beta01"
 
 kotlinx-coroutine = "1.8.0"
+kotlinx-json = "1.6.3"
 
 # For plugins
-org-jetbrains-kotlin = "1.9.23"
+org-jetbrains-kotlin = "1.9.24"
 android-gradle-plugin = "8.4.0"
 protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
@@ -37,11 +38,11 @@ androidx-test-runner = "1.5.2"
 coil = "2.6.0"
 koin = "3.4.1"
 ktor = "2.3.10"
-ksp = "1.9.23-1.0.20"
+ksp = "1.9.24-1.0.20"
 dagger-hilt = "2.51"
 okhttp = "4.12.0"
 uiautomator = "2.3.0"
-benchmark-macro-junit4 = "1.2.3"
+benchmark-macro-junit4 = "1.2.4"
 mockito = "5.10.0"
 
 robolectric = "4.11.1"
@@ -90,7 +91,7 @@ androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navig
 # Kotlinx
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutine" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutine" }
-kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.6.2" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "kotlinx-json" }
 
 coil-kt = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-kt-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
