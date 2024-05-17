@@ -111,7 +111,7 @@ internal fun InputView(
 
     val coroutineScope = rememberCoroutineScope()
 
-    fun toggleFullScreen(byClickAction: Boolean = true) {
+    fun toggleFullScreen() {
         coroutineScope.launch {
             displayLevel = if (displayLevel == DisplayLevel.FULLSCREEN) DisplayLevel.MEDIUM
             else DisplayLevel.FULLSCREEN
@@ -252,6 +252,7 @@ internal fun InputView(
                 onClick = {
                     onSubmit(enterContent.text.toString())
                     keyboardController?.hide()
+                    displayLevel = DisplayLevel.MINIMAL
                     enterContent.clearText()
                 }
             ) {

@@ -8,6 +8,9 @@ plugins {
 
 android {
     namespace = "org.easy.ai.plugins"
+    defaultConfig {
+        consumerProguardFile("consumer-rules.pro")
+    }
 }
 
 dependencies {

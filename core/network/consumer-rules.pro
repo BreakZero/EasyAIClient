@@ -1,1 +1,2 @@
 -keep class org.easy.ai.network.gemini.internal.** { *; }
+-keep @kotlinx.serialization.Serializable class * {*;}
