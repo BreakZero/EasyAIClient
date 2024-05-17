@@ -1,5 +1,6 @@
 package org.easy.ai.plugins.component
 
+import android.view.ViewTreeObserver
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
@@ -34,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults.DecorationBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +51,13 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -72,7 +78,7 @@ internal fun InputView(
     onSubmit: (String) -> Unit
 ) {
     val configuration = LocalConfiguration.current
-    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
@@ -89,20 +95,8 @@ internal fun InputView(
         if (it == DisplayLevel.MEDIUM) 20.dp else 0.dp
     }
 
-    var hasFocus by remember {
-        mutableStateOf(false)
-    }
-
-    LaunchedEffect(key1 = images, key2 = hasFocus) {
-        displayLevel = if (images.isNullOrEmpty()) {
-            if (hasFocus) {
-                DisplayLevel.MEDIUM
-            } else {
-                DisplayLevel.MINIMAL
-            }
-        } else {
-            DisplayLevel.FULLSCREEN
-        }
+    LaunchedEffect(key1 = images) {
+        if (!images.isNullOrEmpty()) displayLevel = DisplayLevel.FULLSCREEN
     }
 
     val height by transition.animateDp(
@@ -118,18 +112,10 @@ internal fun InputView(
 
     val coroutineScope = rememberCoroutineScope()
 
-    fun toggleFullScreen() {
+    fun toggleFullScreen(byClickAction: Boolean = true) {
         coroutineScope.launch {
-            when (displayLevel) {
-                DisplayLevel.MINIMAL -> Unit
-                DisplayLevel.MEDIUM -> {
-                    displayLevel = DisplayLevel.FULLSCREEN
-                }
-
-                DisplayLevel.FULLSCREEN -> {
-                    displayLevel = DisplayLevel.MEDIUM
-                }
-            }
+            displayLevel = if (displayLevel == DisplayLevel.FULLSCREEN) DisplayLevel.MEDIUM
+            else DisplayLevel.FULLSCREEN
         }
     }
 
@@ -141,6 +127,21 @@ internal fun InputView(
             .collect {
                 isPromptEmpty = it.isBlank()
             }
+    }
+    val view = LocalView.current
+    DisposableEffect(LocalWindowInfo.current) {
+        val listener = ViewTreeObserver.OnPreDrawListener {
+            if (displayLevel != DisplayLevel.FULLSCREEN) {
+                val isImeVisible = ViewCompat.getRootWindowInsets(view)
+                    ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+                displayLevel = if (isImeVisible) DisplayLevel.MEDIUM else DisplayLevel.MINIMAL
+            }
+            true
+        }
+        view.viewTreeObserver.addOnPreDrawListener(listener)
+        onDispose {
+            view.viewTreeObserver.removeOnPreDrawListener(listener)
+        }
     }
 
     Box(
@@ -188,10 +189,7 @@ internal fun InputView(
                 textStyle = MaterialTheme.typography.titleLarge,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1.0f)
-                    .onFocusChanged {
-                        hasFocus = it.hasFocus
-                    },
+                    .weight(1.0f),
                 decorator = @Composable {
                     val interactionSource = remember { MutableInteractionSource() }
                     DecorationBox(
@@ -233,7 +231,7 @@ internal fun InputView(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { focusManager.clearFocus() }) {
+            IconButton(onClick = { }, enabled = false) {
                 Icon(
                     imageVector = Icons.Default.Mic, contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondary
@@ -254,7 +252,7 @@ internal fun InputView(
                 enabled = !isPromptEmpty,
                 onClick = {
                     onSubmit(enterContent.text.toString())
-                    focusManager.clearFocus()
+                    keyboardController?.hide()
                     enterContent.clearText()
                 }
             ) {
