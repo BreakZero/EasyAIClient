@@ -2,7 +2,6 @@ package org.easy.ai.plugins.multimodal
 
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -49,7 +48,7 @@ internal fun MultiModalRoute(popBack: () -> Unit) {
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MultiScreen(
     uiState: ModalUiState,

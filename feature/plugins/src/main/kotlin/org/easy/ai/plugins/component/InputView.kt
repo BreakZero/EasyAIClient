@@ -94,10 +94,6 @@ internal fun InputView(
         if (it == DisplayLevel.MEDIUM) 20.dp else 0.dp
     }
 
-    LaunchedEffect(key1 = images) {
-        if (!images.isNullOrEmpty()) displayLevel = DisplayLevel.FULLSCREEN
-    }
-
     val height by transition.animateDp(
         label = "height",
         transitionSpec = { tween(durationMillis = 600) }
@@ -106,15 +102,6 @@ internal fun InputView(
             DisplayLevel.MINIMAL -> 56.dp
             DisplayLevel.MEDIUM -> screenWidth.times(9).div(16)
             DisplayLevel.FULLSCREEN -> screenHeight
-        }
-    }
-
-    val coroutineScope = rememberCoroutineScope()
-
-    fun toggleFullScreen() {
-        coroutineScope.launch {
-            displayLevel = if (displayLevel == DisplayLevel.FULLSCREEN) DisplayLevel.MEDIUM
-            else DisplayLevel.FULLSCREEN
         }
     }
 
@@ -128,13 +115,21 @@ internal fun InputView(
             }
     }
     val view = LocalView.current
+    var isImeVisible by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = images, key2 = isImeVisible) {
+        displayLevel = if (!images.isNullOrEmpty()) DisplayLevel.FULLSCREEN else {
+            if (isImeVisible) DisplayLevel.MEDIUM
+            else DisplayLevel.MINIMAL
+        }
+    }
+
     DisposableEffect(LocalWindowInfo.current) {
         val listener = ViewTreeObserver.OnPreDrawListener {
-            if (displayLevel != DisplayLevel.FULLSCREEN) {
-                val isImeVisible = ViewCompat.getRootWindowInsets(view)
-                    ?.isVisible(WindowInsetsCompat.Type.ime()) == true
-                displayLevel = if (isImeVisible) DisplayLevel.MEDIUM else DisplayLevel.MINIMAL
-            }
+            isImeVisible = ViewCompat.getRootWindowInsets(view)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) == true
             true
         }
         view.viewTreeObserver.addOnPreDrawListener(listener)
@@ -230,7 +225,7 @@ internal fun InputView(
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { }, enabled = false) {
+            IconButton(onClick = { }, enabled = true) {
                 Icon(
                     imageVector = Icons.Default.Mic, contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondary
@@ -252,7 +247,6 @@ internal fun InputView(
                 onClick = {
                     onSubmit(enterContent.text.toString())
                     keyboardController?.hide()
-                    displayLevel = DisplayLevel.MINIMAL
                     enterContent.clearText()
                 }
             ) {
@@ -261,20 +255,6 @@ internal fun InputView(
                     contentDescription = null
                 )
             }
-
-            Icon(
-                modifier = Modifier
-                    .padding(top = 8.dp, end = 8.dp)
-                    .size(24.dp)
-                    .align(Alignment.TopEnd)
-                    .clip(CircleShape)
-                    .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3F))
-                    .clickable { toggleFullScreen() }
-                    .padding(4.dp),
-                tint = MaterialTheme.colorScheme.onPrimary,
-                imageVector = if (displayLevel == DisplayLevel.FULLSCREEN) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
-                contentDescription = null
-            )
         }
     }
 }

@@ -86,7 +86,5 @@ dependencies {
     implementation(projects.feature.settings)
     implementation(projects.feature.plugins)
 
-    implementation(libs.androidx.core.splashscreen)
-
     implementation(libs.timber)
 }

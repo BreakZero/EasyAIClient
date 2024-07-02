@@ -2,6 +2,7 @@ package org.easy.ai.feature.settings
 
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -25,6 +26,12 @@ class SettingsViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), SettingsUiState())
 
     fun onEvent(event: SettingsEvent) {
+        val handler = CoroutineExceptionHandler { _, exception ->
+
+        }
+        viewModelScope.launch(handler) {
+
+        }
         when (event) {
             is SettingsEvent.OnChatAiChanged -> {
                 viewModelScope.launch {

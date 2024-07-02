@@ -14,7 +14,7 @@ androidx-room = "2.6.1"
 compose-bom = "2024.05.00"
 compose-compiler = "1.5.14"
 compose-activity = "1.9.0"
-compose-navigation = "2.8.0-beta01"
+compose-navigation = "2.8.0-beta03"
 
 kotlinx-coroutine = "1.8.0"
 kotlinx-json = "1.6.3"
