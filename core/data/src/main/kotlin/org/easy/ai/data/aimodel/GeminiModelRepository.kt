@@ -14,7 +14,7 @@ import javax.inject.Inject
 class GeminiModelRepository @Inject internal constructor(
     private val geminiRestApi: GeminiRestApi
 ) : ChatPlugin, TextAndImagePlugin {
-    private val defaultModel = "gemini-1.5-pro-latest"
+    private val defaultModel = "gemini-1.5-pro"
     override suspend fun sendMessage(apiKey: String, history: List<ChatMessage>): ChatMessage {
         val content = history.map {
             content(it.participant.name.lowercase()) { text(it.content) }
