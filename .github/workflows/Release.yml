@@ -1,4 +1,4 @@
-name: Github Release with tag
+name: Push to Firebase App Distribution
 on:
   push:
     tags:
@@ -37,6 +37,27 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
+      - name: Grant Permission
+        run: chmod +x ./scripts/update_version_code.sh
+
+      - name: Set versionCode as environment variable
+        run: |
+          VERSION_CODE=${GITHUB_RUN_NUMBER}
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Set versionCode to $VERSION_CODE"
+
+      - name: Update Version Code
+        run: |
+          ./scripts/update_version_code.sh versionCode $VERSION_CODE
+
+      - name: Read Version Name info enviroment variable
+        run: |
+          VERSION_NAME=$(grep -E "^versionName" configs/version_info.properties | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+
+      - name: Echo VersionInfo
+        run: cat configs/version_info.properties
+
       - name: Install GMD image for baseline profile generation
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
 
@@ -57,7 +78,7 @@ jobs:
           app_file=$(find ./app -name "*.aab" | head -n 1)
           echo "APP_FILE=${app_file}" >> $GITHUB_ENV
 
-      - name: Upload APK To Firebase App Distribution
+      - name: Upload App file
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.APP_ID }}
@@ -72,7 +93,7 @@ jobs:
           status: custom
           custom_payload: |
             {
-              text: "Hi Team, New build was uploaded to Firebase App Distribution :among_us_orange_dance:\n",
+              text: "Hi, EasyAi(${{ env.VERSION_NAME }}) has uploaded to Firebase Distribution :tada: \n",
               attachments: [{
                 "author_name": "${{ github.actor }}",
                 "author_link": "https://github.com/${{ github.actor }}",
@@ -80,20 +101,15 @@ jobs:
                 color: 'good',
                 fields: [{
                      title: "Build Version",
-                     value: "1.3.0",
+                     value: "${{ env.VERSION_NAME }}",
                      short: true
                  },
                  {
-                     title: "Branch",
-                     value: "${{ github.head_ref || github.ref_name }}",
-                     short: true
-                 },
-                 {
-                     title: "Recent Commits",
-                     value: "```Hi```",
+                     title: "Release Notes",
+                     value: "```We made improvements and upgrade Gemini Model```",
                      short: false
                 }],
-                "footer": "Easy Group(GitHub Action)"
+                "footer": "EasyOrg"
               }]
             }
         env:

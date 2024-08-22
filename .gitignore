@@ -49,6 +49,7 @@ locals/*
 # keystore files
 /keystore/*
 !/keystore/keystore.jks
-!/keystore/keystore.properties
+
+configs/*.bak
 
 app/google-services.json
