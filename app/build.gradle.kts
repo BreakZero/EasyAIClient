@@ -1,9 +1,6 @@
 import org.easy.mobile.convention.configureFlavors
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import java.util.Properties
+import org.easy.mobile.convention.getPropertiesByFile
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     id("easy.android.application")
     id("easy.android.application.compose")
@@ -14,12 +11,14 @@ plugins {
 android {
     namespace = "org.easy.ai.client"
 
+    val versionInfo = project.getPropertiesByFile("configs/version_info.properties")
+
     defaultConfig {
         applicationId = "org.easy.ai.client"
-        versionCode = 100000012
-        versionName = "v0.1.1"
+        versionCode = versionInfo.getProperty("versionCode", "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: versionInfo.getProperty("versionName", "v1.0.0")
     }
-    val keyProperties = keyStoreProperties()
+    val keyProperties = project.getPropertiesByFile("configs/keystore.properties")
     signingConfigs {
         create("release") {
             storeFile = rootProject.file(keyProperties.getProperty("storeFile"))
@@ -58,18 +57,6 @@ android {
         buildConfig = true
     }
     configureFlavors(this)
-}
-
-fun keyStoreProperties(): Properties {
-    val properties = Properties()
-    val keyPropertiesFile = rootProject.file("keystore/keystore.properties")
-
-    if (keyPropertiesFile.isFile) {
-        InputStreamReader(FileInputStream(keyPropertiesFile), Charsets.UTF_8).use { reader ->
-            properties.load(reader)
-        }
-    }
-    return properties
 }
 
 dependencies {

@@ -1,4 +1,4 @@
-name: Github Release with tag
+name: Push to Firebase App Distribution
 on:
   push:
     tags:
@@ -37,6 +37,22 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
+      - name: Grant Permission
+        run: chmod +x ./scripts/update_version_code.sh
+
+      - name: Set versionCode as environment variable
+        run: |
+          VERSION_CODE=${GITHUB_RUN_NUMBER}
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+          echo "Set versionCode to $VERSION_CODE"
+
+      - name: Update Version Code
+        run: |
+          ./scripts/update_version_code.sh versionCode $VERSION_CODE
+
+      - name: Echo VersionInfo
+        run: cat configs/version_info.properties
+
       - name: Install GMD image for baseline profile generation
         run: yes | "$ANDROID_HOME"/cmdline-tools/latest/bin/sdkmanager "system-images;android-33;aosp_atd;x86_64"
 
@@ -57,7 +73,7 @@ jobs:
           app_file=$(find ./app -name "*.aab" | head -n 1)
           echo "APP_FILE=${app_file}" >> $GITHUB_ENV
 
-      - name: Upload APK To Firebase App Distribution
+      - name: Upload App file
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: ${{ secrets.APP_ID }}
