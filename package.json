@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "changelog": "auto-changelog --output changelogs/CHANGELOG.md",
+    "release": "auto-changelog --output changelogs/CHANGELOG.md"
+  },
+  "auto-changelog": {
+    "output": "changelogs/CHANGELOG.md",
+    "template": "keepachangelog",
+    "unreleased": true
+  }
+}
