@@ -1,8 +1,15 @@
 name: Push to Firebase App Distribution
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      buildEnv:
+        description: 'Which type would you want to build?'
+        required: true
+        default: 'Staging'
+        type: choice
+        options:
+          - Staging
+          - Product
 permissions:
   contents: write
 
