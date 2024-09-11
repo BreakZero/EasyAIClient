@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.androidTest) apply false
     alias(libs.plugins.androidx.room) apply false
+    alias(libs.plugins.compose) apply false
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1" apply false
 }
 
