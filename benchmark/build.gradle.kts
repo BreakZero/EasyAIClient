@@ -1,6 +1,5 @@
 import org.easy.mobile.convention.configureFlavors
 
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
 //    alias(easy.plugins.android.test)
     id("easy.android.test")
