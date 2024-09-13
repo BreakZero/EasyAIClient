@@ -2,11 +2,11 @@ package org.easy.ai.plugins.component
 
 import android.view.ViewTreeObserver
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateIntOffset
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,17 +16,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.CloseFullscreen
 import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.OpenInFull
 import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,7 +36,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -50,16 +45,18 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 import org.easy.ai.system.theme.ThemePreviews
 import org.easy.ai.system.ui.EasyAITheme
 import org.easy.ai.system.ui.localDim
@@ -68,7 +65,7 @@ internal enum class DisplayLevel {
     MINIMAL, MEDIUM, FULLSCREEN
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 internal fun InputView(
     modifier: Modifier = Modifier,
@@ -81,6 +78,7 @@ internal fun InputView(
 
     val screenHeight = configuration.screenHeightDp.dp
     val screenWidth = configuration.screenWidthDp.dp
+    val screenWidthPx = with(LocalDensity.current) { screenWidth.roundToPx() }
 
     var displayLevel by remember { mutableStateOf(DisplayLevel.MINIMAL) }
     var isPromptEmpty by remember {
@@ -102,6 +100,20 @@ internal fun InputView(
             DisplayLevel.MINIMAL -> 56.dp
             DisplayLevel.MEDIUM -> screenWidth.times(9).div(16)
             DisplayLevel.FULLSCREEN -> screenHeight
+        }
+    }
+
+    val actionOffset by transition.animateIntOffset(
+        label = "offset",
+        transitionSpec = { tween(durationMillis = 600) }
+    ) {
+        when (it) {
+            DisplayLevel.MINIMAL -> IntOffset(0, 0)
+
+            DisplayLevel.MEDIUM, DisplayLevel.FULLSCREEN -> IntOffset(
+                -screenWidthPx / 2,
+                0
+            )
         }
     }
 
@@ -208,14 +220,8 @@ internal fun InputView(
                 .layout { measurable, constraints ->
                     val placeable = measurable.measure(constraints)
                     layout(placeable.width, placeable.height) {
-                        when (displayLevel) {
-                            DisplayLevel.MINIMAL -> placeable.place(0, 0)
-
-                            DisplayLevel.MEDIUM, DisplayLevel.FULLSCREEN -> placeable.place(
-                                0 - (screenWidth.roundToPx() - placeable.width) / 2,
-                                0
-                            )
-                        }
+                        val x = if (actionOffset.x < -placeable.width) actionOffset.x + placeable.width / 2 else 0
+                        placeable.place(x, actionOffset.y)
                     }
                 }
                 .padding(4.dp)
