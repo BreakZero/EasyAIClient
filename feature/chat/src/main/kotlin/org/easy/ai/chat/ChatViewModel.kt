@@ -61,12 +61,22 @@ class ChatViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(3_000), ChattingUiState())
 
     private suspend fun onChatSelected(uiChat: ChatUiModel?) {
+        checkChatNotNull()
+
         val newHistory = uiChat?.let {
             offlineChatRepository.getMessagesByChat(it.chatId)
         } ?: emptyList()
+
         chat.release(newHistory)
         _selectedChat.update { uiChat }
         _chatHistory.update { newHistory }
+    }
+
+    private fun checkChatNotNull() {
+        if (!::chat.isInitialized) {
+            dispatchNavigationEvent(ChatEvent.OnSettingsClicked)
+            return
+        }
     }
 
     private fun sendMessage(userMessage: String) {
@@ -89,7 +99,7 @@ class ChatViewModel @Inject constructor(
                 receivingMsg.append(message.content).also { fullContent ->
                     _pendingMessage.update {
                         ChatMessage.success(
-                            content = fullContent.toString(),
+                            content = fullContent.trimEnd().toString(),
                             participant = Participant.MODEL
                         )
                     }
