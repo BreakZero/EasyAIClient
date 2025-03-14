@@ -11,6 +11,8 @@ plugins {
     alias(libs.plugins.androidx.room) apply false
     alias(libs.plugins.compose) apply false
     id("org.jlleitschuh.gradle.ktlint") version "12.1.1" apply false
+    id("com.google.firebase.crashlytics") version "3.0.3" apply false
+    alias(libs.plugins.gms) apply false
 }
 
 subprojects {

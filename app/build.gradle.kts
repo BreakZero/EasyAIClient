@@ -6,6 +6,8 @@ plugins {
     id("easy.android.application.compose")
     id("easy.android.jacoco")
     id("easy.android.hilt")
+    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.gms)
 }
 
 android {
@@ -46,6 +48,9 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = true
+            }
         }
     }
     packaging {
@@ -72,6 +77,11 @@ dependencies {
     implementation(projects.feature.chat)
     implementation(projects.feature.settings)
     implementation(projects.feature.plugins)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
+    implementation("com.google.firebase:firebase-database")
 
     implementation(libs.timber)
 }

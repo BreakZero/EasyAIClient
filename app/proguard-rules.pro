@@ -21,3 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn org.slf4j.**
+-keepattributes SourceFile,LineNumberTable
+
+-keepattributes Signature

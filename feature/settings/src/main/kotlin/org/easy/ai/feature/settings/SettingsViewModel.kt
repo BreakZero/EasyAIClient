@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.easy.ai.common.BaseViewModel
 import org.easy.ai.data.repository.UserDataRepository
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +28,7 @@ class SettingsViewModel @Inject constructor(
 
     fun onEvent(event: SettingsEvent) {
         val handler = CoroutineExceptionHandler { _, exception ->
-
+            Timber.e(exception)
         }
         viewModelScope.launch(handler) {
 
@@ -39,11 +40,19 @@ class SettingsViewModel @Inject constructor(
                 }
             }
 
-            SettingsEvent.OpenSelector -> selectorSwitcher.update { true }
+            SettingsEvent.OpenSelector -> {
+                selectorSwitcher.update { true }
+            }
+
             SettingsEvent.CloseSelector -> selectorSwitcher.update { false }
-            SettingsEvent.NavigateToAiModelManager, SettingsEvent.NavigateToAbout -> dispatchNavigationEvent(
-                event
-            )
+            SettingsEvent.NavigateToAiModelManager, SettingsEvent.NavigateToAbout -> {
+                kotlin.runCatching {
+                    throw RuntimeException("mock runtime exception")
+                }.onFailure {
+                    Timber.e(it)
+                }
+                dispatchNavigationEvent(event)
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ compose-compiler = "1.5.14"
 compose-activity = "1.9.2"
 compose-navigation = "2.8.0"
 
+firebaseBom = "33.10.0"
 kotlinx-coroutine = "1.8.1"
 kotlinx-json = "1.6.3"
 
@@ -24,6 +25,7 @@ org-jetbrains-kotlin = "2.0.20"
 android-gradle-plugin = "8.4.2"
 protobuf = "3.25.2"
 protobufPlugin = "0.9.4"
+gmsPlugin = "4.4.2"
 
 # For testing
 junit = "4.13.2"
@@ -132,6 +134,11 @@ robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "
 robolectric-shadows = { group = "org.robolectric", name = "shadows-framework", version.ref = "robolectric" }
 roborazzi = { group = "io.github.takahirom.roborazzi", name = "roborazzi", version.ref = "roborazzi" }
 
+# Firebase
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+
 # Testing
 mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutine" }
@@ -159,6 +166,7 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 androidTest = { id = "com.android.test", version.ref = "android-gradle-plugin" }
 androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "org-jetbrains-kotlin" }
+gms = { id = "com.google.gms.google-services", version.ref = "gmsPlugin" }
 
 [bundles]
 compose-android-bundle = [
