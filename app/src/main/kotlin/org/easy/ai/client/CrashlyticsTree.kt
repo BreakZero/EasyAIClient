@@ -7,7 +7,7 @@ import com.google.firebase.database.database
 import timber.log.Timber
 
 class CrashlyticsTree : Timber.Tree() {
-    private val database = Firebase.database
+    private val database = Firebase.database.apply { setPersistenceEnabled(true) }
     private val ref = database.getReference("logs")
 
     override fun isLoggable(tag: String?, priority: Int): Boolean {
@@ -16,16 +16,23 @@ class CrashlyticsTree : Timber.Tree() {
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         FirebaseCrashlytics.getInstance().log("$tag: $message")
-        if (t != null) {
-            println("===== logging")
-            ref.push().setValue(t.message)
-                .addOnSuccessListener { println("===== on success") }
-                .addOnFailureListener {
-                    println("===== Failed to log event, $it")
-                    it.printStackTrace()
-                }
-
-            FirebaseCrashlytics.getInstance().recordException(t)
+        if (tag != null) {
+            FirebaseCrashlytics.getInstance().setCustomKey("log_tag", tag)
         }
+        FirebaseCrashlytics.getInstance().setCustomKey("log_priority", priority)
+        FirebaseCrashlytics.getInstance().setCustomKey("log_message", message)
+        t?.let { logThrowable(it) }
+    }
+
+    private fun logThrowable(throwable: Throwable) {
+        ref.child("Nothing").setValue(throwable.message ?: "No error message")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    println("===== success")
+                } else {
+                    println("===== failed")
+                }
+            }
+        FirebaseCrashlytics.getInstance().recordException(throwable)
     }
 }
